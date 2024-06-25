@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require("http");
 const app = require('./app');
 
@@ -9,4 +10,4 @@ server.listen(port, () => {
     console.log("Listening on " + port);
 });
 
-module.exports = server;  // Export the 'server' object for use in other modules
+module.exports = server;
