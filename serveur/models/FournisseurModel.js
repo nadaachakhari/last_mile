@@ -43,7 +43,7 @@ const Fournisseur = sequelize.define('Fournisseur', {
     timestamps: false,
 });
 
-// Définissez l'association entre Fournisseur et Utilisateur
+
 Utilisateur.hasOne(Fournisseur, { foreignKey: 'idUtilisateur' });
 Utilisateur.belongsTo(Adresse, { foreignKey: 'idAdresse' });
 Fournisseur.belongsTo(Utilisateur, { foreignKey: 'idUtilisateur', as: 'utilisateur' });
