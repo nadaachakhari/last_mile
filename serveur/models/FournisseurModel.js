@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Utilisateur = require('./Utilisateur'); // Importez le modèle Utilisateur
-const Utilisateur = require('./UtilisateurModel'); // Importez le modèle Utilisateur
+const Utilisateur = require('./UtilisateurModel');
 const Adresse = require('../models/AdresseModel')
 
 const Fournisseur = sequelize.define('Fournisseur', {
@@ -33,6 +32,11 @@ const Fournisseur = sequelize.define('Fournisseur', {
     notes: {
         type: DataTypes.TEXT,
         allowNull: true,
+    },
+    statuts: {
+        type: DataTypes.ENUM('activer', 'désactiver'),
+        allowNull: false,
+        defaultValue: 'désactiver',
     },
 }, {
     tableName: 'fournisseur',
