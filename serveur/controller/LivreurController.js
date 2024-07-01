@@ -34,6 +34,12 @@ const ajouterLivreur = async (req, res) => {
             return res.status(400).json({ error: 'Le mot de passe est requis' });
         }
 
+        // Vérifier si l'email est déjà utilisé
+        const existingUser = await Utilisateur.findOne({ where: { Email: utilisateur.Email } });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Cet email est déjà utilisé. Veuillez en choisir un autre.' });
+        }
+
         // Hasher le mot de passe
         const hashedPassword = await bcrypt.hash(utilisateur.Mot_de_passe, 10);
 
@@ -58,6 +64,7 @@ const ajouterLivreur = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Mettre à jour un livreur par son ID
 const updateLivreur = async (req, res) => {

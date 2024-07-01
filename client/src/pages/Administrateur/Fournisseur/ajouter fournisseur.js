@@ -11,6 +11,11 @@ import {
   CFormLabel,
   CFormSelect,
   CRow,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
 } from '@coreui/react';
 
 const AjouterFournisseur = () => {
@@ -31,8 +36,11 @@ const AjouterFournisseur = () => {
     secteurActivite: '',
     siteWeb: '',
     notes: '',
+    motDePasse: '', 
     statuts: 'désactiver',
   });
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -42,12 +50,12 @@ const AjouterFournisseur = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/fournisseurs', {
+      const response = await axios.post('http://localhost:5001/fournisseurs/registre', {
         utilisateur: {
           Nom: formData.nom, 
           Prenom: formData.prenom,
           Email: formData.email,
-          Mot_de_passe: '', 
+          Mot_de_passe: formData.motDePasse,
           telephone: formData.telephone,
           age: formData.age,
           genre: formData.genre,
@@ -68,11 +76,17 @@ const AjouterFournisseur = () => {
       });
       console.log('Réponse serveur:', response.data);
     } catch (error) {
+      if (error.response && error.response.status === 400 && error.response.data.error === 'Email already in use') {
+        setModalMessage('Cet email est déjà utilisé. Veuillez en choisir un autre.');
+        setShowModal(true);
+      } else {
+        setModalMessage('Erreur lors de la soumission du formulaire. Veuillez réessayer.');
+        setShowModal(true);
+      }
       console.error('Erreur lors de la soumission du formulaire:', error);
     }
   };
   
-
   return (
     <CRow>
       <CCol xs={12}>
@@ -155,6 +169,10 @@ const AjouterFournisseur = () => {
                 <CFormInput id="notes" value={formData.notes} onChange={handleChange} />
               </CCol>
               <CCol md={6}>
+                <CFormLabel htmlFor="motDePasse">Mot de Passe</CFormLabel> 
+                <CFormInput type="password" id="motDePasse" value={formData.motDePasse} onChange={handleChange} />
+              </CCol>
+              <CCol md={6}>
                 <CFormLabel htmlFor="statuts">État</CFormLabel>
                 <CFormSelect id="statuts" value={formData.statuts} onChange={handleChange}>
                   <option value="activer">Activer</option>
@@ -170,6 +188,19 @@ const AjouterFournisseur = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      <CModal visible={showModal} onClose={() => setShowModal(false)}>
+        <CModalHeader>
+          <CModalTitle>Erreur</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {modalMessage}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowModal(false)}>
+            Fermer
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CRow>
   );
 };

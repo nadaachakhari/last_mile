@@ -11,6 +11,11 @@ import {
   CFormLabel,
   CFormSelect,
   CRow,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
 } from '@coreui/react';
 
 const AjouterLivreur = () => {
@@ -27,8 +32,11 @@ const AjouterLivreur = () => {
     complementAdresse: '',
     codePostal: '',
     ville: '',
+    motDePasse: '', 
     statuts: 'désactiver',
   });
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -43,7 +51,7 @@ const AjouterLivreur = () => {
           Nom: formData.nom,
           Prenom: formData.prenom,
           Email: formData.email,
-          Mot_de_passe: '', // Ensure this matches your backend requirements
+          Mot_de_passe: formData.motDePasse,
           telephone: formData.telephone,
           age: formData.age,
           genre: formData.genre,
@@ -60,7 +68,12 @@ const AjouterLivreur = () => {
       });
       console.log('Réponse serveur:', response.data);
     } catch (error) {
-      console.error('Erreur lors de la soumission du formulaire:', error);
+      if (error.response && error.response.status === 400 && error.response.data.error) {
+        setModalMessage(error.response.data.error);
+        setShowModal(true);
+      } else {
+        console.error('Erreur lors de la soumission du formulaire:', error);
+      }
     }
   };
 
@@ -104,7 +117,8 @@ const AjouterLivreur = () => {
               <CCol md={6}>
                 <CFormLabel htmlFor="type">Type d'adresse</CFormLabel>
                 <CFormSelect id="type" value={formData.type} onChange={handleChange}>
-                  <option>Domicile</option>
+                  <option>Choose...</option>
+                  <option value="Domicile">Domicile</option>
                   <option value="Travail">Travail</option>
                   <option value="Autre">Autre</option>
                 </CFormSelect>
@@ -130,6 +144,10 @@ const AjouterLivreur = () => {
                 <CFormInput id="ville" value={formData.ville} onChange={handleChange} />
               </CCol>
               <CCol md={6}>
+                <CFormLabel htmlFor="motDePasse">Mot de Passe</CFormLabel> 
+                <CFormInput type="password" id="motDePasse" value={formData.motDePasse} onChange={handleChange} />
+              </CCol>
+              <CCol md={6}>
                 <CFormLabel htmlFor="statuts">État</CFormLabel>
                 <CFormSelect id="statuts" value={formData.statuts} onChange={handleChange}>
                   <option value="activer">Activer</option>
@@ -145,6 +163,19 @@ const AjouterLivreur = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      <CModal visible={showModal} onClose={() => setShowModal(false)}>
+        <CModalHeader>
+          <CModalTitle>Erreur</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {modalMessage}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowModal(false)}>
+            Fermer
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CRow>
   );
 };

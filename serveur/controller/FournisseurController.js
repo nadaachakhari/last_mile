@@ -23,13 +23,18 @@ const getFournisseurById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 const registreFournisseur = async (req, res) => {
     const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes } = req.body;
 
     try {
+        // Check if the email already exists
+        const existingUser = await Utilisateur.findOne({ where: { Email: utilisateur.Email } });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already in use' });
+        }
+
         // Hasher le mot de passe
-        const hashedPassword = await bcrypt.hash(utilisateur.Mot_de_passe, 10); // 10 est le nombre de salage (salt rounds)
+        const hashedPassword = await bcrypt.hash(utilisateur.Mot_de_passe, 10);
 
         // Créer l'adresse en premier
         const nouvelleAdresse = await Adresse.create(adresse);
@@ -37,7 +42,7 @@ const registreFournisseur = async (req, res) => {
         // Créer l'utilisateur en utilisant l'idAdresse de l'adresse créée
         const nouvelUtilisateur = await Utilisateur.create({
             ...utilisateur,
-            motDePasse: hashedPassword, // Utilisation du mot de passe haché
+            Mot_de_passe: hashedPassword,
             idAdresse: nouvelleAdresse.idAdresse // Assurez-vous que idAdresse est correctement défini dans UtilisateurModel.js
         });
 
@@ -56,6 +61,7 @@ const registreFournisseur = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Mettre à jour un fournisseur par son ID
 const updateFournisseur = async (req, res) => {
