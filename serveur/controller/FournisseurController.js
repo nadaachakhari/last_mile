@@ -23,7 +23,7 @@ const getFournisseurById = async (req, res) => {
 
 // Ajouter un fournisseur
 const ajouterFournisseur = async (req, res) => {
-    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes } = req.body;
+    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes, statuts } = req.body;
 
     try {
         // Créer l'adresse en premier
@@ -42,6 +42,7 @@ const ajouterFournisseur = async (req, res) => {
             secteurActivite,
             siteWeb,
             notes,
+            statuts: 'désactiver' // Statut par défaut
         });
 
         res.status(201).json(nouveauFournisseur);
@@ -53,7 +54,7 @@ const ajouterFournisseur = async (req, res) => {
 // Mettre à jour un fournisseur par son ID
 const updateFournisseur = async (req, res) => {
     const { id } = req.params;
-    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes } = req.body;
+    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes, statuts } = req.body;
     try {
         const fournisseur = await Fournisseur.findByPk(id, {
             include: [{ model: Utilisateur, as: 'utilisateur' }]
@@ -79,6 +80,7 @@ const updateFournisseur = async (req, res) => {
         fournisseur.secteurActivite = secteurActivite;
         fournisseur.siteWeb = siteWeb;
         fournisseur.notes = notes;
+        fournisseur.statuts = statuts;
         await fournisseur.save();
 
         res.json(fournisseur);
@@ -124,12 +126,38 @@ const getFournisseurs = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};// Mettre à jour le statut d'un fournisseur par son ID
+const updateStatutFournisseur = async (req, res) => {
+    const { id } = req.params;
+    const { statuts } = req.body; // statut devrait être 'activer' ou 'désactiver'
+
+    if (!['activer', 'désactiver'].includes(statuts)) {
+        return res.status(400).json({ error: 'Le statut doit être soit "activer" soit "désactiver".' });
+    }
+
+    try {
+        const fournisseur = await Fournisseur.findByPk(id);
+        if (!fournisseur) {
+            return res.status(404).json({ message: `Fournisseur avec l'ID ${id} non trouvé.` });
+        }
+
+        // Mettre à jour le statut
+        fournisseur.statuts = statuts;
+        await fournisseur.save();
+
+        res.json(fournisseur);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
+
+
 
 module.exports = {
     getFournisseurById,
     ajouterFournisseur,
     getFournisseurs,
     deleteFournisseur,
-    updateFournisseur
+    updateFournisseur,
+    updateStatutFournisseur
 };

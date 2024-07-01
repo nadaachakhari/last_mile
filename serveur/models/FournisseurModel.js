@@ -33,6 +33,11 @@ const Fournisseur = sequelize.define('Fournisseur', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    statuts: {
+        type: DataTypes.ENUM('activer', 'désactiver'),
+        allowNull: false,
+        defaultValue: 'désactiver',
+    },
 }, {
     tableName: 'fournisseur',
     timestamps: false,
