@@ -4,7 +4,7 @@ const cors = require('cors'); // Importer cors
 const bodyParser = require('body-parser'); // Importer body-parser
 require('dotenv').config();
 const sequelize = require('./config/database');
-const FournisseurRoute = require('./routes/LivreurRoute'); // Assurez-vous d'importer vos routes correctement
+const LivreurRoute = require('./routes/LivreurRoute'); // Assurez-vous d'importer vos routes correctement
 const fournisseurRoutes = require('./routes/FournisseurRoute');
 
 const app = express();
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
     res.send('Bonjour, le serveur est opérationnel!');
 });
 
-app.use('/livreur', FournisseurRoute);
+app.use('/livreur', LivreurRoute);
 app.use('/fournisseurs', fournisseurRoutes);
 
 sequelize.sync()
