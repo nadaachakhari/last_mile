@@ -2,7 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 require('dotenv').config();
 const sequelize = require('./config/database');
-const FournisseurRoute = require('./routes/LivreurRoute')
+const livreurRoute = require('./routes/LivreurRoute')
 const fournisseurRoutes = require('./routes/FournisseurRoute')
 
 
@@ -33,7 +33,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Bonjour, le serveur est opérationnel!');
 });
-app.use('/livreur', FournisseurRoute);
+app.use('/livreur', livreurRoute);
 app.use('/fournisseurs', fournisseurRoutes);
 
 sequelize.sync()

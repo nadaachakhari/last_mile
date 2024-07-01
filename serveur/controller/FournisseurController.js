@@ -1,6 +1,8 @@
 const Fournisseur = require('../models/FournisseurModel');
 const Utilisateur = require('../models/UtilisateurModel');
 const Adresse = require('../models/AdresseModel');
+const bcrypt = require('bcrypt');
+
 
 // Récupérer un fournisseur par son ID
 const getFournisseurById = async (req, res) => {
@@ -21,21 +23,29 @@ const getFournisseurById = async (req, res) => {
     }
 };
 
-// Ajouter un fournisseur
-const ajouterFournisseur = async (req, res) => {
-    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes, statuts } = req.body;
+
+const registreFournisseur = async (req, res) => {
+    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes } = req.body;
 
     try {
-        // Créer l'adresse en premier
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(utilisateur.Mot_de_passe, 10);
+        console.log("avant hashage :" + utilisateur.Mot_de_passe);
+        console.log("hash :" + hashedPassword);
+
         const nouvelleAdresse = await Adresse.create(adresse);
 
-        // Créer l'utilisateur en utilisant l'idAdresse de l'adresse créée
         const nouvelUtilisateur = await Utilisateur.create({
-            ...utilisateur,
-            idAdresse: nouvelleAdresse.idAdresse // Assurez-vous que idAdresse est correctement défini dans UtilisateurModel.js
+            Nom: utilisateur.Nom,
+            Prenom: utilisateur.Prenom,
+            Email: utilisateur.Email,
+            Mot_de_passe: hashedPassword,
+            telephone: utilisateur.telephone,
+            age: utilisateur.age,
+            genre: utilisateur.genre,
+            idAdresse: nouvelleAdresse.idAdresse
         });
 
-        // Créer le fournisseur avec les références à l'utilisateur
         const nouveauFournisseur = await Fournisseur.create({
             idUtilisateur: nouvelUtilisateur.idUtilisateur,
             matricule,
@@ -50,6 +60,9 @@ const ajouterFournisseur = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
 
 // Mettre à jour un fournisseur par son ID
 const updateFournisseur = async (req, res) => {
@@ -151,11 +164,12 @@ const updateStatutFournisseur = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+    //enoi email lor de changement son status à activer (bienvenue) et desactiver(raison de désactiver)
 };
 
 module.exports = {
     getFournisseurById,
-    ajouterFournisseur,
+    registreFournisseur,
     getFournisseurs,
     deleteFournisseur,
     updateFournisseur,
