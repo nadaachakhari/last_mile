@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Utilisateur = require('./UtilisateurModel'); // Importez le modèle Utilisateur
-const Adresse =require('../models/AdresseModel')
+const Utilisateur = require('./Utilisateur'); // Importez le modèle Utilisateur
+
 const Fournisseur = sequelize.define('Fournisseur', {
     idFournisseur: {
         type: DataTypes.INTEGER,
@@ -16,7 +16,6 @@ const Fournisseur = sequelize.define('Fournisseur', {
             key: 'idUtilisateur',
         },
     },
-
     matricule: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -33,20 +32,13 @@ const Fournisseur = sequelize.define('Fournisseur', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    statuts: {
-        type: DataTypes.ENUM('activer', 'désactiver'),
-        allowNull: false,
-        defaultValue: 'désactiver',
-    },
 }, {
     tableName: 'fournisseur',
     timestamps: false,
 });
 
 // Définissez l'association entre Fournisseur et Utilisateur
+Fournisseur.belongsTo(Utilisateur, { foreignKey: 'idUtilisateur' });
 Utilisateur.hasOne(Fournisseur, { foreignKey: 'idUtilisateur' });
-Utilisateur.belongsTo(Adresse, { foreignKey: 'idAdresse' });
-Fournisseur.belongsTo(Utilisateur, { foreignKey: 'idUtilisateur', as: 'utilisateur' });
-
 
 module.exports = Fournisseur;

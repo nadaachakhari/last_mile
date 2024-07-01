@@ -1,7 +1,7 @@
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Adresse =require('../models/AdresseModel')
+
+
 const Utilisateur = sequelize.define('Utilisateur', {
     idUtilisateur: {
         type: DataTypes.INTEGER,
@@ -12,7 +12,7 @@ const Utilisateur = sequelize.define('Utilisateur', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Adresse, // Nom de la table de référence
+            model: 'adresse',
             key: 'idAdresse',
         },
     },
@@ -52,6 +52,4 @@ const Utilisateur = sequelize.define('Utilisateur', {
 
 // Définissez l'association entre Utilisateur et Adresse
 Utilisateur.belongsTo(require('./AdresseModel'), { foreignKey: 'idAdresse' });
-
-Utilisateur.belongsTo(Adresse, { foreignKey: 'idAdresse', as: 'adresse' });
 module.exports = Utilisateur;
