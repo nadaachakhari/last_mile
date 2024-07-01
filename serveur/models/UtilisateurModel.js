@@ -54,4 +54,24 @@ const Utilisateur = sequelize.define('Utilisateur', {
 // Définissez l'association entre Utilisateur et Adresse
 Utilisateur.belongsTo(require('./AdresseModel'), { foreignKey: 'idAdresse' });
 Utilisateur.belongsTo(Adresse, { foreignKey: 'idAdresse', as: 'adresse' });
+
+
+//test pour le role
+Utilisateur.prototype.getRole = async function () {
+    const administrateur = await this.getAdministrateur();
+    if (administrateur) return 'administrateur';
+
+    const livreur = await this.getLivreur();
+    if (livreur) return 'livreur';
+
+    const fournisseur = await this.getFournisseur();
+    if (fournisseur) return 'fournisseur';
+
+    const client = await this.getClient();
+    if (client) return 'client';
+
+    return 'utilisateur';
+};
+
+
 module.exports = Utilisateur;

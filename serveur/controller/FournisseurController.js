@@ -1,8 +1,11 @@
 const Fournisseur = require('../models/FournisseurModel');
 const Utilisateur = require('../models/UtilisateurModel');
 const Adresse = require('../models/AdresseModel');
+const bcrypt = require('bcrypt');
 
-// Récupérer un fournisseur par son ID
+
+
+
 const getFournisseurById = async (req, res) => {
     const { id } = req.params;
     try {
@@ -21,17 +24,20 @@ const getFournisseurById = async (req, res) => {
     }
 };
 
-// Ajouter un fournisseur
-const ajouterFournisseur = async (req, res) => {
-    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes, statuts } = req.body;
+const registreFournisseur = async (req, res) => {
+    const { utilisateur, adresse, matricule, secteurActivite, siteWeb, notes } = req.body;
 
     try {
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(utilisateur.Mot_de_passe, 10); // 10 est le nombre de salage (salt rounds)
+
         // Créer l'adresse en premier
         const nouvelleAdresse = await Adresse.create(adresse);
 
         // Créer l'utilisateur en utilisant l'idAdresse de l'adresse créée
         const nouvelUtilisateur = await Utilisateur.create({
             ...utilisateur,
+            motDePasse: hashedPassword, // Utilisation du mot de passe haché
             idAdresse: nouvelleAdresse.idAdresse // Assurez-vous que idAdresse est correctement défini dans UtilisateurModel.js
         });
 
@@ -155,7 +161,7 @@ const updateStatutFournisseur = async (req, res) => {
 
 module.exports = {
     getFournisseurById,
-    ajouterFournisseur,
+    registreFournisseur,
     getFournisseurs,
     deleteFournisseur,
     updateFournisseur,

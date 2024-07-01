@@ -2,7 +2,7 @@ const express = require('express');
 const {
     getFournisseurs,
     getFournisseurById,
-    ajouterFournisseur,
+    registreFournisseur,
     deleteFournisseur,
     updateFournisseur,
     updateStatutFournisseur,
@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/', getFournisseurs);
 router.get('/:id', getFournisseurById);
-router.post('/', ajouterFournisseur);
+router.post('/registre', registreFournisseur);
 router.put('/:id', updateFournisseur);
 router.delete('/:id', deleteFournisseur);
 router.put('/statut/:id', updateStatutFournisseur);
