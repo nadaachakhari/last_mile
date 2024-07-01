@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Utilisateur = require('./Utilisateur'); // Importez le modèle Utilisateur
+const Utilisateur = require('./UtilisateurModel'); // Importez le modèle Utilisateur
+const Adresse = require('../models/AdresseModel')
 
 const Fournisseur = sequelize.define('Fournisseur', {
     idFournisseur: {
@@ -38,7 +40,8 @@ const Fournisseur = sequelize.define('Fournisseur', {
 });
 
 // Définissez l'association entre Fournisseur et Utilisateur
-Fournisseur.belongsTo(Utilisateur, { foreignKey: 'idUtilisateur' });
 Utilisateur.hasOne(Fournisseur, { foreignKey: 'idUtilisateur' });
+Utilisateur.belongsTo(Adresse, { foreignKey: 'idAdresse' });
+Fournisseur.belongsTo(Utilisateur, { foreignKey: 'idUtilisateur', as: 'utilisateur' });
 
 module.exports = Fournisseur;
