@@ -8,8 +8,8 @@ const authMiddleware = require('../middlewares/auth');
 router.get('/', LivreurController.getLivreurs);
 router.post('/addLivreur', LivreurController.ajouterLivreur);
 router.put('/updateLivreur:id', LivreurController.updateLivreur);
-router.get('/getLivreurById:id', LivreurController.getLivreurById);
-router.delete('/deleteLivreur:id', LivreurController.deleteLivreur);
+router.get('/getLivreurById/:id', LivreurController.getLivreurById);
+router.delete('/deleteLivreur/:id', LivreurController.deleteLivreur);
 router.post('/login', authMiddleware.login);
 
 

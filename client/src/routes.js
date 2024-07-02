@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -39,7 +38,10 @@ const Validation = React.lazy(() => import('./views/forms/validation/Validation'
 //nouveau
 const addfournisseur = React.lazy(() => import('./pages/Administrateur/Fournisseur/ajouter fournisseur'))
 const addListener = React.lazy(() => import('./pages/Administrateur/Livreur/ajouter livreur'))
+const listeListener = React.lazy(() => import('./pages/Administrateur/Livreur/liste livreurs'))
+const LivreurDetail = React.lazy(() => import('./pages/Administrateur/Livreur/detail livreur'))
 
+//
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
 // Icons
@@ -93,6 +95,8 @@ const routes = [
   //nouvau
   { path: '/administrateur/ajouter_fournisseur', name: 'Ajouter Fournisseur', element: addfournisseur },
   { path: '/administrateur/ajouter_livreur', name: 'Ajouter Livreur', element: addListener },
+  { path: '/administrateur/liste_livreur', name: 'Lister Livreur', element: listeListener },
+  { path:'/administrateur/detaillivreur/:idLivreur', element:LivreurDetail },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

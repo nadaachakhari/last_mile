@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.10.2",
+    "react-router-dom": "^6.24.0",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
