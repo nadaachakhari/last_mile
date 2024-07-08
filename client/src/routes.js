@@ -36,10 +36,15 @@ const Range = React.lazy(() => import('./views/forms/range/Range'))
 const Select = React.lazy(() => import('./views/forms/select/Select'))
 const Validation = React.lazy(() => import('./views/forms/validation/Validation'))
 //nouveau
-const addfournisseur = React.lazy(() => import('./pages/Administrateur/Fournisseur/ajouter fournisseur'))
-const addListener = React.lazy(() => import('./pages/Administrateur/Livreur/ajouter livreur'))
-const listeListener = React.lazy(() => import('./pages/Administrateur/Livreur/liste livreurs'))
-const LivreurDetail = React.lazy(() => import('./pages/Administrateur/Livreur/detail livreur'))
+const addfournisseur = React.lazy(() => import('./pages/admin/Fournisseur/ajouter fournisseur'))
+const addListener = React.lazy(() => import('./pages/admin/Livreur/ajouter livreur'))
+const listeListener = React.lazy(() => import('./pages/admin/Livreur/liste livreurs'))
+const LivreurDetail = React.lazy(() => import('./pages/admin/Livreur/detail livreur'))
+const add_type_tiers = React.lazy(() => import('./pages/admin/tiers/add_type_tiers'))
+const list_type_tiers= React.lazy(() => import('./pages/admin/tiers/list_type_tiers'))
+const detail_type_tiers= React.lazy(() => import('./pages/admin/tiers/detail_type_tiers'))
+const edit_type_tiers= React.lazy(() => import('./pages/admin/tiers/edit_type_tiers'))
+
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
@@ -93,10 +98,11 @@ const routes = [
   { path: '/forms/floating-labels', name: 'Floating Labels', element: FloatingLabels },
   { path: '/forms/layout', name: 'Layout', element: Layout },
   //nouvau
-  { path: '/administrateur/ajouter_fournisseur', name: 'Ajouter Fournisseur', element: addfournisseur },
-  { path: '/administrateur/ajouter_livreur', name: 'Ajouter Livreur', element: addListener },
-  { path: '/administrateur/liste_livreur', name: 'Lister Livreur', element: listeListener },
-  { path:'/administrateur/detaillivreur/:idLivreur', element:LivreurDetail },
+ 
+  { path:'/admin/add_type_tiers', element:add_type_tiers },
+  { path:'/admin/list_type_tiers', element:list_type_tiers },
+  { path:'/admin/detail_type_tiers/:id', element:detail_type_tiers },
+  { path:'/admin/edit_type_tiers/:id',name: 'edit_type_tiers', element:edit_type_tiers },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

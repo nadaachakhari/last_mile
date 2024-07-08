@@ -13,11 +13,14 @@ const TypeTiers = sequelize.define('TypeTiers', {
   },
   deleted: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: true,
   },
 }, {
   tableName: 'type_tiers',
   timestamps: false,
 });
+
+
 
 module.exports = TypeTiers;
