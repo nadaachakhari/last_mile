@@ -92,9 +92,11 @@ const ListeTypeTiers = () => {
             <strong>Liste des</strong> <small>Types de Tiers</small>
           </CCardHeader>
           <CCardBody>
+          <Link to={`/admin/add_type_tiers`}>
             <CButton color="primary" onClick={handleAddTypeTiers} className="mb-3">
               Ajouter Type de Tiers
             </CButton>
+            </Link>
             <CTable striped>
               <CTableCaption>Liste des types de tiers actifs</CTableCaption>
               <CTableHead>

@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./config/database');
 const TypeTiersRoutes = require('./routes/TypeTiersRoute');
-
+const CityRoutes= require('./routes/CityRoute');
 const app = express();
 
 // Utiliser CORS
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 
 // Routes pour les types de tiers
 app.use('/TypeTiers', TypeTiersRoutes);
-
+app.use('/City', CityRoutes);
 // Synchronisation avec Sequelize
 sequelize.sync()
     .then(() => {
