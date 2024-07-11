@@ -36,7 +36,7 @@ const Range = React.lazy(() => import('./views/forms/range/Range'))
 const Select = React.lazy(() => import('./views/forms/select/Select'))
 const Validation = React.lazy(() => import('./views/forms/validation/Validation'))
 //nouveau
-
+//type_tiers
 const add_type_tiers = React.lazy(() => import('./pages/admin/TypeTiers/add_type_tiers'))
 const list_type_tiers = React.lazy(() => import('./pages/admin/TypeTiers/list_type_tiers'))
 const detail_type_tiers = React.lazy(() => import('./pages/admin/TypeTiers/detail_type_tiers'))
@@ -46,19 +46,21 @@ const add_city = React.lazy(() => import('./pages/admin/City/add_city'))
 const list_city = React.lazy(() => import('./pages/admin/City/list_city'))
 const detail_city = React.lazy(() => import('./pages/admin/City/detail_city'))
 const edit_city = React.lazy(() => import('./pages/admin/City/edit_city'))
-//
+//tiers
 const add_tiers = React.lazy(() => import('./pages/admin/Tiers/add_tiers'))
 const list_tiers = React.lazy(() => import('./pages/admin/Tiers/list_tiers'))
 const detail_tiers = React.lazy(() => import('./pages/admin/Tiers/detail_tiers'))
 const edit_tiers = React.lazy(() => import('./pages/admin/Tiers/edit_tiers'))
-
-
+//role_users
 const add_role_users = React.lazy(() => import('./pages/admin/users/add_role_users'))
 const liset_role_users = React.lazy(() => import('./pages/admin/users/liset_role_users'))
 const detail_role_users = React.lazy(() => import('./pages/admin/users/detail_role_users'))
 const edit_role_users = React.lazy(() => import('./pages/admin/users/edit_role_users'))
-
-
+//vat
+const add_vat = React.lazy(() => import('./pages/admin/Vat/add_vat'))
+const list_vat = React.lazy(() => import('./pages/admin/Vat/list_vat'))
+const detail_vat = React.lazy(() => import('./pages/admin/Vat/detail_vat'))
+const edit_vat = React.lazy(() => import('./pages/admin/Vat/edit_vat'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -111,7 +113,7 @@ const routes = [
   { path: '/forms/floating-labels', name: 'Floating Labels', element: FloatingLabels },
   { path: '/forms/layout', name: 'Layout', element: Layout },
   //nouvau
-
+//routes de type tiers
   { path: '/admin/add_type_tiers', element: add_type_tiers },
   { path: '/admin/list_type_tiers', element: list_type_tiers },
   { path: '/admin/detail_type_tiers/:id', element: detail_type_tiers },
@@ -128,13 +130,16 @@ const routes = [
   { path: '/admin/list_city', element: list_city },
   { path: '/admin/detail_city/:id', element: detail_city },
   { path: '/admin/edit_city/:id', name: 'modifer city', element: edit_city },
-  //
+//routes de tiers
   { path: '/admin/add_tiers', element: add_tiers },
   { path: '/admin/list_tiers', element: list_tiers },
   { path: '/admin/detail_tiers/:id', element: detail_tiers },
   { path: '/admin/edit_tiers/:id', name: 'edit_tiers', element: edit_tiers },
-
-
+//routes de vat
+{ path: '/admin/add_vat', element: add_vat },
+{ path: '/admin/list_vat', element: list_vat },
+{ path: '/admin/detail_vat/:id', element: detail_vat },
+{ path: '/admin/edit_vat/:id', name: 'modifer vat', element: edit_vat },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

@@ -10,7 +10,6 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
-  CFormSelect,
   CRow,
   CModal,
   CModalHeader,
@@ -19,14 +18,14 @@ import {
   CModalFooter,
 } from '@coreui/react';
 
-const AddTypeTiers = () => {
+const AddVat = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    deleted: '1',
+    value: '',
+    deleted: false,
   });
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const navigate = useNavigate(); // Initialisation de navigate à partir de useNavigate()
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -36,13 +35,13 @@ const AddTypeTiers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/typeTiers', {
-        name: formData.name,
+      const response = await axios.post('http://localhost:5001/vat', {
+        value: formData.value,
         deleted: formData.deleted,
       });
       console.log('Réponse serveur:', response.data);
-      // Afficher un message de succès ou rediriger l'utilisateur
-      navigate('/admin/list_type_tiers'); 
+      // Redirect the user to the list of VATs or show a success message
+      navigate('/admin/list_vat');
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
@@ -58,15 +57,21 @@ const AddTypeTiers = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Ajouter</strong> <small>Type de Tiers</small>
+            <strong>Ajouter</strong> <small>TVA</small>
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
               <CCol md={6}>
-                <CFormLabel htmlFor="name">Nom du Type de Tiers</CFormLabel>
-                <CFormInput id="name" value={formData.name} onChange={handleChange} />
+                <CFormLabel htmlFor="value">Valeur de la TVA</CFormLabel>
+                <CFormInput
+               
+                  step="0.01"
+                  id="value"
+                  value={formData.value}
+                  onChange={handleChange}
+                  required
+                />
               </CCol>
-             
               <CCol xs={12}>
                 <CButton color="primary" type="submit">
                   Ajouter
@@ -80,9 +85,7 @@ const AddTypeTiers = () => {
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          {modalMessage}
-        </CModalBody>
+        <CModalBody>{modalMessage}</CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowModal(false)}>
             Fermer
@@ -93,4 +96,4 @@ const AddTypeTiers = () => {
   );
 };
 
-export default AddTypeTiers;
+export default AddVat;

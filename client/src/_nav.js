@@ -31,6 +31,53 @@ const _nav = [
     name: 'Theme',
   },
   {
+    component: CNavGroup,
+    name: 'Tiers',
+    to: '/Tier',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de tiers',
+        to: '/admin/list_tiers',
+      },
+      {
+        component: CNavItem,
+        name: 'liste type de tiers',
+        to: '/admin/list_type_tiers',
+      },
+      
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Ville',
+    to: '/City',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de villes',
+        to: '/admin/list_city',
+      },
+    
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'TVA',
+    to: '/vat',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de TVA',
+        to: '/admin/list_vat',
+      },
+    
+    ],
+  },
+  {
     component: CNavItem,
     name: 'Fourniseur',
     to: '/administrateur/ajouter_fournisseur',
