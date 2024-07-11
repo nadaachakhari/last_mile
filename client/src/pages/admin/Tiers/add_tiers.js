@@ -18,7 +18,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react';
-
+import { Link } from 'react-router-dom';
 const AddTier = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -97,11 +97,15 @@ const AddTier = () => {
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
+            <CCol md={6}>
+                <CFormLabel htmlFor="code">Code</CFormLabel>
+                <CFormInput id="code" value={formData.code} onChange={handleChange} />
+              </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="name">Nom</CFormLabel>
                 <CFormInput id="name" value={formData.name} onChange={handleChange} />
               </CCol>
-              <CCol md={6}>
+              <CCol md={4}>
                 <CFormLabel htmlFor="type_tiersID">Type Tiers</CFormLabel>
                 <CFormSelect id="type_tiersID" value={formData.type_tiersID} onChange={handleChange}>
                   <option value="">Choose...</option>
@@ -112,10 +116,32 @@ const AddTier = () => {
                   ))}
                 </CFormSelect>
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} />
+              <CCol md={2} className="align-self-end">
+              <Link to={`/admin/add_type_tiers`}>
+                <CButton color="primary" >
+                  Ajouter Type Tiers 
+                </CButton>
+                </Link>
               </CCol>
+              <CCol md={4}>
+                <CFormLabel htmlFor="cityID">Ville</CFormLabel>
+                <CFormSelect id="cityID" value={formData.cityID} onChange={handleChange}>
+                  <option value="">Choose...</option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.value}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+              <CCol md={2} className="align-self-end">
+              <Link to={`/admin/add_city`}>
+                <CButton color="primary" >
+                  Ajouter ville 
+                </CButton>
+                </Link>
+              </CCol>
+             
               <CCol md={6}>
                 <CFormLabel htmlFor="address">Adresse</CFormLabel>
                 <CFormInput id="address" value={formData.address} onChange={handleChange} />
@@ -144,17 +170,7 @@ const AddTier = () => {
                 <CFormLabel htmlFor="email">Email</CFormLabel>
                 <CFormInput id="email" value={formData.email} onChange={handleChange} />
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="cityID">Ville</CFormLabel>
-                <CFormSelect id="cityID" value={formData.cityID} onChange={handleChange}>
-                  <option value="">Choose...</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.value}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
+             
               <CCol md={6}>
                 <CFormLabel htmlFor="block">Block</CFormLabel>
                 <CFormInput id="block" value={formData.block} onChange={handleChange} />
