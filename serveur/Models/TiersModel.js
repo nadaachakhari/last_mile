@@ -76,5 +76,6 @@ const Tiers = sequelize.define('Tiers', {
 
 // Définir la relation avec TypeTiers
 Tiers.belongsTo(TypeTiers, { foreignKey: 'type_tiersID' });
+Tiers.belongsTo(City, { foreignKey: 'cityID' });
 
 module.exports = Tiers;

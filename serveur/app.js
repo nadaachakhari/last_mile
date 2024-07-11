@@ -5,6 +5,9 @@ const bodyParser = require('body-parser');
 const sequelize = require('./config/database');
 const TypeTiersRoutes = require('./routes/TypeTiersRoute');
 const CityRoutes= require('./routes/CityRoute');
+const TiersRoutes = require('./routes/TierRoute');
+const RoleUsersRoutes = require('./routes/RoleUsersRoute');
+
 const app = express();
 
 // Utiliser CORS
@@ -19,7 +22,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT
+   // port: process.env.DB_PORT
 });
 
 db.connect((err) => {
@@ -38,6 +41,9 @@ app.get('/', (req, res) => {
 // Routes pour les types de tiers
 app.use('/TypeTiers', TypeTiersRoutes);
 app.use('/City', CityRoutes);
+app.use('/Tier', TiersRoutes);
+app.use('/roleUsers', RoleUsersRoutes);
+
 // Synchronisation avec Sequelize
 sequelize.sync()
     .then(() => {
