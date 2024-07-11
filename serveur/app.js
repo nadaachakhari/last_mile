@@ -7,7 +7,7 @@ const TypeTiersRoutes = require('./routes/TypeTiersRoute');
 const CityRoutes= require('./routes/CityRoute');
 const TiersRoutes = require('./routes/TierRoute');
 const RoleUsersRoutes = require('./routes/RoleUsersRoute');
-
+const VatRoutes = require('./routes/VatRoute');
 const app = express();
 
 // Utiliser CORS
@@ -43,7 +43,7 @@ app.use('/TypeTiers', TypeTiersRoutes);
 app.use('/City', CityRoutes);
 app.use('/Tier', TiersRoutes);
 app.use('/roleUsers', RoleUsersRoutes);
-
+app.use('/Vat', VatRoutes);
 // Synchronisation avec Sequelize
 sequelize.sync()
     .then(() => {
