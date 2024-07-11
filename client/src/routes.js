@@ -44,11 +44,17 @@ const add_type_tiers = React.lazy(() => import('./pages/admin/tiers/add_type_tie
 const list_type_tiers = React.lazy(() => import('./pages/admin/tiers/list_type_tiers'))
 const detail_type_tiers = React.lazy(() => import('./pages/admin/tiers/detail_type_tiers'))
 const edit_type_tiers = React.lazy(() => import('./pages/admin/tiers/edit_type_tiers'))
+//city
+const add_city = React.lazy(() => import('./pages/admin/City/add_city'))
+const list_city = React.lazy(() => import('./pages/admin/City/list_city'))
+const detail_city = React.lazy(() => import('./pages/admin/City/detail_city'))
+const edit_city = React.lazy(() => import('./pages/admin/City/edit_city'))
+
 
 
 const add_role_users = React.lazy(() => import('./pages/admin/users/add_role_users'))
 const liset_role_users = React.lazy(() => import('./pages/admin/users/liset_role_users'))
-const detail_role_users = React.lazy(() => import('./pages/admin/users/detail_role_users'))
+const detail_role_users = React.lazy(() => import('./pages/admin/users/'))
 const edit_role_users = React.lazy(() => import('./pages/admin/users/edit_role_users'))
 
 
@@ -115,6 +121,14 @@ const routes = [
   { path: '/admin/list_role_users', element: liset_role_users },
   { path: '/admin/detail_role_users/:id', element: detail_role_users },
   { path: '/admin/edit_role_users/:id', name: 'edit_role_users', element: edit_role_users },
+
+  //les routes de city
+  { path: '/admin/add_city', name: 'Ajouter Ville', element: add_city },
+  { path: '/admin/list_city', element: list_city },
+  { path: '/admin/detail_city/:id', element: detail_city },
+  { path: '/admin/edit_city/:id', name: 'modifer city', element: edit_city },
+  
+
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

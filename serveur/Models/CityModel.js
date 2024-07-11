@@ -13,7 +13,8 @@ const City = sequelize.define('City', {
   },
   deleted: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: true,
   },
 }, {
   tableName: 'city',
