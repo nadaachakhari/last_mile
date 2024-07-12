@@ -14,8 +14,6 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-import { IoArrowBack } from 'react-icons/io5';
-
 const DetailTier = () => {
   const { id } = useParams(); // Récupère l'ID du tier depuis les paramètres d'URL
   const [tier, setTier] = useState(null); // État pour stocker les détails du tier
@@ -82,9 +80,7 @@ const DetailTier = () => {
     <CRow>
       <CCol xs={12}>
       <div className="card-header-actions" xs={12} >
-              <CButton color="secondary" onClick={handleBack}>
-                <IoArrowBack className="me-1 " /> Retour
-              </CButton>
+           
             </div>
         <CCard className="mb-4">
           <CCardHeader>
@@ -109,6 +105,9 @@ const DetailTier = () => {
             <CButton color="danger" onClick={handleDelete}>
               Supprimer
             </CButton>
+            <Link to="/admin/list_tiers">
+              <CButton color="primary">Retour à la liste</CButton>
+            </Link>
           </CCardBody>
         </CCard>
       </CCol>

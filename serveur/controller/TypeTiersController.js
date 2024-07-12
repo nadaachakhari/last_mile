@@ -6,7 +6,7 @@ const getTypeTiers = async (req, res, next) => {
  // Filtrer les types de tiers où deleted = 1
  const typeTiers = await TypeTiers.findAll({
   where: {
-    deleted: 1
+     deleted: false
   }
 });
     res.json(typeTiers);
@@ -34,7 +34,7 @@ const createTypeTiers = async (req, res) => {
   try {
     const { name } = req.body;
     
-    const newTypeTiers = await TypeTiers.create({ name });
+    const newTypeTiers = await TypeTiers.create({ name, deleted: false });
     res.status(201).json(newTypeTiers);
   } catch (error) {
     console.error('Error creating type_tiers:', error);

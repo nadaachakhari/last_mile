@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -10,7 +10,6 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
-  CFormSelect,
   CRow,
   CModal,
   CModalHeader,
@@ -19,14 +18,30 @@ import {
   CModalFooter,
 } from '@coreui/react';
 
-const AddCity = () => {
+const EditVat = () => {
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     value: '',
-    deleted: 'true',
+    deleted: '1',
   });
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const navigate = useNavigate(); // Initialisation de navigate à partir de useNavigate()
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchVat = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/vat/${id}`);
+        setFormData(response.data);
+      } catch (error) {
+        console.error(`Erreur lors de la récupération de la TVA avec l'ID ${id}:`, error);
+        setModalMessage('Erreur lors de la récupération de la TVA.');
+        setShowModal(true);
+      }
+    };
+
+    fetchVat();
+  }, [id]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -36,20 +51,12 @@ const AddCity = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/City', {
-        value: formData.value,
-        deleted: formData.deleted,
-      });
-      console.log('Réponse serveur:', response.data);
-      // Afficher un message de succès ou rediriger l'utilisateur
-      navigate('/admin/list_city'); 
+      await axios.put(`http://localhost:5001/vat/${id}`, formData);
+      navigate('/admin/list_vat');
     } catch (error) {
-      if (error.response && error.response.status === 400 && error.response.data.error) {
-        setModalMessage(error.response.data.error);
-        setShowModal(true);
-      } else {
-        console.error('Erreur lors de la soumission du formulaire:', error);
-      }
+      console.error('Erreur lors de la mise à jour de la TVA:', error);
+      setModalMessage('Erreur lors de la mise à jour de la TVA.');
+      setShowModal(true);
     }
   };
 
@@ -58,18 +65,20 @@ const AddCity = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Ajouter</strong> <small>ville</small>
+            <strong>Modifier</strong> <small>TVA</small>
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
               <CCol md={6}>
-                <CFormLabel htmlFor="value">Nom du ville</CFormLabel>
+                <CFormLabel htmlFor="value">Valeur de la TVA</CFormLabel>
                 <CFormInput id="value" value={formData.value} onChange={handleChange} />
               </CCol>
-             
               <CCol xs={12}>
                 <CButton color="primary" type="submit">
-                  Ajouter
+                  Modifier
+                </CButton>
+                <CButton color="secondary" onClick={() => navigate('/admin/list_vat')}>
+                  Retour
                 </CButton>
               </CCol>
             </CForm>
@@ -80,17 +89,13 @@ const AddCity = () => {
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>
         </CModalHeader>
-        <CModalBody>
-          {modalMessage}
-        </CModalBody>
+        <CModalBody>{modalMessage}</CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setShowModal(false)}>
-            Fermer
-          </CButton>
+          <CButton color="secondary" onClick={() => setShowModal(false)}>Fermer</CButton>
         </CModalFooter>
       </CModal>
     </CRow>
   );
 };
 
-export default AddCity;
+export default EditVat;

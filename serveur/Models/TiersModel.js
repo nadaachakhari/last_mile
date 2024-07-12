@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const City = require('./CityModel'); // Supposons que vous avez déjà défini le modèle City
+const City = require('./CityModel'); 
 const TypeTiers = require('./TypeTiersModel');
 
 const Tiers = sequelize.define('Tiers', {
@@ -64,6 +64,10 @@ const Tiers = sequelize.define('Tiers', {
   block: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+    password: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   deleted: {
     type: DataTypes.BOOLEAN,

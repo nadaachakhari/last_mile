@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+
 import {
+  CButton,
   CCard,
   CCardBody,
   CCardHeader,
@@ -51,10 +53,12 @@ const DetailCity = () => {
             Détail du ville
           </CCardHeader>
           <CCardBody>
-            <p><strong>ID:</strong> {city.id}</p>
-            <p><strong>Nom:</strong> {city.value}</p>
-            <p><strong>Deleted:</strong> {city.deleted ? 'Active' : 'Inactive'}</p>
           
+            <p><strong>Nom:</strong> {city.value}</p>
+            <p><strong>État:</strong> {city.deleted ? 'Active' : 'Inactive'}</p>
+            <Link to="/admin/list_city">
+              <CButton color="primary">Retour à la liste</CButton>
+            </Link>
            
           </CCardBody>
         </CCard>

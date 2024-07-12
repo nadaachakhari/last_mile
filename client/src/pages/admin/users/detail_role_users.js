@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-
+import {   CButton,CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import { Link, useNavigate } from 'react-router-dom';
 const DetailRoleUser = () => {
   const { id } = useParams()
   const [roleUser, setRoleUser] = useState(null)
@@ -47,8 +47,11 @@ const DetailRoleUser = () => {
               <strong>Nom:</strong> {roleUser.name}
             </p>
             <p>
-              <strong>Deleted:</strong> {roleUser.deleted ? 'Active' : 'Inactive'}
+              <strong>État:</strong> {roleUser.deleted ? 'Active' : 'Inactive'}
             </p>
+            <Link to="/admin/list_role_users">
+              <CButton color="primary">Retour à la liste</CButton>
+            </Link>
           </CCardBody>
         </CCard>
       </CCol>

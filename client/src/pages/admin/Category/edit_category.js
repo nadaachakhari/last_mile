@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -10,7 +10,6 @@ import {
   CForm,
   CFormInput,
   CFormLabel,
-  CFormSelect,
   CRow,
   CModal,
   CModalHeader,
@@ -19,14 +18,30 @@ import {
   CModalFooter,
 } from '@coreui/react';
 
-const AddTypeTiers = () => {
+const EditCategory = () => {
+  const { id } = useParams(); // Get ID from URL parameters for editing
+  const navigate = useNavigate(); // For navigation
   const [formData, setFormData] = useState({
     name: '',
-    deleted: '1',
+    deleted: false,
   });
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const navigate = useNavigate(); // Initialisation de navigate à partir de useNavigate()
+
+  useEffect(() => {
+    if (id) {
+      // If there's an ID, fetch the existing category details
+      const fetchCategory = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5001/category/${id}`);
+          setFormData(response.data);
+        } catch (error) {
+          console.error(`Erreur lors de la récupération des détails de la catégorie avec l'ID ${id}:`, error);
+        }
+      };
+      fetchCategory();
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -36,13 +51,9 @@ const AddTypeTiers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/typeTiers', {
-        name: formData.name,
-        deleted: formData.deleted,
-      });
-      console.log('Réponse serveur:', response.data);
-      // Afficher un message de succès ou rediriger l'utilisateur
-      navigate('/admin/list_type_tiers'); 
+      // Update the existing category
+      await axios.put(`http://localhost:5001/category/${id}`, formData);
+      navigate('/admin/list_category'); // Navigate back to list after successful submission
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
@@ -53,23 +64,29 @@ const AddTypeTiers = () => {
     }
   };
 
+  const handleReturn = () => {
+    navigate('/admin/list_category'); // Navigate back to list
+  };
+
   return (
     <CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Ajouter</strong> <small>Type de Tiers</small>
+            <strong>Modifier</strong> <small>Catégorie</small>
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
               <CCol md={6}>
-                <CFormLabel htmlFor="name">Nom du Type de Tiers</CFormLabel>
+                <CFormLabel htmlFor="name">Nom de la Catégorie</CFormLabel>
                 <CFormInput id="name" value={formData.name} onChange={handleChange} />
               </CCol>
-             
               <CCol xs={12}>
-                <CButton color="primary" type="submit">
-                  Ajouter
+                <CButton color="primary" type="submit" className="me-2">
+                  Modifier
+                </CButton>
+                <CButton color="secondary" onClick={handleReturn}>
+                  Retour à la liste
                 </CButton>
               </CCol>
             </CForm>
@@ -93,4 +110,4 @@ const AddTypeTiers = () => {
   );
 };
 
-export default AddTypeTiers;
+export default EditCategory;

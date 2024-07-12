@@ -9,7 +9,7 @@ const getRoleUsers = async (req, res, next) => {
     try {
         const roleUsers = await RoleUser.findAll({
             where: {
-                deleted: 1
+                deleted: false
             }
         });
         res.json(roleUsers);
@@ -35,7 +35,7 @@ const createRoleUser = async (req, res) => {
     try {
         const { name } = req.body;
 
-        const newRoleUser = await RoleUser.create({ name, deleted: 1 });
+        const newRoleUser = await RoleUser.create({ name, deleted: false });
         res.status(201).json(newRoleUser);
     } catch (error) {
         console.error('Error creating role_user:', error);

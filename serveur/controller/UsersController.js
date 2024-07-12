@@ -33,7 +33,7 @@ const createUser = async (req, res) => {
                 registration_number,
                 cin,
                 role_usersID,
-                deleted: true
+                deleted: false
             });
             res.status(201).json(newUser);
         });
@@ -42,18 +42,12 @@ const createUser = async (req, res) => {
     }
 };
 
-// Exporter les fonctions de gestion des utilisateurs
-module.exports = {
-    createUser,
-    // Autres fonctions comme getAllUsers, getUserById, updateUser, deleteUser
-};
 
-// Lire tous les utilisateurs
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
             where: {
-                deleted: 1
+                deleted: false
             },
             include: [
                 { model: RoleUser, attributes: ['name'] }

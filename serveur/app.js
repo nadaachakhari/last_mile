@@ -8,6 +8,10 @@ const CityRoutes = require('./routes/CityRoute');
 const TiersRoutes = require('./routes/TierRoute');
 const RoleUsersRoutes = require('./routes/RoleUsersRoute');
 const UsersRoutes = require('./routes/UsersRoute')
+const VatRoutes = require('./routes/VatRoute');
+const CategoryRoutes = require('./routes/CategoryRoute');
+const PaymentMethodRoutes = require('./routes/PaymentMethodeRoute')
+const StateRoutes = require('./routes/StateRoute')
 
 const app = express();
 
@@ -43,12 +47,17 @@ app.get('/', (req, res) => {
     res.send('Bonjour, le serveur est opérationnel!');
 });
 
-// Routes pour les types de tiers
+// Routes 
 app.use('/TypeTiers', TypeTiersRoutes);
 app.use('/City', CityRoutes);
 app.use('/Tier', TiersRoutes);
 app.use('/roleUsers', RoleUsersRoutes);
 app.use('/Users', UsersRoutes);
+app.use('/Vat', VatRoutes);
+app.use('/Category', CategoryRoutes);
+app.use('/PaymentMethode', PaymentMethodRoutes);
+app.use('/State', StateRoutes);
+
 
 // Synchronisation avec Sequelize
 sequelize.sync()

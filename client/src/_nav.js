@@ -31,6 +31,109 @@ const _nav = [
     name: 'Theme',
   },
   {
+    component: CNavGroup,
+    name: 'Tiers',
+    to: '/Tier',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de tiers',
+        to: '/admin/list_tiers',
+      },
+      {
+        component: CNavItem,
+        name: 'liste type de tiers',
+        to: '/admin/list_type_tiers',
+      },
+
+    ],
+  },
+  //users 
+  {
+    component: CNavGroup,
+    name: 'Utilisateurs',
+    to: '/user',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des utilisateurs',
+        to: '/admin/list_user',
+      },
+      {
+        component: CNavItem,
+        name: 'liste type des utilisateurs',
+        to: '/admin/list_role_users',
+      },
+
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Ville',
+    to: '/City',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de villes',
+        to: '/admin/list_city',
+      },
+
+    ],
+  },
+
+  //payment methode
+
+  {
+    component: CNavGroup,
+    name: 'Méthode de paiement',
+    to: '/payment_methode',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de méthode de paiment',
+        to: '/admin/list_payment_methode',
+      },
+
+    ],
+  },
+
+  {
+    component: CNavGroup,
+    name: 'Les articles',
+    to: '/vat',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des Catégories',
+        to: '/admin/list_category',
+      },
+      {
+        component: CNavItem,
+        name: 'liste de TVA',
+        to: '/admin/list_vat',
+      },
+
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Les états',
+    to: '/State',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des états',
+        to: '/admin/list_state',
+      }
+    ],
+  },
+  {
     component: CNavItem,
     name: 'Fourniseur',
     to: '/administrateur/ajouter_fournisseur',

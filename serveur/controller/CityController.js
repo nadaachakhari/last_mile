@@ -3,7 +3,7 @@ const City = require('../Models/CityModel');
 const getAllCities = async (req, res) => {
     try {
       const cities = await City.findAll({
-        where: { deleted: false }, // Ne récupère que les villes non supprimées
+        where: { deleted: false },
       });
       res.json(cities);
     } catch (error) {
@@ -29,7 +29,7 @@ const getAllCities = async (req, res) => {
   const createCity = async (req, res) => {
     const { value } = req.body;
     try {
-      const newCity = await City.create({ value, deleted: true });
+      const newCity = await City.create({ value, deleted: false });
       res.status(201).json(newCity);
     } catch (error) {
       console.error('Erreur lors de la création de la ville:', error);
