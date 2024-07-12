@@ -65,6 +65,10 @@ const Tiers = sequelize.define('Tiers', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+    password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

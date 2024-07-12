@@ -55,7 +55,7 @@ const DetailCity = () => {
           <CCardBody>
           
             <p><strong>Nom:</strong> {city.value}</p>
-            <p><strong>Deleted:</strong> {city.deleted ? 'Active' : 'Inactive'}</p>
+            <p><strong>État:</strong> {city.deleted ? 'Active' : 'Inactive'}</p>
             <Link to="/admin/list_city">
               <CButton color="primary">Retour à la liste</CButton>
             </Link>

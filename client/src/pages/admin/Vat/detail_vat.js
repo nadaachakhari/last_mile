@@ -60,7 +60,7 @@ const DetailVat = () => {
           </CCardHeader>
           <CCardBody>
             <p><strong>Valeur:</strong> {vat.value}</p>
-            <p><strong>Deleted:</strong> {vat.deleted ? 'Active' : 'Inactive'}</p>
+            <p><strong>État:</strong> {vat.deleted ? 'Active' : 'Inactive'}</p>
             <Link to="/admin/list_vat">
               <CButton color="primary">Retour à la liste</CButton>
             </Link>

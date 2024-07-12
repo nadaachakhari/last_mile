@@ -47,7 +47,7 @@ const DetailRoleUser = () => {
               <strong>Nom:</strong> {roleUser.name}
             </p>
             <p>
-              <strong>Deleted:</strong> {roleUser.deleted ? 'Active' : 'Inactive'}
+              <strong>État:</strong> {roleUser.deleted ? 'Active' : 'Inactive'}
             </p>
             <Link to="/admin/list_role_users">
               <CButton color="primary">Retour à la liste</CButton>

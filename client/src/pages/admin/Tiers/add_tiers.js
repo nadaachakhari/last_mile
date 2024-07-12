@@ -19,6 +19,7 @@ import {
   CFormSelect,
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
+
 const AddTier = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -34,15 +35,15 @@ const AddTier = () => {
     cityID: '',
     block: '',
     deleted: true,
+    password: '',  // Ajout du champ password
   });
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [typeTiers, setTypeTiers] = useState([]);
   const [cities, setCities] = useState([]);
-  const navigate = useNavigate(); // Initialisation de navigate à partir de useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch type tiers
     const fetchTypeTiers = async () => {
       try {
         const response = await axios.get('http://localhost:5001/TypeTiers');
@@ -52,7 +53,6 @@ const AddTier = () => {
       }
     };
 
-    // Fetch cities
     const fetchCities = async () => {
       try {
         const response = await axios.get('http://localhost:5001/City');
@@ -76,7 +76,6 @@ const AddTier = () => {
     try {
       const response = await axios.post('http://localhost:5001/Tier', formData);
       console.log('Réponse serveur:', response.data);
-      // Afficher un message de succès ou rediriger l'utilisateur
       navigate('/admin/list_tiers'); 
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
@@ -97,7 +96,7 @@ const AddTier = () => {
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
-            <CCol md={6}>
+              <CCol md={6}>
                 <CFormLabel htmlFor="code">Code</CFormLabel>
                 <CFormInput id="code" value={formData.code} onChange={handleChange} />
               </CCol>
@@ -117,10 +116,10 @@ const AddTier = () => {
                 </CFormSelect>
               </CCol>
               <CCol md={2} className="align-self-end">
-              <Link to={`/admin/add_type_tiers`}>
-                <CButton color="primary" >
-                  Ajouter Type Tiers 
-                </CButton>
+                <Link to={`/admin/add_type_tiers`}>
+                  <CButton color="primary">
+                    Ajouter Type Tiers 
+                  </CButton>
                 </Link>
               </CCol>
               <CCol md={4}>
@@ -135,13 +134,12 @@ const AddTier = () => {
                 </CFormSelect>
               </CCol>
               <CCol md={2} className="align-self-end">
-              <Link to={`/admin/add_city`}>
-                <CButton color="primary" >
-                  Ajouter ville 
-                </CButton>
+                <Link to={`/admin/add_city`}>
+                  <CButton color="primary">
+                    Ajouter ville 
+                  </CButton>
                 </Link>
               </CCol>
-             
               <CCol md={6}>
                 <CFormLabel htmlFor="address">Adresse</CFormLabel>
                 <CFormInput id="address" value={formData.address} onChange={handleChange} />
@@ -170,10 +168,13 @@ const AddTier = () => {
                 <CFormLabel htmlFor="email">Email</CFormLabel>
                 <CFormInput id="email" value={formData.email} onChange={handleChange} />
               </CCol>
-             
               <CCol md={6}>
                 <CFormLabel htmlFor="block">Block</CFormLabel>
                 <CFormInput id="block" value={formData.block} onChange={handleChange} />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="password">Mot de passe</CFormLabel>
+                <CFormInput type="password" id="password" value={formData.password} onChange={handleChange} />
               </CCol>
               <CCol xs={12}>
                 <CButton color="primary" type="submit">

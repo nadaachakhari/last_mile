@@ -63,18 +63,24 @@ const _nav = [
     
     ],
   },
+
   {
     component: CNavGroup,
-    name: 'TVA',
+    name: 'Les articles',
     to: '/vat',
     icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
+        name: 'liste des Catégories',
+        to: '/admin/list_category',
+      },
+      {
+        component: CNavItem,
         name: 'liste de TVA',
         to: '/admin/list_vat',
       },
-    
+       
     ],
   },
   {

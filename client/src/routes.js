@@ -61,6 +61,11 @@ const add_vat = React.lazy(() => import('./pages/admin/Vat/add_vat'))
 const list_vat = React.lazy(() => import('./pages/admin/Vat/list_vat'))
 const detail_vat = React.lazy(() => import('./pages/admin/Vat/detail_vat'))
 const edit_vat = React.lazy(() => import('./pages/admin/Vat/edit_vat'))
+//Category
+const add_category = React.lazy(() => import('./pages/admin/Category/add_category'))
+const list_category = React.lazy(() => import('./pages/admin/Category/list_category'))
+const detail_category = React.lazy(() => import('./pages/admin/Category/detail_category'))
+const edit_category = React.lazy(() => import('./pages/admin/Category/edit_category'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -140,6 +145,11 @@ const routes = [
 { path: '/admin/list_vat', element: list_vat },
 { path: '/admin/detail_vat/:id', element: detail_vat },
 { path: '/admin/edit_vat/:id', name: 'modifer vat', element: edit_vat },
+//routes de category
+{ path: '/admin/add_category', element: add_category },
+{ path: '/admin/list_category', element: list_category },
+{ path: '/admin/detail_category/:id', element: detail_category },
+{ path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },
