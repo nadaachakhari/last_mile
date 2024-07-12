@@ -4,18 +4,26 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./config/database');
 const TypeTiersRoutes = require('./routes/TypeTiersRoute');
-const CityRoutes= require('./routes/CityRoute');
+const CityRoutes = require('./routes/CityRoute');
 const TiersRoutes = require('./routes/TierRoute');
 const RoleUsersRoutes = require('./routes/RoleUsersRoute');
+const UsersRoutes = require('./routes/UsersRoute')
 const VatRoutes = require('./routes/VatRoute');
 const CategoryRoutes = require('./routes/CategoryRoute');
+const PaymentMethodRoutes = require('./routes/PaymentMethodeRoute')
+const StateRoutes = require('./routes/StateRoute')
+
 const app = express();
 
 // Utiliser CORS
 app.use(cors());
+app.use(express.json())
 
 // Utiliser body-parser pour parser les requêtes JSON
 app.use(bodyParser.json());
+
+// Middleware pour servir les fichiers statiques (comme les photos téléchargées)
+app.use('/uploads', express.static('uploads'));
 
 // Connexion à la base de données MySQL
 const db = mysql.createConnection({
@@ -23,7 +31,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-   // port: process.env.DB_PORT
+    port: process.env.DB_PORT
 });
 
 db.connect((err) => {
@@ -44,8 +52,11 @@ app.use('/TypeTiers', TypeTiersRoutes);
 app.use('/City', CityRoutes);
 app.use('/Tier', TiersRoutes);
 app.use('/roleUsers', RoleUsersRoutes);
+app.use('/Users', UsersRoutes);
 app.use('/Vat', VatRoutes);
 app.use('/Category', CategoryRoutes);
+app.use('/PaymentMethode', PaymentMethodRoutes);
+app.use('/State', StateRoutes);
 
 
 // Synchronisation avec Sequelize

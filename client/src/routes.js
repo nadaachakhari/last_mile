@@ -72,6 +72,20 @@ const add_users = React.lazy(() => import('./pages/admin/users/add_users'))
 const list_users = React.lazy(() => import('./pages/admin/users/list_users'))
 const detail_users = React.lazy(() => import('./pages/admin/users/detail_users'))
 const edit_users = React.lazy(() => import('./pages/admin/users/edit_users'))
+
+//methode payment : 
+const add_payment_methode = React.lazy(() => import('./pages/admin/payment_methode/add_payment_methode'))
+const list_payment_methode = React.lazy(() => import('./pages/admin/payment_methode/list_payment_methode'))
+const detail_payment_methode = React.lazy(() => import('./pages/admin/payment_methode/detail_payment_methode'))
+const edit_payment_methode = React.lazy(() => import('./pages/admin/payment_methode/edit_payment_methode'))
+
+
+// state :
+const add_state = React.lazy(() => import('./pages/admin/State/add_state'))
+const list_state = React.lazy(() => import('./pages/admin/State/list_detail'))
+const detail_state = React.lazy(() => import('./pages/admin/State/detail_state'))
+const edit_state = React.lazy(() => import('./pages/admin/State/edit_state'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -162,7 +176,27 @@ const routes = [
   { path: '/admin/list_user', element: list_users },
   { path: '/admin/detail_user/:id', element: detail_users },
   { path: '/admin/edit_user/:id', name: 'modifer utilisateur', element: edit_users },
-  
+
+  //
+  { path: '/admin/add_user', name: 'Ajouter utilisateur', element: add_users },
+  { path: '/admin/list_user', element: list_users },
+  { path: '/admin/detail_user/:id', element: detail_users },
+  { path: '/admin/edit_user/:id', name: 'modifer utilisateur', element: edit_users },
+
+  //
+  { path: '/admin/add_payment_methode', name: 'Ajouter methode de payment', element: add_payment_methode },
+  { path: '/admin/list_payment_methode', element: list_payment_methode },
+  { path: '/admin/detail_payment_methode/:id', element: detail_payment_methode },
+  { path: '/admin/edit_payment_methode/:id', name: 'modifer methode de payment', element: edit_payment_methode },
+
+
+  //
+  { path: '/admin/add_state', name: 'Ajouter état', element: add_state },
+  { path: '/admin/list_state', element: list_state },
+  { path: '/admin/detail_state/:id', element: detail_state },
+  { path: '/admin/edit_state/:id', name: 'modifer état', element: edit_state },
+
+
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

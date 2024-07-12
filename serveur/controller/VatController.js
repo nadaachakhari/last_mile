@@ -3,7 +3,7 @@ const Vat = require('../Models/VatModel');
 const getAllVats = async (req, res) => {
   try {
     const vats = await Vat.findAll({
-      where: { deleted: true },
+      where: { deleted: false },
     });
     res.json(vats);
   } catch (error) {
@@ -29,7 +29,7 @@ const getVatById = async (req, res) => {
 const createVat = async (req, res) => {
   const { value } = req.body;
   try {
-    const newVat = await Vat.create({ value, deleted: true });
+    const newVat = await Vat.create({ value, deleted: false });
     res.status(201).json(newVat);
   } catch (error) {
     console.error('Erreur lors de la création de la TVA:', error);
@@ -39,7 +39,7 @@ const createVat = async (req, res) => {
 
 const updateVat = async (req, res) => {
   const { id } = req.params;
-  const { value ,deleted} = req.body;
+  const { value, deleted } = req.body;
   try {
     let vat = await Vat.findByPk(id);
     if (!vat) {

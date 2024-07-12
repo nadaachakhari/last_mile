@@ -26,10 +26,9 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 const UserList = () => {
     const [users, setUsers] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [idToDelete, setIdToDelete] = useState(null); // État pour stocker l'ID de l'utilisateur à supprimer
+    const [idToDelete, setIdToDelete] = useState(null);
 
     useEffect(() => {
-        // Fonction pour récupérer les utilisateurs depuis l'API
         const fetchUsers = async () => {
             try {
                 const response = await axios.get('http://localhost:5001/Users');
@@ -42,19 +41,16 @@ const UserList = () => {
         fetchUsers();
     }, []);
 
-    // Fonction pour gérer la modification d'un utilisateur
+    
     const handleModifier = (id) => {
         console.log(`Modifier utilisateur avec id: ${id}`);
-        // Ajouter ici la logique pour la redirection ou l'ouverture de la page de modification
     };
 
-    // Fonction pour gérer la suppression d'un utilisateur
     const handleSupprimer = async (id) => {
-        setIdToDelete(id); // Stocker l'ID de l'utilisateur à supprimer
-        setShowConfirmation(true); // Afficher la modal de confirmation de suppression
+        setIdToDelete(id); 
+        setShowConfirmation(true);
     };
 
-    // Fonction de confirmation de suppression
     const confirmDelete = async () => {
         try {
             await axios.put(`http://localhost:5001/Users/update_deleted/${idToDelete}`);
@@ -69,7 +65,6 @@ const UserList = () => {
         }
     };
 
-    // Fonction pour annuler la suppression
     const cancelDelete = () => {
         setShowConfirmation(false); // Annuler la suppression et fermer la modal de confirmation
     };
@@ -105,7 +100,7 @@ const UserList = () => {
                                         <CTableDataCell>{user.name}</CTableDataCell>
                                         <CTableDataCell>{user.user_name}</CTableDataCell>
                                         <CTableDataCell>{user.email}</CTableDataCell>
-                                        <CTableDataCell>{user.role?.name}</CTableDataCell>
+                                        <CTableDataCell>{user.RoleUser?.name}</CTableDataCell>
                                         <CTableDataCell>
                                             <Link to={`/admin/detail_user/${user.id}`}>
                                                 <CButton size="md" color="info" className="me-2">

@@ -4,7 +4,7 @@ const Category = require('../Models/CategoryModel');
 createCategory = async (req, res) => {
   try {
     const { name, deleted } = req.body;
-    const newCategory = await Category.create({ name, deleted: true });
+    const newCategory = await Category.create({ name, deleted: false });
     res.status(201).json(newCategory);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -15,7 +15,7 @@ createCategory = async (req, res) => {
 getCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
-        where: { deleted: true }, // Ne récupère que les villes non supprimées
+        where: { deleted: false }, // Ne récupère que les villes non supprimées
       });
     res.status(200).json(categories);
   } catch (error) {

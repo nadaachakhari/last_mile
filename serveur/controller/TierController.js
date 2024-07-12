@@ -9,7 +9,7 @@ const createTier = async (req, res) => {
   try {
     // Hachage du mot de passe avant de créer le Tier
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newTier = await Tiers.create({ name, type_tiersID, code, address, postal_code, country, phone, mobile, fax, email, cityID, block, deleted: true, password: hashedPassword });
+    const newTier = await Tiers.create({ name, type_tiersID, code, address, postal_code, country, phone, mobile, fax, email, cityID, block, deleted: false, password: hashedPassword });
     res.status(201).json(newTier);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -21,7 +21,7 @@ const getAllTiers = async (req, res) => {
   try {
     const tiers = await Tiers.findAll({
       where: {
-        deleted: 1
+        deleted: false
       },
       include: [
         { model: TypeTiers, attributes: ['name'] },
