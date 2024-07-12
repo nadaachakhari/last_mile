@@ -25,7 +25,7 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   photo: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   registration_number: {
     type: DataTypes.STRING,
@@ -39,9 +39,6 @@ const User = sequelize.define('User', {
       model: RoleUser,
       key: 'id',
     },
-  },
-  permission: {
-    type: DataTypes.STRING,
   },
   deleted: {
     type: DataTypes.BOOLEAN,
