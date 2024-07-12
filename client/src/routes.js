@@ -58,7 +58,11 @@ const liset_role_users = React.lazy(() => import('./pages/admin/users/liset_role
 const detail_role_users = React.lazy(() => import('./pages/admin/users/detail_role_users'))
 const edit_role_users = React.lazy(() => import('./pages/admin/users/edit_role_users'))
 
-
+//users 
+const add_users = React.lazy(() => import('./pages/admin/users/add_users'))
+const list_users = React.lazy(() => import('./pages/admin/users/list_users'))
+const detail_users = React.lazy(() => import('./pages/admin/users/detail_users'))
+const edit_users = React.lazy(() => import('./pages/admin/users/edit_users'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -134,6 +138,12 @@ const routes = [
   { path: '/admin/detail_tiers/:id', element: detail_tiers },
   { path: '/admin/edit_tiers/:id', name: 'edit_tiers', element: edit_tiers },
 
+  //users
+
+  { path: '/admin/add_user', name: 'Ajouter utilisateur', element: add_users },
+  { path: '/admin/list_user', element: list_users },
+  { path: '/admin/detail_user/:id', element: detail_users },
+  { path: '/admin/edit_user/:id', name: 'modifer utilisateur', element: edit_users },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
