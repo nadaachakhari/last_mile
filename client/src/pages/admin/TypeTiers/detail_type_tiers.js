@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import {
+  CButton,
   CCard,
   CCardBody,
   CCardHeader,
   CCol,
   CRow,
 } from '@coreui/react';
-
+import { Link, useNavigate } from 'react-router-dom';
 const DetailTypeTiers = () => {
   const { id } = useParams(); // Récupère l'ID depuis les paramètres d'URL
   const [typeTiers, setTypeTiers] = useState(null); // État pour stocker les détails du TypeTiers
@@ -53,8 +54,10 @@ const DetailTypeTiers = () => {
           <CCardBody>
             
             <p><strong>Nom:</strong> {typeTiers.name}</p>
-            <p><strong>Deleted:</strong> {typeTiers.deleted ? 'Active' : 'Inactive'}</p>
-          
+            <p><strong>État:</strong> {typeTiers.deleted ? 'Active' : 'Inactive'}</p>
+            <Link to="/admin/list_type_tiers">
+              <CButton color="primary">Retour à la liste</CButton>
+            </Link>
            
           </CCardBody>
         </CCard>

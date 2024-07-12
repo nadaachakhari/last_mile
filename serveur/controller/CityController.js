@@ -3,7 +3,7 @@ const City = require('../Models/CityModel');
 const getAllCities = async (req, res) => {
     try {
       const cities = await City.findAll({
-        where: { deleted: false }, // Ne récupère que les villes non supprimées
+        where: { deleted: true }, // Ne récupère que les villes non supprimées
       });
       res.json(cities);
     } catch (error) {
