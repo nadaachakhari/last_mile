@@ -109,6 +109,11 @@ const _nav = [
     items: [
       {
         component: CNavItem,
+        name: 'liste des articles',
+        to: '/admin/list_article',
+      },
+      {
+        component: CNavItem,
         name: 'liste des Catégories',
         to: '/admin/list_category',
       },

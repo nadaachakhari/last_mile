@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -10,8 +12,24 @@ const RoleUsersRoutes = require('./routes/RoleUsersRoute');
 const UsersRoutes = require('./routes/UsersRoute')
 const VatRoutes = require('./routes/VatRoute');
 const CategoryRoutes = require('./routes/CategoryRoute');
+
 const PaymentMethodRoutes = require('./routes/PaymentMethodeRoute')
 const StateRoutes = require('./routes/StateRoute')
+
+
+const ArticleRoutes = require('./routes/ArticleRoute');
+
+// Configuration de multer pour le stockage des images
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, '../client/src/assets/images');
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname));
+    },
+  });
+  
+  const upload = multer({ storage: storage });
 
 const app = express();
 
@@ -55,8 +73,13 @@ app.use('/roleUsers', RoleUsersRoutes);
 app.use('/Users', UsersRoutes);
 app.use('/Vat', VatRoutes);
 app.use('/Category', CategoryRoutes);
+
 app.use('/PaymentMethode', PaymentMethodRoutes);
 app.use('/State', StateRoutes);
+
+
+app.use('/Article', ArticleRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '../client/src/assets/images')));
 
 
 // Synchronisation avec Sequelize

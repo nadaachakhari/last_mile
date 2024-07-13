@@ -67,6 +67,7 @@ const list_category = React.lazy(() => import('./pages/admin/Category/list_categ
 const detail_category = React.lazy(() => import('./pages/admin/Category/detail_category'))
 const edit_category = React.lazy(() => import('./pages/admin/Category/edit_category'))
 
+
 //users 
 const add_users = React.lazy(() => import('./pages/admin/users/add_users'))
 const list_users = React.lazy(() => import('./pages/admin/users/list_users'))
@@ -85,6 +86,13 @@ const add_state = React.lazy(() => import('./pages/admin/State/add_state'))
 const list_state = React.lazy(() => import('./pages/admin/State/list_detail'))
 const detail_state = React.lazy(() => import('./pages/admin/State/detail_state'))
 const edit_state = React.lazy(() => import('./pages/admin/State/edit_state'))
+
+
+//add_article
+const add_article = React.lazy(() => import('./pages/admin/Article/add_article'))
+const list_article = React.lazy(() => import('./pages/admin/Article/list_article'))
+const detail_article = React.lazy(() => import('./pages/admin/Article/detail_article'))
+const edit_article = React.lazy(() => import('./pages/admin/Article/edit_article'))
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
@@ -160,6 +168,7 @@ const routes = [
   { path: '/admin/list_tiers', element: list_tiers },
   { path: '/admin/detail_tiers/:id', element: detail_tiers },
   { path: '/admin/edit_tiers/:id', name: 'edit_tiers', element: edit_tiers },
+
   //routes de vat
   { path: '/admin/add_vat', element: add_vat },
   { path: '/admin/list_vat', element: list_vat },
@@ -196,6 +205,22 @@ const routes = [
   { path: '/admin/detail_state/:id', element: detail_state },
   { path: '/admin/edit_state/:id', name: 'modifer état', element: edit_state },
 
+
+//routes de vat
+{ path: '/admin/add_vat', element: add_vat },
+{ path: '/admin/list_vat', element: list_vat },
+{ path: '/admin/detail_vat/:id', element: detail_vat },
+{ path: '/admin/edit_vat/:id', name: 'modifer vat', element: edit_vat },
+//routes de category
+{ path: '/admin/add_category', element: add_category },
+{ path: '/admin/list_category', element: list_category },
+{ path: '/admin/detail_category/:id', element: detail_category },
+{ path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
+//article
+{ path: '/admin/add_article', element: add_article },
+{ path: '/admin/list_article', element: list_article },
+{ path: '/admin/detail_article/:id', element: detail_article },
+{ path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
