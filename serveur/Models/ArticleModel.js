@@ -1,4 +1,3 @@
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Vat = require('./VatModel'); // Include Vat model
@@ -32,7 +31,7 @@ const Article = sequelize.define('Article', {
   },
   sale_ttc: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
+    allowNull: true, // Allow null initially
   },
   categoryID: {
     type: DataTypes.INTEGER,
@@ -53,7 +52,8 @@ const Article = sequelize.define('Article', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-  },
+    defaultValue: false // Ajoutez une valeur par défaut
+}
 }, {
   tableName: 'articles',
   timestamps: false,

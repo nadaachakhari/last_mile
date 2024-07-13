@@ -66,6 +66,11 @@ const add_category = React.lazy(() => import('./pages/admin/Category/add_categor
 const list_category = React.lazy(() => import('./pages/admin/Category/list_category'))
 const detail_category = React.lazy(() => import('./pages/admin/Category/detail_category'))
 const edit_category = React.lazy(() => import('./pages/admin/Category/edit_category'))
+//add_article
+const add_article = React.lazy(() => import('./pages/admin/Article/add_article'))
+const list_article = React.lazy(() => import('./pages/admin/Article/list_article'))
+const detail_article = React.lazy(() => import('./pages/admin/Article/detail_article'))
+const edit_article = React.lazy(() => import('./pages/admin/Article/edit_article'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -150,6 +155,11 @@ const routes = [
 { path: '/admin/list_category', element: list_category },
 { path: '/admin/detail_category/:id', element: detail_category },
 { path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
+//article
+{ path: '/admin/add_article', element: add_article },
+{ path: '/admin/list_article', element: list_article },
+{ path: '/admin/detail_article/:id', element: detail_article },
+{ path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },
