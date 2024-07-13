@@ -112,7 +112,7 @@ const AddArticle = () => {
         },
       });
       console.log('Réponse serveur:', response.data);
-      navigate('/admin/list_articles');
+      navigate('/admin/list_article');
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
