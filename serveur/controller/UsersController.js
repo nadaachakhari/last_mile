@@ -1,7 +1,9 @@
+const bcrypt = require('bcryptjs');
 const User = require('../Models/UserModel');
 const RoleUser = require('../Models/RoleUserModel');
 
-// Créer un nouvel utilisateur
+
+
 const createUser = async (req, res) => {
     const { name, user_name, password, email, registration_number, cin, role_usersID } = req.body;
     const photo = req.file ? req.file.filename : '';
@@ -11,10 +13,11 @@ const createUser = async (req, res) => {
         if (!roleUser) {
             return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
+        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             name,
             user_name,
-            password,
+            password: hashedPassword,
             email,
             photo,
             registration_number,
@@ -75,11 +78,13 @@ const updateUser = async (req, res) => {
         if (!roleUser) {
             return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
+        const hashedPassword = password ? await bcrypt.hash(password, 10) : user.password;
+
 
         await user.update({
             name,
             user_name,
-            password,
+            password: hashedPassword,
             email,
             registration_number,
             cin,
