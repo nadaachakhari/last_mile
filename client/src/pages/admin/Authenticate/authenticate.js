@@ -40,6 +40,10 @@ const Authenticate = () => {
       const response = await axios.post('http://localhost:5001/Authenticate', { username, password });
       const { token, role, nameTiers,nameusers } = response.data;
 
+
+    
+      
+
       // Stocker les détails de l'utilisateur dans le localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
