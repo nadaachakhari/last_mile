@@ -93,6 +93,7 @@ const add_article = React.lazy(() => import('./pages/admin/Article/add_article')
 const list_article = React.lazy(() => import('./pages/admin/Article/list_article'))
 const detail_article = React.lazy(() => import('./pages/admin/Article/detail_article'))
 const edit_article = React.lazy(() => import('./pages/admin/Article/edit_article'))
+//profil
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))

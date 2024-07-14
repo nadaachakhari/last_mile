@@ -70,9 +70,10 @@ const CNavbars = () => {
           </CNavbar>
         </CCardBody>
       </CCard>
-
-      <CCard className="mb-4">
+      
+      <CCard className="mb-2">
         <CCardHeader>CNavbar brand</CCardHeader>
+
         <CCardBody>
           <CNavbar color="faded" light>
             <CNavbarBrand>
@@ -80,7 +81,7 @@ const CNavbars = () => {
                 src="https://placekitten.com/g/30/30"
                 className="d-inline-block align-top"
                 alt="CoreuiVue"
-              />
+              /> 
               CoreUI React
             </CNavbarBrand>
           </CNavbar>
