@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const {
     createUser,
     getAllUsers,
@@ -8,19 +10,22 @@ const {
     deleteUser,
 } = require('../controller/UsersController');
 
-// Créer un nouvel utilisateur
-router.post('/', createUser);
+// Configuration de multer pour le stockage des images
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../client/src/assets/images/users');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
 
-// Lire tous les utilisateurs
+const upload = multer({ storage: storage });
+
+router.post('/', upload.single('photo'), createUser);
 router.get('/', getAllUsers);
-
-// Lire un seul utilisateur par ID
 router.get('/:id', getUserById);
-
-// Mettre à jour un utilisateur
 router.put('/:id', updateUser);
-
-// Supprimer un utilisateur (marquer comme supprimé)
 router.put('/update_deleted/:id', deleteUser);
 
 module.exports = router;

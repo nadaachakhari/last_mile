@@ -35,6 +35,7 @@ const User = sequelize.define('User', {
   },
   role_usersID: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
       model: RoleUser,
       key: 'id',
@@ -43,6 +44,7 @@ const User = sequelize.define('User', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false
   },
 }, {
   tableName: 'users',
@@ -51,6 +53,5 @@ const User = sequelize.define('User', {
 
 // Define the relationship
 User.belongsTo(RoleUser, { foreignKey: 'role_usersID' });
-RoleUser.hasMany(User, { foreignKey: 'role_usersID' });
 
 module.exports = User;

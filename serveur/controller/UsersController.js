@@ -1,54 +1,38 @@
-const bcrypt = require('bcrypt');
 const User = require('../Models/UserModel');
 const RoleUser = require('../Models/RoleUserModel');
-const multer = require('multer');
-const upload = require('../middleware/upload'); // Importer la configuration de Multer
 
-
-
-
+// Créer un nouvel utilisateur
 const createUser = async (req, res) => {
-    const { name, user_name, password, email, registration_number, cin, role_usersID, deleted } = req.body;
+    const { name, user_name, password, email, registration_number, cin, role_usersID } = req.body;
+    const photo = req.file ? req.file.filename : '';
     try {
-        // Hacher le mot de passe
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Traitement de la photo avec Multer
-        upload.single('photo')(req, res, async function (err) {
-            if (err instanceof multer.MulterError) {
-                // Une erreur Multer s'est produite lors du téléchargement du fichier
-                return res.status(400).json({ error: 'Une erreur est survenue lors du téléchargement du fichier.' });
-            } else if (err) {
-                // Une autre erreur s'est produite
-                return res.status(500).json({ error: err.message });
-            }
-
-            // Tout s'est bien passé, continuer avec la création de l'utilisateur
-            const newUser = await User.create({
-                name,
-                user_name,
-                password: hashedPassword,
-                email,
-                photo: req.file ? req.file.path : null, // Stocker le chemin du fichier téléchargé
-                registration_number,
-                cin,
-                role_usersID,
-                deleted: false
-            });
-            res.status(201).json(newUser);
+        const roleUser = await RoleUser.findByPk(role_usersID);
+        console.log(roleUser);
+        if (!roleUser) {
+            return res.status(400).json({ error: 'Invalid RoleUser ID' });
+        }
+        const newUser = await User.create({
+            name,
+            user_name,
+            password,
+            email,
+            photo,
+            registration_number,
+            cin,
+            role_usersID,
+            deleted: false
         });
+
+        res.status(201).json(newUser);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
-            where: {
-                deleted: false
-            },
+            where: { deleted: false },
             include: [
                 { model: RoleUser, attributes: ['name'] }
             ]
@@ -59,12 +43,11 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-// Lire un seul utilisateur par ID
 const getUserById = async (req, res) => {
     const { id } = req.params;
     try {
         const user = await User.findOne({
-            where: { id },
+            where: { id, deleted: false },
             include: [
                 { model: RoleUser, attributes: ['name'] }
             ]
@@ -78,54 +61,51 @@ const getUserById = async (req, res) => {
     }
 };
 
-// Mettre à jour un utilisateur
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { name, user_name, password, email, photo, registration_number, cin, role_usersID, deleted } = req.body;
+    const { name, user_name, password, email, registration_number, cin, role_usersID, deleted } = req.body;
+    const photo = req.file ? req.file.filename : '';
     try {
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Hacher le mot de passe s'il est fourni
-        let hashedPassword = user.password;
-        if (password) {
-            hashedPassword = await bcrypt.hash(password, 10);
+        const roleUser = await RoleUser.findByPk(role_usersID);
+        if (!roleUser) {
+            return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
 
         await user.update({
             name,
             user_name,
-            password: hashedPassword,
+            password,
             email,
-            photo,
             registration_number,
             cin,
             role_usersID,
-            deleted
+            photo: photo || user.photo,
+            deleted: deleted !== undefined ? deleted : user.deleted
         });
+
         res.status(200).json(user);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-// Supprimer un utilisateur
-const deleteUser = async (req, res, next) => {
+const deleteUser = async (req, res) => {
     const { id } = req.params;
     try {
         const user = await User.findByPk(id);
         if (!user) {
-            return res.status(404).json({ message: `Utilisateur avec l'ID ${id} non trouvé.` });
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        // Mettre à jour la colonne 'deleted' à 1
-        await user.update({ deleted: 0 });
-
-        res.json({ message: `Utilisateur avec l'ID ${id} a été marqué comme supprimé.` });
+        await user.update({ deleted: true });
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        next(error);
+        res.status(400).json({ error: error.message });
     }
 };
 

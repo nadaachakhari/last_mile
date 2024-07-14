@@ -18,6 +18,7 @@ import {
     CModalTitle,
     CModalBody,
     CModalFooter,
+    CImage
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
@@ -31,7 +32,7 @@ const UserList = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/Users');
+                const response = await axios.get('http://localhost:5001/Users/');
                 setUsers(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -41,13 +42,13 @@ const UserList = () => {
         fetchUsers();
     }, []);
 
-    
+
     const handleModifier = (id) => {
         console.log(`Modifier utilisateur avec id: ${id}`);
     };
 
     const handleSupprimer = async (id) => {
-        setIdToDelete(id); 
+        setIdToDelete(id);
         setShowConfirmation(true);
     };
 
@@ -66,7 +67,8 @@ const UserList = () => {
     };
 
     const cancelDelete = () => {
-        setShowConfirmation(false); // Annuler la suppression et fermer la modal de confirmation
+        setShowConfirmation(false);
+        setIdToDelete(null)// Annuler la suppression et fermer la modal de confirmation
     };
 
     return (
@@ -90,6 +92,7 @@ const UserList = () => {
                                     <CTableHeaderCell>Nom d'utilisateur</CTableHeaderCell>
                                     <CTableHeaderCell>Email</CTableHeaderCell>
                                     <CTableHeaderCell>Rôle</CTableHeaderCell>
+                                    <CTableHeaderCell scope="col">Photo</CTableHeaderCell>
                                     <CTableHeaderCell>Actions</CTableHeaderCell>
                                 </CTableRow>
                             </CTableHead>
@@ -101,6 +104,15 @@ const UserList = () => {
                                         <CTableDataCell>{user.user_name}</CTableDataCell>
                                         <CTableDataCell>{user.email}</CTableDataCell>
                                         <CTableDataCell>{user.RoleUser?.name}</CTableDataCell>
+                                        <CTableDataCell>
+                                            {user.photo && (
+                                                <CImage
+                                                    src={`http://localhost:5001/users_uploads/${user.photo}`}
+                                                    alt={user.name}
+                                                    width={100}
+                                                />
+                                            )}
+                                        </CTableDataCell>
                                         <CTableDataCell>
                                             <Link to={`/admin/detail_user/${user.id}`}>
                                                 <CButton size="md" color="info" className="me-2">

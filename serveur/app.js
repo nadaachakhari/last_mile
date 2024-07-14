@@ -80,6 +80,7 @@ app.use('/State', StateRoutes);
 
 app.use('/Article', ArticleRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../client/src/assets/images')));
+app.use('/users_uploads', express.static(path.join(__dirname, '../client/src/assets/images/users')));
 
 
 // Synchronisation avec Sequelize
