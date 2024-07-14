@@ -52,16 +52,16 @@ const Authenticate = () => {
       // Redirection en fonction du rôle
       switch (role) {
         case 'admin':
-          navigate('/dashboardadmin');
+          navigate('/dashboard');
           break;
         case 'livreur':
-          navigate('/admin/list_tiers');
+          navigate('/dashboard');
           break;
         case 'client':
           navigate('/dashboard');
           break;
         case 'fournisseur':
-          navigate('/dashboardfournisseur');
+          navigate('/dashboard');
           break;
         default:
           navigate('/dashboard');

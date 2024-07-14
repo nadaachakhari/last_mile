@@ -41,23 +41,23 @@ const authenticate = async (req, res) => {
     let nameTiers;
     let nameusers;
     if (user) {
-      role = user.role_usersID.name === 'admin' ? 'admin' : 'livreur'; // Assurez-vous que '1' est l'ID pour 'admin'
+      role = user.RoleUser.name === 'admin' ? 'admin' : 'livreur'; 
       redirectTo = role === 'admin' ? '/dashboard' : '/dashboard';
       nameusers = user.name;
     } else if (tiers) {
-      role = tiers.TypeTier.name === 'client' ? 'client' : 'fournisseur'; // Comparer avec les valeurs réelles de type_tiersID.name
+      role = tiers.TypeTier.name === 'client' ? 'client' : 'fournisseur'; 
       redirectTo = role === 'client' ? '/dashboard' : '/dashboard';
       nameTiers = tiers.name;
     }
 
     // Générer un token JWT
     const token = jwt.sign(
-      { id: entity.id, username: entity.user_name || entity.name, name: entity.name, role, nameTiers },
+      { id: entity.id, username: entity.user_name || entity.name, name: entity.name, role, nameTiers, nameusers },
       'votre_clé_secrète', 
       { expiresIn: '1h' } 
     );
 
-    res.status(200).json({ message: 'Connexion réussie', token, redirectTo, role , nameTiers});
+    res.status(200).json({ message: 'Connexion réussie', token, redirectTo, role , nameTiers, nameusers});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
