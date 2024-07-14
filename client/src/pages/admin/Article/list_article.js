@@ -70,6 +70,11 @@ const ArticleList = () => {
             <strong>Liste</strong> <small>des Articles</small>
           </CCardHeader>
           <CCardBody>
+          <Link to={`/admin/add_article`}>
+              <CButton color="primary" className="mb-3">
+                Ajouter Article
+              </CButton>
+            </Link>
             <CTable striped>
               <CTableHead>
                 <CTableRow>

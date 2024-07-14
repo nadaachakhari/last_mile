@@ -159,7 +159,7 @@ const AddArticle = () => {
                 <CFormLabel htmlFor="sale_ttc">Prix TTC</CFormLabel>
                 <CFormInput type="number" step="0.01" id="sale_ttc" value={formData.sale_ttc} readOnly />
               </CCol>
-              <CCol md={6}>
+              <CCol md={4}>
                 <CFormLabel htmlFor="categoryID">Catégorie</CFormLabel>
                 <CFormSelect id="categoryID" value={formData.categoryID} onChange={handleChange} required>
                   <option value="">Choisir...</option>
@@ -169,6 +169,13 @@ const AddArticle = () => {
                     </option>
                   ))}
                 </CFormSelect>
+              </CCol>
+              <CCol md={3} className="align-self-end">
+                <Link to={`/admin/add_category`}>
+                  <CButton color="primary">
+                    Ajouter Catégorie
+                  </CButton>
+                </Link>
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="photo">Photo</CFormLabel>

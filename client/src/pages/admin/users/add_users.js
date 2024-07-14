@@ -18,6 +18,7 @@ import {
     CModalFooter,
     CFormSelect,
 } from '@coreui/react';
+import { Link } from 'react-router-dom';
 
 const AddUser = () => {
     const [formData, setFormData] = useState({
@@ -126,7 +127,7 @@ const AddUser = () => {
                                 <CFormLabel htmlFor="cin">CIN</CFormLabel>
                                 <CFormInput id="cin" value={formData.cin} onChange={handleChange} />
                             </CCol>
-                            <CCol md={6}>
+                            <CCol md={4}>
                                 <CFormLabel htmlFor="role_usersID">Rôle</CFormLabel>
                                 <CFormSelect id="role_usersID" value={formData.role_usersID} onChange={handleChange} required>
                                     <option value="">Choisir...</option>
@@ -137,6 +138,13 @@ const AddUser = () => {
                                     ))}
                                 </CFormSelect>
                             </CCol>
+                            <CCol md={2} className="align-self-end">
+                <Link to={`/admin/add_role_users`}>
+                  <CButton color="primary">
+                    Ajouter Role
+                  </CButton>
+                </Link>
+              </CCol>
                             <CCol md={6}>
                                 <CFormLabel htmlFor="photo">Photo</CFormLabel>
                                 <CFormInput type="file" id="photo" onChange={handleImageChange} />

@@ -66,7 +66,7 @@ const deleteRoleUser = async (req, res, next) => {
             return res.status(404).json({ message: `Rôle d'utilisateur avec l'ID ${id} non trouvé.` });
         }
 
-        await roleUser.update({ deleted: 0 });
+        await roleUser.update({ deleted: true });
 
         res.json({ message: `Rôle d'utilisateur avec l'ID ${id} a été marqué comme supprimé.` });
     } catch (error) {
