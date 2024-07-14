@@ -99,6 +99,7 @@ const ArticleList = () => {
                         />
                       )}
                     </CTableDataCell>
+                    
                     <CTableDataCell>
                       <Link to={`/admin/detail_article/${article.id}`}>
                         <CButton size="md" color="info" className="me-2">

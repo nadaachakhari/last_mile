@@ -16,7 +16,7 @@ const CategoryRoutes = require('./routes/CategoryRoute');
 const PaymentMethodRoutes = require('./routes/PaymentMethodeRoute')
 const StateRoutes = require('./routes/StateRoute')
 
-
+const AuthRoutes = require('./routes/AuthRoutes');
 const ArticleRoutes = require('./routes/ArticleRoute');
 
 // Configuration de multer pour le stockage des images
@@ -76,6 +76,7 @@ app.use('/Category', CategoryRoutes);
 
 app.use('/PaymentMethode', PaymentMethodRoutes);
 app.use('/State', StateRoutes);
+app.use('/Authenticate', AuthRoutes);
 
 
 app.use('/Article', ArticleRoutes);
