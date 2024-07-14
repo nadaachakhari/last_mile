@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const City = require('../Models/CityModel');
+const { sendEmail } = require('../config/emailConfig')
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
@@ -70,19 +72,19 @@ const updateTier = async (req, res) => {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
-    await tier.update({ 
-      name, 
-      type_tiersID, 
-      code, 
-      address, 
-      postal_code, 
-      country, 
-      phone, 
-      mobile, 
-      fax, 
-      email, 
-      cityID, 
-      block, 
+    await tier.update({
+      name,
+      type_tiersID,
+      code,
+      address,
+      postal_code,
+      country,
+      phone,
+      mobile,
+      fax,
+      email,
+      cityID,
+      block,
       deleted,
       password: hashedPassword || tier.password  // Si pas de nouveau mot de passe, conserver l'ancien
     });
@@ -110,10 +112,76 @@ const deleteTier = async (req, res, next) => {
   }
 };
 
+
+
+//creer client depuis le fournisseur,
+
+
+// Générer un mot de passe aléatoire
+const generatePassword = (length) => {
+  return crypto.randomBytes(length).toString('hex').slice(0, length);
+};
+
+const createClient = async (req, res) => {
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  try {
+    // Vérifiez si le type "client" existe
+    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    if (!typeClient) {
+      return res.status(400).json({ error: 'Type "client" does not exist' });
+    }
+  
+
+    // Vérifiez si l'email existe déjà
+    const existingClient = await Tiers.findOne({ where: { email } });
+    if (existingClient) {
+      const emailSubject = 'Bienvenue chez nous !';
+      const emailText = `Bonjour ${existingClient.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
+
+      await sendEmail(existingClient.email, emailSubject, emailText);
+
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    // Génération et hashage du mot de passe
+    const generatedPassword = generatePassword(12);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    const newClient = await Tiers.create({
+      name,
+      type_tiersID: typeClient.id,
+      code,
+      address,
+      postal_code,
+      country,
+      phone,
+      mobile,
+      fax,
+      email,
+      cityID,
+      block: false,
+      password: hashedPassword,
+      deleted: false
+    });
+
+    // Envoyer un email au nouveau client avec ses informations de connexion
+    const emailSubject = 'Bienvenue sur notre plateforme !';
+    const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.email}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+
+    await sendEmail(newClient.email, emailSubject, emailText);
+
+    res.status(201).json({ newClient, generatedPassword });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   createTier,
   getAllTiers,
   getTierById,
   updateTier,
   deleteTier,
+  createClient
 };
