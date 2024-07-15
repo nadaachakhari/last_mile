@@ -48,10 +48,9 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'liste des clients',
+        name: 'liste des client',
         to: '/admin/list_client',
-      }
-
+      },
     ],
   },
   //users 
