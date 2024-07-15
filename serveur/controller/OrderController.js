@@ -7,7 +7,11 @@ const State = require('../Models/StateModel');
 const createOrder = async (req, res) => {
     const { code, date, customerID, observation, note, ID_payment_method } = req.body;
     const supplierID = req.user && req.user.id;
-
+    console.log(supplierID);
+    if (!supplierID) {
+        console.log('Unauthorized access attempt, user not authenticated');
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
+    }
     if (!supplierID) {
         return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
     }
@@ -60,6 +64,7 @@ const createOrder = async (req, res) => {
 
         res.status(201).json(newOrder);
     } catch (error) {
+        console.log("not cncted !!!!!!!");
         res.status(500).json({ error: error.message });
     }
 };

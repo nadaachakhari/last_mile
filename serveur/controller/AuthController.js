@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 
 const authenticate = async (req, res) => {
   const { username, password } = req.body;
-
   try {
     // Rechercher l'utilisateur dans les deux tables
     const user = await User.findOne({
