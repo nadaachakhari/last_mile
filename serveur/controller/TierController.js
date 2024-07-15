@@ -4,6 +4,7 @@ const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const City = require('../Models/CityModel');
 const { sendEmail } = require('../config/emailConfig')
+const { Op } = require('sequelize');
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
@@ -114,7 +115,7 @@ const deleteTier = async (req, res, next) => {
 
 
 
-//creer client depuis le fournisseur,
+//creer client depuis le fournisseur, update et getAll !!!!!!!!!!!!!!
 
 
 // Générer un mot de passe aléatoire
@@ -130,7 +131,7 @@ const createClient = async (req, res) => {
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" does not exist' });
     }
-  
+
 
     // Vérifiez si l'email existe déjà
     const existingClient = await Tiers.findOne({ where: { email } });
@@ -176,6 +177,103 @@ const createClient = async (req, res) => {
   }
 };
 
+const getAllClients = async (req, res) => {
+  try {
+    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    if (!typeClient) {
+      return res.status(400).json({ error: 'Type "client" does not exist' });
+    }
+    const clients = await Tiers.findAll({
+      where: { type_tiersID: typeClient.id, deleted: false },
+      include: [
+        { model: TypeTiers, attributes: ['name'] },
+        { model: City, attributes: ['value'] }
+      ]
+    });
+
+    res.status(200).json(clients);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Fonction pour détecter les changements et créer un message
+const getChangesMessage = (original, updated) => {
+  let changes = '';
+  for (let key in updated) {
+    if (updated[key] && updated[key] !== original[key]) {
+      changes += `${key}: ${original[key]} -> ${updated[key]}\n`;
+    }
+  }
+  return changes;
+};
+
+const updateClient = async (req, res) => {
+  const { id } = req.params;
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+
+  try {
+    const client = await Tiers.findByPk(id);
+    if (!client) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    if (email && email !== client.email) {
+      const existingClient = await Tiers.findOne({ where: { email, id: { [Op.ne]: id } } });
+      if (existingClient) {
+        return res.status(400).json({ error: 'Email already exists for another client' });
+      }
+    }
+
+    const updatedClient = {
+      name: name || client.name,
+      code: code || client.code,
+      address: address || client.address,
+      postal_code: postal_code || client.postal_code,
+      country: country || client.country,
+      phone: phone || client.phone,
+      mobile: mobile || client.mobile,
+      fax: fax || client.fax,
+      email: email || client.email,
+      cityID: cityID || client.cityID
+    };
+
+    const changesMessage = getChangesMessage(client, updatedClient);
+
+    await client.update(updatedClient);
+
+    // Envoyer un email au client avec les détails des modifications
+    const emailSubject = 'Mise à jour de vos informations';
+    const emailText = `Bonjour ${client.name},\n\nNous avons mis à jour vos informations. Voici les changements effectués :\n\n${changesMessage}\n\nCordialement,\nVotre équipe`;
+
+    await sendEmail(client.email, emailSubject, emailText);
+
+    res.status(200).json(client);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const getClientById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const client = await Tiers.findByPk(id, {
+      include: [
+        { model: TypeTiers, attributes: ['name'] },
+        { model: City, attributes: ['value'] }
+      ]
+    });
+
+    if (!client) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    res.status(200).json(client);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 
 module.exports = {
   createTier,
@@ -183,5 +281,10 @@ module.exports = {
   getTierById,
   updateTier,
   deleteTier,
-  createClient
+
+  //crud client by fournisseurs
+  createClient,
+  updateClient,
+  getAllClients,
+  getClientById
 };
