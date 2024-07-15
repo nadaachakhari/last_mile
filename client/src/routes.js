@@ -94,6 +94,12 @@ const list_article = React.lazy(() => import('./pages/admin/Article/list_article
 const detail_article = React.lazy(() => import('./pages/admin/Article/detail_article'))
 const edit_article = React.lazy(() => import('./pages/admin/Article/edit_article'))
 
+//clients
+const add_client = React.lazy(() => import('./pages/admin/Tiers/add_client'))
+const list_client = React.lazy(() => import('./pages/admin/Tiers/list_client'))
+const detail_client = React.lazy(() => import('./pages/admin/Tiers/detail_client'))
+const edit_client = React.lazy(() => import('./pages/admin/Tiers/edit_client'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -220,7 +226,13 @@ const routes = [
 { path: '/admin/add_article', element: add_article },
 { path: '/admin/list_article', element: list_article },
 { path: '/admin/detail_article/:id', element: detail_article },
-{ path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
+  { path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
+
+  //client added by fournisseur
+  { path: '/admin/add_client', element: add_client },
+  { path: '/admin/list_client', element: list_client },
+  { path: '/admin/detail_client/:id', element: detail_client },
+  { path: '/admin/edit_client/:id', name: 'modifer client', element: edit_client },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

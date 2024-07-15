@@ -6,7 +6,10 @@ const {
   getTierById,
   updateTier,
   deleteTier,
-  createClient
+  createClient,
+  updateClient,
+  getAllClients,
+  getClientById
 } = require('../controller/TierController');
 
 // Créer un nouveau Tier
@@ -17,6 +20,10 @@ router.get('/', getAllTiers);
 
 //create client depuis le fournisseur !!!
 router.post('/create-client', createClient);
+router.put('/clients/:id', updateClient);
+// Récupérer tous les clients
+router.get('/clients', getAllClients);
+router.get('/clients/:id', getClientById)
 
 // Lire un seul Tier par ID
 router.get('/:id', getTierById);
