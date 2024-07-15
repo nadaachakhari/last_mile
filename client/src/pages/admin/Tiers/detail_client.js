@@ -8,17 +8,11 @@ import {
     CCol,
     CRow,
     CButton,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CModalFooter,
 } from '@coreui/react';
 
 const DetailClient = () => {
     const { id } = useParams(); 
-    const [client, setClient] = useState(null); 
-    const [showModal, setShowModal] = useState(false);
+    const [client, setClient] = useState(null);
 
     useEffect(() => {
         const fetchClient = async () => {

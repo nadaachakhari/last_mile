@@ -45,7 +45,12 @@ const _nav = [
         component: CNavItem,
         name: 'liste type de tiers',
         to: '/admin/list_type_tiers',
-      }
+      },
+      {
+        component: CNavItem,
+        name: 'liste des client',
+        to: '/admin/list_client',
+      },
     ],
   },
   //users 
