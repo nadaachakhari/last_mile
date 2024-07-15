@@ -1,16 +1,13 @@
-const { Op } = require('sequelize');
+
 const Order = require('../Models/OrderModel');
 const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const State = require('../Models/StateModel');
+const { Op } = require('sequelize');
 
 const createOrder = async (req, res) => {
     const { code, date, customerID, observation, note, ID_payment_method } = req.body;
-    const supplierID = req.user && req.user.id;
-
-    if (!supplierID) {
-        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
-    }
+    const supplierID = req.user.id; // Utilisateur connecté en tant que fournisseur
 
     try {
         // Vérifier si le type "client" existe
@@ -60,7 +57,7 @@ const createOrder = async (req, res) => {
 
         res.status(201).json(newOrder);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
