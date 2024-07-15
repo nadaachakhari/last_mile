@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Tiers = require('./TiersModel'); // Assuming you have defined the Tiers model
-const User = require('./UserModel'); // Assuming you have defined the User model
-const PaymentMethod = require('./PaymentMethodModel'); // Include PaymentMethod model
-const State = require('./StateModel'); // Include State model
+const Tiers = require('./TiersModel');
+const User = require('./UserModel');
+const PaymentMethod = require('./PaymentMethodModel');
+const State = require('./StateModel');
 
 const Order = sequelize.define('Order', {
   id: {
@@ -70,13 +70,13 @@ const Order = sequelize.define('Order', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false
   },
 }, {
-  tableName: 'orders', // Adjusted to 'orders' to avoid reserved keyword 'order'
+  tableName: 'orders',
   timestamps: false,
 });
 
-// Define relationships
 Order.belongsTo(Tiers, { as: 'customer', foreignKey: 'customerID' });
 Order.belongsTo(Tiers, { as: 'supplier', foreignKey: 'supplierID' });
 Order.belongsTo(User, { foreignKey: 'userID' });
