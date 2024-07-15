@@ -73,6 +73,14 @@ const Tiers = sequelize.define('Tiers', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
+  createdBy: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Tiers',
+      key: 'id',
+    },
+  },
 }, {
   tableName: 'tiers',
   timestamps: false,
@@ -81,5 +89,8 @@ const Tiers = sequelize.define('Tiers', {
 // Définir la relation avec TypeTiers
 Tiers.belongsTo(TypeTiers, { foreignKey: 'type_tiersID' });
 Tiers.belongsTo(City, { foreignKey: 'cityID' });
+
+// Auto-référence pour le fournisseur créateur
+Tiers.belongsTo(Tiers, { as: 'Creator', foreignKey: 'createdBy' });
 
 module.exports = Tiers;

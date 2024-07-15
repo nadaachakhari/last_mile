@@ -59,7 +59,7 @@ const AddClient = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5001/Tier/clients', formData);
+            const response = await axios.post('http://localhost:5001/Tier/create-client', formData);
             console.log('Réponse serveur:', response.data);
             navigate('/admin/list_client');
         } catch (error) {
