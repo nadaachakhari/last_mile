@@ -13,87 +13,89 @@ import {
     CTableHeaderCell,
     CTableBody,
     CTableDataCell,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CModalFooter,
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 
-const ClientList = () => {
-    const [clients, setClients] = useState([]);
-   
+const OrderList = () => {
+    const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        const fetchClients = async () => {
+        const fetchOrders = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token non trouvé dans localStorage.');
+                return;
+            }
             try {
-                const response = await axios.get('http://localhost:5001/Tier/clients');
-                setClients(response.data);
+                const response = await axios.get('http://localhost:5001/Order/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setOrders(response.data);
+                console.log(response.data);
             } catch (error) {
-                console.error('Erreur lors de la récupération des clients:', error);
+                console.error('Erreur lors de la récupération des commandes:', error);
             }
         };
 
-        fetchClients();
+        fetchOrders();
     }, []);
 
-    const handleModifier = (id) => {
-        console.log(`Modifier client avec id: ${id}`);
-        // Ajouter ici la logique pour la redirection ou l'ouverture de la page de modification
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
     };
 
+    const handleModifier = (id) => {
+        console.log(`Modifier commande avec id: ${id}`);
+    };
 
     return (
         <CRow>
             <CCol xs={12}>
                 <CCard className="mb-4">
                     <CCardHeader>
-                        <strong>Liste</strong> <small>des Clients</small>
+                        <strong>Liste</strong> <small>des Commandes</small>
                     </CCardHeader>
                     <CCardBody>
-                        <Link to={`/admin/add_client`}>
+                        <Link to={`/admin/add_order`}>
                             <CButton color="primary" className="mb-3">
-                                Ajouter Client
+                                Ajouter Commande
                             </CButton>
                         </Link>
                         <CTable hover responsive>
                             <CTableHead>
                                 <CTableRow>
                                     <CTableHeaderCell>ID</CTableHeaderCell>
-                                    <CTableHeaderCell>Nom</CTableHeaderCell>
-                                    <CTableHeaderCell>Type</CTableHeaderCell>
                                     <CTableHeaderCell>Code</CTableHeaderCell>
-                                    <CTableHeaderCell>Adresse</CTableHeaderCell>
-                                    <CTableHeaderCell>Email</CTableHeaderCell>
-                                    <CTableHeaderCell>Téléphone</CTableHeaderCell>
+                                    <CTableHeaderCell>Date</CTableHeaderCell>
+                                    <CTableHeaderCell>Client</CTableHeaderCell>
+                                    <CTableHeaderCell>État</CTableHeaderCell>
                                     <CTableHeaderCell>Actions</CTableHeaderCell>
                                 </CTableRow>
                             </CTableHead>
                             <CTableBody>
-                                {clients.map((client, index) => (
-                                    <CTableRow key={client.id}>
+                                {orders.map((order, index) => (
+                                    <CTableRow key={order.id}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                        <CTableDataCell>{client.name}</CTableDataCell>
-                                        <CTableDataCell>{client.TypeTier?.name}</CTableDataCell>
-                                        <CTableDataCell>{client.code}</CTableDataCell>
-                                        <CTableDataCell>{client.address}</CTableDataCell>
-                                        <CTableDataCell>{client.email}</CTableDataCell>
-                                        <CTableDataCell>{client.phone}</CTableDataCell>
+                                        <CTableDataCell>{order.code}</CTableDataCell>
+                                        <CTableDataCell>{formatDate(order.date)}</CTableDataCell>
+                                        <CTableDataCell>{order.customer.name}</CTableDataCell>
+                                        <CTableDataCell>{order.state.value}</CTableDataCell>
                                         <CTableDataCell>
-                                            <Link to={`/admin/detail_client/${client.id}`}>
+                                            <Link to={`/admin/detail_order/${order.id}`}>
                                                 <CButton size="md" color="info" className="me-2">
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
-                                            <Link to={`/admin/edit_client/${client.id}`}>
-                                                <CButton size="md" color="warning" onClick={() => handleModifier(client.id)} className="me-2">
+                                            <Link to={`/admin/edit_order/${order.id}`}>
+                                                <CButton size="md" color="warning" onClick={() => handleModifier(order.id)} className="me-2">
                                                     <FaEdit className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
-                                            
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}
@@ -106,4 +108,4 @@ const ClientList = () => {
     );
 };
 
-export default ClientList;
+export default OrderList;

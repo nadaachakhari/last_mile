@@ -245,7 +245,7 @@ const updateClient = async (req, res) => {
     // Envoyer un email au client avec les détails des modifications
     const emailSubject = 'Mise à jour de vos informations';
     const emailText = `Bonjour ${client.name},\n\nNous avons mis à jour vos informations. Voici les changements effectués :\n\n${changesMessage}\n\nCordialement,\nVotre équipe`;
-
+    console.log('client mail: ' + client.email);
     await sendEmail(client.email, emailSubject, emailText);
 
     res.status(200).json(client);

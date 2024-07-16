@@ -37,7 +37,7 @@ const DetailUser = () => {
   }, [id]);
 
   const handleReturn = () => {
-    navigate('/admin/list_users'); // Navigate back to list
+    navigate('/admin/list_user'); // Navigate back to list
   };
 
   return (

@@ -142,6 +142,21 @@ const _nav = [
       }
     ],
   },
+
+  //order
+  {
+    component: CNavGroup,
+    name: 'Les commande',
+    to: '/Order',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des commandes',
+        to: '/admin/list_order',
+      }
+    ],
+  },
   {
     component: CNavItem,
     name: 'Fourniseur',
