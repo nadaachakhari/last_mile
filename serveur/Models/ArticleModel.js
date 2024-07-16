@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Vat = require('./VatModel'); // Include Vat model
-const Category = require('./CategoryModel'); // Include Category model
+const Vat = require('./VatModel');
+const Category = require('./CategoryModel');
 
 const Article = sequelize.define('Article', {
   id: {
@@ -12,10 +12,16 @@ const Article = sequelize.define('Article', {
   code: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   },
   vatID: {
     type: DataTypes.INTEGER,
@@ -28,10 +34,18 @@ const Article = sequelize.define('Article', {
   sale_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      isDecimal: true,
+      min: 0,
+    }
   },
   sale_ttc: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: true, // Allow null initially
+    allowNull: true,
+    validate: {
+      isDecimal: true,
+      min: 0,
+    }
   },
   categoryID: {
     type: DataTypes.INTEGER,
@@ -52,11 +66,11 @@ const Article = sequelize.define('Article', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: false // Ajoutez une valeur par défaut
+    defaultValue: false
 }
 }, {
   tableName: 'articles',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships

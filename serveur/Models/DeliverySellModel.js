@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Tiers = require('./TiersModel'); // Assuming you have defined the Tiers model
-const Order = require('./OrderModel'); // Assuming you have defined the Order model
-const User = require('./UserModel'); // Assuming you have defined the User model
+const Tiers = require('./TiersModel');
+const Order = require('./OrderModel');
+const User = require('./UserModel');
 
 const DeliverySell = sequelize.define('DeliverySell', {
   id: {
@@ -13,10 +13,16 @@ const DeliverySell = sequelize.define('DeliverySell', {
   code: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   },
   date: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      isDate: true,
+    }
   },
   tiersID: {
     type: DataTypes.INTEGER,
@@ -25,14 +31,27 @@ const DeliverySell = sequelize.define('DeliverySell', {
       model: Tiers,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   total_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0,
+    }
   },
   total_ttc: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0,
+    }
   },
   orderID: {
     type: DataTypes.INTEGER,
@@ -41,6 +60,9 @@ const DeliverySell = sequelize.define('DeliverySell', {
       model: Order,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   userID: {
     type: DataTypes.INTEGER,
@@ -49,6 +71,9 @@ const DeliverySell = sequelize.define('DeliverySell', {
       model: User,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   observation: {
     type: DataTypes.STRING,
@@ -65,13 +90,14 @@ const DeliverySell = sequelize.define('DeliverySell', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
 }, {
   tableName: 'delivery_sell',
-  timestamps: false,
+  timestamps: true,
 });
 
-// Define relationships
+// Définir les relations
 DeliverySell.belongsTo(Tiers, { foreignKey: 'tiersID' });
 DeliverySell.belongsTo(Order, { foreignKey: 'orderID' });
 DeliverySell.belongsTo(User, { foreignKey: 'userID' });

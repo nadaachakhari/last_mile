@@ -10,14 +10,20 @@ const Vat = sequelize.define('Vat', {
   value: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'La valeur du taux de TVA ne peut pas être vide.',
+      },
+    },
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false
   },
 }, {
   tableName: 'vat',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Vat;

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Order = require('./OrderModel'); // Assuming you have defined the Order model
-const State = require('./StateModel'); // Assuming you have defined the State model
+const Order = require('./OrderModel');
+const State = require('./StateModel');
 
 const OrderState = sequelize.define('OrderState', {
   id: {
@@ -28,10 +28,13 @@ const OrderState = sequelize.define('OrderState', {
   date: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      isDate: true, 
+    }
   },
 }, {
   tableName: 'order_state',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships

@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Order = require('./OrderModel'); // Assuming you have defined the Order model
-const Tiers = require('./TiersModel'); // Assuming you have defined the Tiers model
-const PaymentMethod = require('./PaymentMethodModel'); // Assuming you have defined the PaymentMethod model
-const Bank = require('./BankModel'); // Assuming you have defined the Bank model
+const Order = require('./OrderModel');
+const Tiers = require('./TiersModel');
+const PaymentMethod = require('./PaymentMethodModel');
+const Bank = require('./BankModel'); 
 
 const Regulations = sequelize.define('Regulations', {
   id: {
@@ -30,6 +30,9 @@ const Regulations = sequelize.define('Regulations', {
   date: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      isDate: true,
+    },
   },
   ID_payment_method: {
     type: DataTypes.INTEGER,
@@ -50,10 +53,11 @@ const Regulations = sequelize.define('Regulations', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false
   },
 }, {
   tableName: 'regulations',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships

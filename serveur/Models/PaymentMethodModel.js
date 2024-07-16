@@ -10,14 +10,18 @@ const PaymentMethod = sequelize.define('PaymentMethod', {
   value: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false
   },
 }, {
   tableName: 'payment_method',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = PaymentMethod;

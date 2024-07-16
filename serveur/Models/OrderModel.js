@@ -14,10 +14,14 @@ const Order = sequelize.define('Order', {
   code: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   date: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      isDate: true,
+    }
   },
   customerID: {
     type: DataTypes.INTEGER,
@@ -26,6 +30,9 @@ const Order = sequelize.define('Order', {
       model: Tiers,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   supplierID: {
     type: DataTypes.INTEGER,
@@ -34,6 +41,9 @@ const Order = sequelize.define('Order', {
       model: Tiers,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   userID: {
     type: DataTypes.INTEGER,
@@ -58,6 +68,9 @@ const Order = sequelize.define('Order', {
       model: PaymentMethod,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   StatesID: {
     type: DataTypes.INTEGER,
@@ -66,15 +79,18 @@ const Order = sequelize.define('Order', {
       model: State,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: false
+    defaultValue: false,
   },
 }, {
   tableName: 'orders',
-  timestamps: false,
+  timestamps: true,
 });
 
 Order.belongsTo(Tiers, { as: 'customer', foreignKey: 'customerID' });

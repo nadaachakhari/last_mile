@@ -17,6 +17,9 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
       model: Invoice,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   articleID: {
     type: DataTypes.INTEGER,
@@ -25,18 +28,35 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
       model: Article,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    validate: {
+      notNull: true, 
+      min: 1,
+    }
   },
   sale_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   gross_amount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   vatID: {
     type: DataTypes.INTEGER,
@@ -45,18 +65,27 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
       model: Vat,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   sale_ttc: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
 }, {
   tableName: 'invoices_lignes',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships
