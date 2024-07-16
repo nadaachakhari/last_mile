@@ -10,14 +10,18 @@ const Category = sequelize.define('Category', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true, 
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
 }, {
   tableName: 'category',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Category;

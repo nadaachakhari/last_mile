@@ -10,6 +10,15 @@ const State = sequelize.define('State', {
   value: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notNull: {
+        msg: 'La valeur de l\'état est requise.',
+      },
+      len: {
+        args: [1, 50],
+        msg: 'La valeur de l\'état doit faire entre 1 et 50 caractères.',
+      },
+    },
   },
   deleted: {
     type: DataTypes.BOOLEAN,
@@ -18,7 +27,7 @@ const State = sequelize.define('State', {
   },
 }, {
   tableName: 'state',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = State;

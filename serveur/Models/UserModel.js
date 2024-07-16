@@ -11,18 +11,51 @@ const User = sequelize.define('User', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'Le nom de l\'utilisateur ne peut pas être vide.',
+      },
+    },
   },
   user_name: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: {
+      msg: 'Ce nom d\'utilisateur est déjà pris.',
+    },
+    validate: {
+      notEmpty: {
+        msg: 'Le nom d\'utilisateur ne peut pas être vide.',
+      },
+    },
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: 'Le mot de passe ne peut pas être vide.',
+      },
+      len: {
+        args: [8, 255],
+        msg: 'Le mot de passe doit faire au moins 8 caractères.',
+      },
+    },
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: {
+      msg: 'Cet email est déjà associé à un compte.',
+    },
+    validate: {
+      notEmpty: {
+        msg: 'L\'email ne peut pas être vide.',
+      },
+      isEmail: {
+        msg: 'L\'email doit être une adresse email valide.',
+      },
+    },
   },
   photo: {
     type: DataTypes.TEXT,
@@ -44,11 +77,11 @@ const User = sequelize.define('User', {
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: false
+    defaultValue: false,
   },
 }, {
   tableName: 'users',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define the relationship

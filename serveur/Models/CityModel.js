@@ -10,15 +10,18 @@ const City = sequelize.define('City', {
   value: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
-    allowNull: true,
+    allowNull: false,
     defaultValue: true,
   },
 }, {
   tableName: 'city',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = City;

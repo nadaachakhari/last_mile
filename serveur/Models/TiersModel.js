@@ -12,18 +12,30 @@ const Tiers = sequelize.define('Tiers', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notNull: {
+        msg: 'Le nom du tiers est requis.',
+      },
+      len: {
+        args: [2, 255],
+        msg: 'Le nom du tiers doit faire entre 2 et 255 caractères.',
+      },
+    },
   },
   type_tiersID: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'TypeTiers',
+      model: TypeTiers,
       key: 'id',
     },
   },
   code: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: {
+      msg: 'Ce code de tiers est déjà utilisé.',
+    },
   },
   address: {
     type: DataTypes.STRING,
@@ -52,6 +64,11 @@ const Tiers = sequelize.define('Tiers', {
   email: {
     type: DataTypes.STRING,
     allowNull: true,
+    validate: {
+      isEmail: {
+        msg: 'L\'adresse email doit être valide.',
+      },
+    },
   },
   cityID: {
     type: DataTypes.INTEGER,
@@ -64,14 +81,25 @@ const Tiers = sequelize.define('Tiers', {
   block: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notNull: {
+        msg: 'Le mot de passe est requis.',
+      },
+      len: {
+        args: [8, 255],
+        msg: 'Le mot de passe doit faire au moins 8 caractères.',
+      },
+    },
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
   createdBy: {
     type: DataTypes.INTEGER,
@@ -83,7 +111,7 @@ const Tiers = sequelize.define('Tiers', {
   },
 }, {
   tableName: 'tiers',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Définir la relation avec TypeTiers

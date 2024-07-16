@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Order = require('./OrderModel'); // Assuming you have defined the Order model
-const Tiers = require('./TiersModel'); // Assuming you have defined the Tiers model
-const StatutClaim = require('./StatutClaimModel'); // Assuming you have defined the StatutClaim model
+const Order = require('./OrderModel');
+const Tiers = require('./TiersModel');
+const StatutClaim = require('./StatutClaimModel');
 
 const Claim = sequelize.define('Claim', {
   id: {
@@ -14,9 +14,12 @@ const Claim = sequelize.define('Claim', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'orders', // Adjust 'orders' if your actual table name differs
+      model: 'orders',
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   tiersID: {
     type: DataTypes.INTEGER,
@@ -25,10 +28,16 @@ const Claim = sequelize.define('Claim', {
       model: Tiers,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   description: {
     type: DataTypes.TEXT,
     allowNull: false,
+    validate: {
+      notNull: true,
+    }
   },
   answer: {
     type: DataTypes.TEXT,
@@ -41,10 +50,16 @@ const Claim = sequelize.define('Claim', {
       model: StatutClaim,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   dateClaim: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      notNull: true,
+    }
   },
   observation: {
     type: DataTypes.TEXT,
@@ -52,7 +67,7 @@ const Claim = sequelize.define('Claim', {
   },
 }, {
   tableName: 'claim',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships

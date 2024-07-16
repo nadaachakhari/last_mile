@@ -13,10 +13,16 @@ const Invoice = sequelize.define('Invoice', {
   code: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true,
+    }
   },
   date: {
     type: DataTypes.DATE,
     allowNull: false,
+    validate: {
+      isDate: true,
+    }
   },
   tiersID: {
     type: DataTypes.INTEGER,
@@ -25,6 +31,9 @@ const Invoice = sequelize.define('Invoice', {
       model: Tiers,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   orderID: {
     type: DataTypes.INTEGER,
@@ -41,10 +50,17 @@ const Invoice = sequelize.define('Invoice', {
       model: PaymentMethod,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   taxStamp: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
+    validate: {
+      isDecimal: true,
+      min: 0,
+    }
   },
   observation: {
     type: DataTypes.STRING,
@@ -57,22 +73,38 @@ const Invoice = sequelize.define('Invoice', {
   total_ttc: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   total_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   total_net: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true,
+      min: 0, 
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
 }, {
   tableName: 'invoices',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships

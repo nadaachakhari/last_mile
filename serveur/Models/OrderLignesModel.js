@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Article = require('./ArticleModel'); // Assuming you have defined the Article model
-const Vat = require('./VatModel'); // Assuming you have defined the Vat model
-const Order = require('./OrderModel'); // Assuming you have defined the Order model
+const Article = require('./ArticleModel');
+const Vat = require('./VatModel'); 
+const Order = require('./OrderModel');
 
 const OrderLignes = sequelize.define('OrderLignes', {
   id: {
@@ -17,6 +17,9 @@ const OrderLignes = sequelize.define('OrderLignes', {
       model: Order,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   articleID: {
     type: DataTypes.INTEGER,
@@ -25,18 +28,35 @@ const OrderLignes = sequelize.define('OrderLignes', {
       model: Article,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    validate: {
+      notNull: true,
+      min: 1, 
+    }
   },
   sale_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true, 
+      min: 0, 
+    }
   },
   gross_amount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    validate: {
+      notNull: true,
+      isDecimal: true, 
+      min: 0, 
+    }
   },
   vatID: {
     type: DataTypes.INTEGER,
@@ -45,14 +65,18 @@ const OrderLignes = sequelize.define('OrderLignes', {
       model: Vat,
       key: 'id',
     },
+    validate: {
+      notNull: true,
+    }
   },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   },
 }, {
   tableName: 'order_lignes',
-  timestamps: false,
+  timestamps: true,
 });
 
 // Define relationships
