@@ -115,16 +115,20 @@ const deleteTier = async (req, res, next) => {
 
 
 
-//creer client depuis le fournisseur, update et getAll !!!!!!!!!!!!!!
+
 
 
 // Générer un mot de passe aléatoire
+
 const generatePassword = (length) => {
   return crypto.randomBytes(length).toString('hex').slice(0, length);
 };
 
 const createClient = async (req, res) => {
   const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const createdBy = req.user.id;
+  console.log(createdBy); 
+
   try {
     // Vérifiez si le type "client" existe
     const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
@@ -132,14 +136,14 @@ const createClient = async (req, res) => {
       return res.status(400).json({ error: 'Type "client" does not exist' });
     }
 
-
     // Vérifiez si l'email existe déjà
     const existingClient = await Tiers.findOne({ where: { email } });
     if (existingClient) {
       const emailSubject = 'Bienvenue chez nous !';
       const emailText = `Bonjour ${existingClient.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
 
-      await sendEmail(existingClient.email, emailSubject, emailText);
+      // Envoi d'un email au client existant
+      // await sendEmail(existingClient.email, emailSubject, emailText);
 
       return res.status(400).json({ error: 'Email already exists' });
     }
@@ -148,6 +152,7 @@ const createClient = async (req, res) => {
     const generatedPassword = generatePassword(12);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
+    // Création du nouveau client
     const newClient = await Tiers.create({
       name,
       type_tiersID: typeClient.id,
@@ -162,13 +167,15 @@ const createClient = async (req, res) => {
       cityID,
       block: false,
       password: hashedPassword,
-      deleted: false
+      deleted: false,
+      createdBy // Assigner le fournisseur créateur
     });
 
-    // Envoyer un email au nouveau client avec ses informations de connexion
+    // Envoi d'un email au nouveau client avec ses informations de connexion
     const emailSubject = 'Bienvenue sur notre plateforme !';
     const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.email}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
+    // Envoi de l'email (à décommenter si la fonction sendEmail est implémentée)
     await sendEmail(newClient.email, emailSubject, emailText);
 
     res.status(201).json({ newClient, generatedPassword });

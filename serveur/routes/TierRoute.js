@@ -11,6 +11,7 @@ const {
   getAllClients,
   getClientById
 } = require('../controller/TierController');
+const { authenticateToken } = require('../controller/AuthController')
 
 // Créer un nouveau Tier
 router.post('/', createTier);
@@ -19,7 +20,7 @@ router.post('/', createTier);
 router.get('/', getAllTiers);
 
 //create client depuis le fournisseur !!!
-router.post('/create-client', createClient);
+router.post('/create-client', authenticateToken, createClient);
 router.put('/clients/:id', updateClient);
 // Récupérer tous les clients
 router.get('/clients', getAllClients);

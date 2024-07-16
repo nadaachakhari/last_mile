@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import {
     CButton,
@@ -18,7 +19,6 @@ import {
     CModalFooter,
     CFormSelect,
 } from '@coreui/react';
-import { Link } from 'react-router-dom';
 
 const AddClient = () => {
     const [formData, setFormData] = useState({
@@ -36,6 +36,7 @@ const AddClient = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [cities, setCities] = useState([]);
+    const [userDetails, setUserDetails] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,6 +52,14 @@ const AddClient = () => {
         fetchCities();
     }, []);
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setUserDetails(decodedToken);
+        }
+    }, []);
+
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
@@ -58,19 +67,48 @@ const AddClient = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        console.log('Token récupéré:', token); // Vérifiez que le token est correctement récupéré
+    
+        if (!token) {
+            console.error('Token non trouvé dans localStorage.');
+            return;
+        }
+    
         try {
-            const response = await axios.post('http://localhost:5001/Tier/create-client', formData);
+            //const response = await axios.post('http://localhost:5001/Tier/create-client', formData);
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.id; // Assurez-vous que id correspond à la clé dans le payload JWT pour l'ID de l'utilisateur
+    
+            const clientData = {
+                ...formData,
+                userId: userId,
+            };
+    
+            const response = await axios.post('http://localhost:5001/Tier/create-client', clientData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
             console.log('Réponse serveur:', response.data);
             navigate('/admin/list_client');
         } catch (error) {
-            if (error.response && error.response.status === 400 && error.response.data.error) {
-                setModalMessage(error.response.data.error);
-                setShowModal(true);
+            if (error.response) {
+                if (error.response.status === 403) {
+                    console.error('Accès refusé: Vérifiez les autorisations.');
+                } else if (error.response.status === 400 && error.response.data.error) {
+                    setModalMessage(error.response.data.error);
+                    setShowModal(true);
+                } else {
+                    console.error('Erreur inattendue:', error.response.data);
+                }
             } else {
-                console.error('Erreur lors de la soumission du formulaire:', error);
+                console.error('Erreur lors de la soumission du formulaire:', error.message);
             }
         }
     };
+    
 
     return (
         <CRow>
