@@ -76,6 +76,7 @@ const AddClient = () => {
         }
     
         try {
+            //const response = await axios.post('http://localhost:5001/Tier/create-client', formData);
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.id; // Assurez-vous que id correspond à la clé dans le payload JWT pour l'ID de l'utilisateur
     

@@ -80,7 +80,7 @@ const Order = sequelize.define('Order', {
 Order.belongsTo(Tiers, { as: 'customer', foreignKey: 'customerID' });
 Order.belongsTo(Tiers, { as: 'supplier', foreignKey: 'supplierID' });
 Order.belongsTo(User, { foreignKey: 'userID' });
-Order.belongsTo(PaymentMethod, { foreignKey: 'ID_payment_method' });
-Order.belongsTo(State, { foreignKey: 'StatesID' });
+Order.belongsTo(PaymentMethod, { as: 'PaymentMethod', foreignKey: 'ID_payment_method' });
+Order.belongsTo(State, { as: 'state', foreignKey: 'StatesID' });
 
 module.exports = Order;

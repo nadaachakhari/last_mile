@@ -71,7 +71,7 @@ const EditClient = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.put(`http://localhost:5001/Tier/${id}`, formData)
+      const response = await axios.put(`http://localhost:5001/Tier/clients/${id}`, formData)
       console.log('Réponse serveur:', response.data)
       navigate('/admin/list_client')
     } catch (error) {

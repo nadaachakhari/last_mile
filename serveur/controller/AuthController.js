@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 
 const authenticate = async (req, res) => {
   const { username, password } = req.body;
-
   try {
     // Rechercher l'utilisateur dans les deux tables
     const user = await User.findOne({
@@ -41,8 +40,8 @@ const authenticate = async (req, res) => {
     let nameTiers;
     let nameusers;
     if (user) {
-      role = user.RoleUser.name === "admin" ? "admin" : "livreur";
-      redirectTo = role === "admin" ? "/dashboard" : "/dashboard";
+      role = user.RoleUser.name === "Administrateur" ? "Administrateur" : "livreur";
+      redirectTo = role === "Administrateur" ? "/dashboard" : "/dashboard";
       nameusers = user.name;
     } else if (tiers) {
       role = tiers.TypeTier.name === "client" ? "client" : "fournisseur";
@@ -85,7 +84,6 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
-  console.log(token);
   jwt.verify(token, "hex", (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
