@@ -107,6 +107,10 @@ const list_order = React.lazy(() => import('./pages/admin/Order/list_order'))
 const detail_order = React.lazy(() => import('./pages/admin/Order/detail_order'))
 const edit_order = React.lazy(() => import('./pages/admin/Order/edit_order'))
 
+
+//list order state : 
+const list_order_state = React.lazy(() => import('./pages/admin/OrderState/list_order_state'))
+const detail_order_state = React.lazy(() => import('./pages/admin/OrderState/detail_order_state'))
 //fournisseur
 const add_fournisseur = React.lazy(() => import('./pages/admin/Tiers/add_supplier'))
 const list_fournisseur = React.lazy(() => import('./pages/admin/Tiers/list_supplier'))
@@ -251,6 +255,14 @@ const routes = [
   { path: '/admin/detail_client/:id', element: detail_client },
   { path: '/admin/edit_client/:id', name: 'modifer client', element: edit_client },
 
+  //order
+  { path: '/admin/add_order', element: add_order },
+  { path: '/admin/list_order', element: list_order },
+  { path: '/admin/detail_order/:id', element: detail_order },
+  { path: '/admin/edit_order/:id', name: 'modifer commande', element: edit_order },
+  //order state :
+  { path: '/admin/list_order_state', element: list_order_state },
+  { path: '/admin/detail_order_state/:id', element: detail_order_state},
 //fournisseur
 { path: '/admin/add_fournisseur', element: add_fournisseur },
 { path: '/admin/list_fournisseur', element: list_fournisseur },

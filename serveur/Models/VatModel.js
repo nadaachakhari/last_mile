@@ -23,7 +23,7 @@ const Vat = sequelize.define('Vat', {
   },
 }, {
   tableName: 'vat',
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = Vat;

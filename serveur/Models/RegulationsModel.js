@@ -57,7 +57,7 @@ const Regulations = sequelize.define('Regulations', {
   },
 }, {
   tableName: 'regulations',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Define relationships

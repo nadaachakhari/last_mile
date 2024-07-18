@@ -27,7 +27,7 @@ const StatutClaim = sequelize.define('StatutClaim', {
   },
 }, {
   tableName: 'statutclaim',
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = StatutClaim;

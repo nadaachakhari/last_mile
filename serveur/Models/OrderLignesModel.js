@@ -76,7 +76,7 @@ const OrderLignes = sequelize.define('OrderLignes', {
   },
 }, {
   tableName: 'order_lignes',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Define relationships
