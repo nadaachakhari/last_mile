@@ -143,7 +143,7 @@ const createClient = async (req, res) => {
       const emailText = `Bonjour ${existingClient.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
 
       // Envoi d'un email au client existant
-      // await sendEmail(existingClient.email, emailSubject, emailText);
+       await sendEmail(existingClient.email, emailSubject, emailText);
 
       return res.status(400).json({ error: 'Email already exists' });
     }
@@ -183,10 +183,11 @@ const createClient = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 const getAllClients = async (req, res) => {
+
   try {
     const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    console.log(typeClient);
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" does not exist' });
     }
@@ -281,7 +282,172 @@ const getClientById = async (req, res) => {
   }
 };
 
+//Supplier
 
+
+const createSupplier = async (req, res) => {
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const createdBy = null; // Assigner createdBy à null pour les livreurs
+
+  try {
+    // Vérifiez si le type "fournisseur" existe
+    const typeSupplier = await TypeTiers.findOne({ where: { name: 'fournisseur' } });
+    if (!typeSupplier) {
+      return res.status(400).json({ error: 'Type "fournisseur" does not exist' });
+    }
+
+    // Vérifiez si l'email existe déjà
+    const existingSupplier = await Tiers.findOne({ where: { email } });
+    if (existingSupplier) {
+      const emailSubject = 'Bienvenue chez nous !';
+      const emailText = `Bonjour ${existingSupplier.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
+
+      // Envoi d'un email au fournisseur existant
+      await sendEmail(existingSupplier.email, emailSubject, emailText);
+
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    // Génération et hashage du mot de passe
+    const generatedPassword = generatePassword(12);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    // Création du nouveau fournisseur
+    const newSupplier = await Tiers.create({
+      name,
+      type_tiersID: typeSupplier.id,
+      code,
+      address,
+      postal_code,
+      country,
+      phone,
+      mobile,
+      fax,
+      email,
+      cityID,
+      block: false,
+      password: hashedPassword,
+      deleted: false,
+      createdBy // Assigner createdBy à null
+    });
+
+    // Envoi d'un email au nouveau fournisseur avec ses informations de connexion
+    const emailSubject = 'Bienvenue sur notre plateforme !';
+    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.email}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+
+    // Envoi de l'email
+    await sendEmail(newSupplier.email, emailSubject, emailText);
+
+    res.status(201).json({ newSupplier, generatedPassword });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const uploadSupplier = async (req, res) => {
+  const { id } = req.params;
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+
+  try {
+    const supplier = await Tiers.findByPk(id);
+    if (!supplier) {
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    if (email && email !== supplier.email) {
+      const existingSupplier = await Tiers.findOne({ where: { email, id: { [Op.ne]: id } } });
+      if (existingSupplier) {
+        return res.status(400).json({ error: 'Email already exists for another supplier' });
+      }
+    }
+
+    const updatedSupplier = {
+      name: name || supplier.name,
+      code: code || supplier.code,
+      address: address || supplier.address,
+      postal_code: postal_code || supplier.postal_code,
+      country: country || supplier.country,
+      phone: phone || supplier.phone,
+      mobile: mobile || supplier.mobile,
+      fax: fax || supplier.fax,
+      email: email || supplier.email,
+      cityID: cityID || supplier.cityID
+    };
+
+    const changesMessage = getChangesMessage(supplier, updatedSupplier);
+
+    await supplier.update(updatedSupplier);
+
+    // Envoyer un email au fournisseur avec les détails des modifications
+    const emailSubject = 'Mise à jour de vos informations';
+    const emailText = `Bonjour ${supplier.name},\n\nNous avons mis à jour vos informations. Voici les changements effectués :\n\n${changesMessage}\n\nCordialement,\nVotre équipe`;
+
+    await sendEmail(supplier.email, emailSubject, emailText);
+
+    res.status(200).json(supplier);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+;
+
+const getSupplierById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const supplier = await Tiers.findByPk(id, {
+      include: [
+        { model: TypeTiers, attributes: ['name'] },
+        { model: City, attributes: ['value'] }
+      ]
+    });
+
+    if (!supplier) {
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    res.status(200).json(supplier);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const getAllSuppliers = async (req, res) => {
+  try {
+    // Vérifiez si le type "fournisseur" existe
+    const typeSupplier = await TypeTiers.findOne({ where: { name: 'fournisseur' } });
+    if (!typeSupplier) {
+      return res.status(400).json({ error: 'Type "fournisseur" does not exist' });
+    }
+
+    // Récupérez tous les fournisseurs qui ne sont pas supprimés
+    const suppliers = await Tiers.findAll({
+      where: { type_tiersID: typeSupplier.id, deleted: false },
+      include: [
+        { model: TypeTiers, attributes: ['name'] },
+        { model: City, attributes: ['value'] }
+      ]
+    });
+
+    res.status(200).json(suppliers);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Supprimer (logiquement) un article
+const deleteSupplier = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const supplier = await Tiers.findByPk(id);
+    if (!supplier) {
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    await supplier.update({ deleted: true });
+    res.status(200).json({ message: 'supplier deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 module.exports = {
   createTier,
   getAllTiers,
@@ -289,9 +455,19 @@ module.exports = {
   updateTier,
   deleteTier,
 
-  //crud client by fournisseurs
+  //crud client 
   createClient,
   updateClient,
   getAllClients,
-  getClientById
+  getClientById,
+
+
+  //crud fournisseur
+  createSupplier,
+  uploadSupplier,
+  getAllSuppliers,
+  getSupplierById,
+  deleteSupplier,
+
+
 };
