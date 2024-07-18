@@ -21,7 +21,7 @@ const City = sequelize.define('City', {
   },
 }, {
   tableName: 'city',
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = City;
