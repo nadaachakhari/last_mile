@@ -27,7 +27,7 @@ const RoleUser = sequelize.define('RoleUser', {
   },
 }, {
   tableName: 'role_users',
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = RoleUser;

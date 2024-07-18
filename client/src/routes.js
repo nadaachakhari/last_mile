@@ -107,6 +107,10 @@ const list_order = React.lazy(() => import('./pages/admin/Order/list_order'))
 const detail_order = React.lazy(() => import('./pages/admin/Order/detail_order'))
 const edit_order = React.lazy(() => import('./pages/admin/Order/edit_order'))
 
+
+//list order state : 
+const list_order_state = React.lazy(() => import('./pages/admin/OrderState/list_order_state'))
+const detail_order_state = React.lazy(() => import('./pages/admin/OrderState/detail_order_state'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -246,6 +250,9 @@ const routes = [
   { path: '/admin/list_order', element: list_order },
   { path: '/admin/detail_order/:id', element: detail_order },
   { path: '/admin/edit_order/:id', name: 'modifer commande', element: edit_order },
+  //order state :
+  { path: '/admin/list_order_state', element: list_order_state },
+  { path: '/admin/detail_order_state/:id', element: detail_order_state},
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

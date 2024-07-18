@@ -111,7 +111,7 @@ const Tiers = sequelize.define('Tiers', {
   },
 }, {
   tableName: 'tiers',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Définir la relation avec TypeTiers

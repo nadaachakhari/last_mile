@@ -90,7 +90,7 @@ const Order = sequelize.define('Order', {
   },
 }, {
   tableName: 'orders',
-  timestamps: true,
+  timestamps: false,
 });
 
 Order.belongsTo(Tiers, { as: 'customer', foreignKey: 'customerID' });
@@ -98,5 +98,6 @@ Order.belongsTo(Tiers, { as: 'supplier', foreignKey: 'supplierID' });
 Order.belongsTo(User, { foreignKey: 'userID' });
 Order.belongsTo(PaymentMethod, { as: 'PaymentMethod', foreignKey: 'ID_payment_method' });
 Order.belongsTo(State, { as: 'state', foreignKey: 'StatesID' });
+
 
 module.exports = Order;

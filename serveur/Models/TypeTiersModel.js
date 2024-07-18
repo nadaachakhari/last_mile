@@ -27,7 +27,7 @@ const TypeTiers = sequelize.define('TypeTiers', {
   },
 }, {
   tableName: 'type_tiers',
-  timestamps: true,
+  timestamps: false,
 });
 
 

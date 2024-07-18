@@ -1,3 +1,4 @@
+// Exemple de définition de modèle pour OrderState
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Order = require('./OrderModel');
@@ -29,16 +30,18 @@ const OrderState = sequelize.define('OrderState', {
     type: DataTypes.DATE,
     allowNull: false,
     validate: {
-      isDate: true, 
+      isDate: true,
     }
   },
 }, {
   tableName: 'order_state',
-  timestamps: true,
+  timestamps: false,
 });
 
-// Define relationships
-OrderState.belongsTo(Order, { foreignKey: 'orderID' });
-OrderState.belongsTo(State, { foreignKey: 'stateID' });
+// Définir les relations
+OrderState.belongsTo(Order, { as: 'Order', foreignKey: 'orderID' });
+Order.hasOne(OrderState, { foreignKey: 'orderID' });
+OrderState.belongsTo(State, { as: 'State', foreignKey: 'stateID' });
+State.hasOne(OrderState, { foreignKey: 'stateID' });
 
 module.exports = OrderState;
