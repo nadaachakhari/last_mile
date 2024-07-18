@@ -25,14 +25,14 @@ const OrderStateRoutes = require('./routes/OrderStateRoute')
 // Configuration de multer pour le stockage des images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '../client/src/assets/images');
+        cb(null, '../client/src/assets/images');
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname));
+        cb(null, Date.now() + path.extname(file.originalname));
     },
-  });
-  
-  const upload = multer({ storage: storage });
+});
+
+const upload = multer({ storage: storage });
 
 const app = express();
 
@@ -51,7 +51,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    //port: process.env.DB_PORT
+    port: process.env.DB_PORT
 });
 
 db.connect((err) => {

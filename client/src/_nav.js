@@ -154,6 +154,11 @@ const _nav = [
         component: CNavItem,
         name: 'liste des commandes',
         to: '/admin/list_order',
+      },
+      {
+        component: CNavItem,
+        name: 'liste des étas des commandes',
+        to: '/admin/list_order_state',
       }
     ],
   },
