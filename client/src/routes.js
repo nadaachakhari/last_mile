@@ -93,13 +93,13 @@ const add_article = React.lazy(() => import('./pages/admin/Article/add_article')
 const list_article = React.lazy(() => import('./pages/admin/Article/list_article'))
 const detail_article = React.lazy(() => import('./pages/admin/Article/detail_article'))
 const edit_article = React.lazy(() => import('./pages/admin/Article/edit_article'))
-//profil
 
 //clients _ added by fournisseur
 const add_client = React.lazy(() => import('./pages/admin/Tiers/add_client'))
 const list_client = React.lazy(() => import('./pages/admin/Tiers/list_client'))
 const detail_client = React.lazy(() => import('./pages/admin/Tiers/detail_client'))
 const edit_client = React.lazy(() => import('./pages/admin/Tiers/edit_client'))
+
 
 //order
 const add_order = React.lazy(() => import('./pages/admin/Order/add_order'))
@@ -111,6 +111,14 @@ const edit_order = React.lazy(() => import('./pages/admin/Order/edit_order'))
 //list order state : 
 const list_order_state = React.lazy(() => import('./pages/admin/OrderState/list_order_state'))
 const detail_order_state = React.lazy(() => import('./pages/admin/OrderState/detail_order_state'))
+//fournisseur
+const add_fournisseur = React.lazy(() => import('./pages/admin/Tiers/add_supplier'))
+const list_fournisseur = React.lazy(() => import('./pages/admin/Tiers/list_supplier'))
+const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_supplier'))
+const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
+
+
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -203,20 +211,20 @@ const routes = [
   { path: '/admin/detail_user/:id', element: detail_users },
   { path: '/admin/edit_user/:id', name: 'modifer utilisateur', element: edit_users },
 
-  //
+  //user
   { path: '/admin/add_user', name: 'Ajouter utilisateur', element: add_users },
   { path: '/admin/list_user', element: list_users },
   { path: '/admin/detail_user/:id', element: detail_users },
   { path: '/admin/edit_user/:id', name: 'modifer utilisateur', element: edit_users },
 
-  //
+  //payment_methode
   { path: '/admin/add_payment_methode', name: 'Ajouter methode de payment', element: add_payment_methode },
   { path: '/admin/list_payment_methode', element: list_payment_methode },
   { path: '/admin/detail_payment_methode/:id', element: detail_payment_methode },
   { path: '/admin/edit_payment_methode/:id', name: 'modifer methode de payment', element: edit_payment_methode },
 
 
-  //
+  //state
   { path: '/admin/add_state', name: 'Ajouter état', element: add_state },
   { path: '/admin/list_state', element: list_state },
   { path: '/admin/detail_state/:id', element: detail_state },
@@ -228,18 +236,20 @@ const routes = [
 { path: '/admin/list_vat', element: list_vat },
 { path: '/admin/detail_vat/:id', element: detail_vat },
 { path: '/admin/edit_vat/:id', name: 'modifer vat', element: edit_vat },
+
 //routes de category
 { path: '/admin/add_category', element: add_category },
 { path: '/admin/list_category', element: list_category },
 { path: '/admin/detail_category/:id', element: detail_category },
 { path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
+
 //article
 { path: '/admin/add_article', element: add_article },
 { path: '/admin/list_article', element: list_article },
 { path: '/admin/detail_article/:id', element: detail_article },
   { path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
 
-  //client added by fournisseur
+  //client 
   { path: '/admin/add_client', element: add_client },
   { path: '/admin/list_client', element: list_client },
   { path: '/admin/detail_client/:id', element: detail_client },
@@ -253,6 +263,11 @@ const routes = [
   //order state :
   { path: '/admin/list_order_state', element: list_order_state },
   { path: '/admin/detail_order_state/:id', element: detail_order_state},
+//fournisseur
+{ path: '/admin/add_fournisseur', element: add_fournisseur },
+{ path: '/admin/list_fournisseur', element: list_fournisseur },
+{ path: '/admin/detail_fournisseur/:id', element: detail_fournisseur },
+{ path: '/admin/edit_fournisseur/:id', name: 'modifer fournisseur', element: edit_fournisseur },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

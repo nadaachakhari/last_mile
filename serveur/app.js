@@ -42,7 +42,6 @@ app.use(express.json())
 
 // Utiliser body-parser pour parser les requêtes JSON
 app.use(bodyParser.json());
-
 // Middleware pour servir les fichiers statiques (comme les photos téléchargées)
 app.use('/uploads', express.static('uploads'));
 
@@ -52,7 +51,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT
+    //port: process.env.DB_PORT
 });
 
 db.connect((err) => {

@@ -23,47 +23,47 @@ import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
-const TierList = () => {
-  const [tiers, setTiers] = useState([]);
+const SupplierList = () => {
+  const [suppliers, setSuppliers] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null); // État pour stocker l'ID du tier à supprimer
+  const [idToDelete, setIdToDelete] = useState(null); // État pour stocker l'ID du fournisseur à supprimer
 
   useEffect(() => {
-    // Fonction pour récupérer les tiers depuis l'API
-    const fetchTiers = async () => {
+    // Fonction pour récupérer les fournisseurs depuis l'API
+    const fetchSuppliers = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/Tier');
-        setTiers(response.data);
+        const response = await axios.get('http://localhost:5001/Supplier');
+        setSuppliers(response.data);
       } catch (error) {
-        console.error('Erreur lors de la récupération des tiers:', error);
+        console.error('Erreur lors de la récupération des fournisseurs:', error);
       }
     };
 
-    fetchTiers();
+    fetchSuppliers();
   }, []);
 
-  // Fonction pour gérer la modification d'un tier
+  // Fonction pour gérer la modification d'un fournisseur
   const handleModifier = (id) => {
-    console.log(`Modifier tier avec id: ${id}`);
+    console.log(`Modifier fournisseur avec id: ${id}`);
     // Ajouter ici la logique pour la redirection ou l'ouverture de la page de modification
   };
 
-  // Fonction pour gérer la suppression d'un tier
+  // Fonction pour gérer la suppression d'un fournisseur
   const handleSupprimer = async (id) => {
-    setIdToDelete(id); // Stocker l'ID du tier à supprimer
-    setShowConfirmation(true); // Afficher la modal de confirmation de suppression
+    setIdToDelete(id); 
+    setShowConfirmation(true); 
   };
 
   // Fonction de confirmation de suppression
   const confirmDelete = async () => {
     try {
-      await axios.put(`http://localhost:5001/Tier/update_deleted/${idToDelete}`);
-      // Mettre à jour localement en filtrant le tier supprimé
-      const updatedList = tiers.filter((tier) => tier.id !== idToDelete);
-      setTiers(updatedList);
-      console.log(`Supprimé tier avec id: ${idToDelete}`);
+      await axios.put(`http://localhost:5001/Tier/update_deleted_Supplier/${idToDelete}`);
+      // Mettre à jour localement en filtrant le fournisseur supprimé
+      const updatedList = suppliers.filter((supplier) => supplier.id !== idToDelete);
+      setSuppliers(updatedList);
+      console.log(`Supprimé fournisseur avec id: ${idToDelete}`);
     } catch (error) {
-      console.error('Erreur lors de la suppression du tier:', error);
+      console.error('Erreur lors de la suppression du fournisseur:', error);
     } finally {
       setShowConfirmation(false); // Fermer la modal de confirmation après suppression
     }
@@ -79,12 +79,12 @@ const TierList = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Liste</strong> <small>des Tiers</small>
+            <strong>Liste</strong> <small>des Fournisseurs</small>
           </CCardHeader>
           <CCardBody>
-            <Link to={`/admin/add_tiers`}>
+            <Link to={`/admin/add_supplier`}>
               <CButton color="primary" className="mb-3">
-                Ajouter Tiers
+                Ajouter Fournisseur
               </CButton>
             </Link>
             <CTable hover responsive>
@@ -100,27 +100,28 @@ const TierList = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-              {tiers.map((tier, index) => (
-                  <CTableRow key={tier.id}>
+                {suppliers.map((supplier, index) => (
+                  <CTableRow key={supplier.id}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                    <CTableDataCell>{tier.name}</CTableDataCell>
-                    <CTableDataCell>{tier.TypeTier?.name}</CTableDataCell>
-                    <CTableDataCell>{tier.code}</CTableDataCell>
-                    <CTableDataCell>{tier.address}</CTableDataCell>
-                    <CTableDataCell>{tier.email}</CTableDataCell>
+                    <CTableDataCell>{supplier.name}</CTableDataCell>
+                    <CTableDataCell>{supplier.TypeSupplier?.name}</CTableDataCell>
+                    <CTableDataCell>{supplier.code}</CTableDataCell>
+                    <CTableDataCell>{supplier.address}</CTableDataCell>
+                    <CTableDataCell>{supplier.email}</CTableDataCell>
                     <CTableDataCell>
-                      <Link to={`/admin/detail_tiers/${tier.id}`}>
+                      <Link to={`/admin/detail_supplier/${supplier.id}`}>
                         <CButton size="md" color="info" className="me-2">
                           <IoEyeSharp className="icon-white icon-lg me-1" />
                         </CButton>
                       </Link>
-                      <Link to={`/admin/edit_tiers/${tier.id}`}>
-                        <CButton size="md" color="warning" onClick={() => handleModifier(tier.id)} className="me-2">
+                      <Link to={`/admin/edit_supplier/${supplier.id}`}>
+                        <CButton size="md" color="warning" onClick={() => handleModifier(supplier.id)} className="me-2">
                           <FaEdit className="icon-white icon-lg me-1" />
                         </CButton>
                       </Link>
-                      <CButton size="md" color="danger" onClick={() => handleSupprimer(tier.id)} className="me-2">
-                        <FaTrash className="icon-white icon-lg me-1" />
+                      <CButton size="md" color="danger"  onClick={() => handleSupprimer(supplier.id)} className="me-2">
+                      <FaTrash className="icon-white icon-lg me-7" />
+                      
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>
@@ -137,7 +138,7 @@ const TierList = () => {
           <CModalTitle>Confirmation de suppression</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Êtes-vous sûr de vouloir supprimer ce Tier ?
+          Êtes-vous sûr de vouloir supprimer ce Fournisseur ?
         </CModalBody>
         <CModalFooter>
           <CButton color="danger" onClick={confirmDelete}>
@@ -152,4 +153,4 @@ const TierList = () => {
   );
 };
 
-export default TierList;
+export default SupplierList;
