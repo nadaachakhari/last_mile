@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import {
   CButton,
   CCard,
@@ -17,13 +17,14 @@ import {
   CModalBody,
   CModalFooter,
   CFormSelect,
-} from '@coreui/react'
+} from '@coreui/react';
 
-const EditClient = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
+const EditSupplier = () => {
+  const { id } = useParams(); // Récupérer l'ID du fournisseur à éditer depuis les paramètres d'URL
+  const navigate = useNavigate(); // Pour la navigation
   const [formData, setFormData] = useState({
     name: '',
+    type_supplierID: '',
     code: '',
     address: '',
     postal_code: '',
@@ -33,66 +34,77 @@ const EditClient = () => {
     fax: '',
     email: '',
     cityID: '',
-  })
-  const [showModal, setShowModal] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
-  const [cities, setCities] = useState([])
+    deleted: true,
+  });
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [typeSuppliers, setTypeSuppliers] = useState([]); // État pour stocker la liste des types de fournisseurs
+  const [cities, setCities] = useState([]); // État pour stocker la liste des villes
 
+  // Utiliser useEffect pour récupérer les détails du fournisseur à éditer
   useEffect(() => {
-    const fetchClientDetails = async () => {
+    const fetchSupplierDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/Tier/${id}`)
-        setFormData(response.data)
+        const response = await axios.get(`http://localhost:5001/Tier/supplier/${id}`);
+        setFormData(response.data); // Pré-remplir le formulaire avec les détails du fournisseur
       } catch (error) {
-        console.error(
-          `Erreur lors de la récupération des détails du client avec l'ID ${id}:`,
-          error,
-        )
+        console.error(`Erreur lors de la récupération des détails du fournisseur avec l'ID ${id}:`, error);
       }
-    }
+    };
+
+    // Charger la liste des types de fournisseurs et des villes
+    const fetchTypeSuppliers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/TypeTiers');
+        setTypeSuppliers(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des types de fournisseurs:', error);
+      }
+    };
 
     const fetchCities = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/City/')
-        setCities(response.data)
+        const response = await axios.get('http://localhost:5001/City');
+        setCities(response.data);
       } catch (error) {
-        console.error('Erreur lors de la récupération des villes:', error)
+        console.error('Erreur lors de la récupération des villes:', error);
       }
-    }
+    };
 
-    fetchClientDetails()
-    fetchCities()
-  }, [id])
+    fetchSupplierDetails();
+    fetchTypeSuppliers();
+    fetchCities();
+  }, [id]);
 
+  // Gérer les modifications du formulaire
   const handleChange = (e) => {
-    const { id, value } = e.target
-    setFormData({ ...formData, [id]: value })
-  }
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  // Soumettre le formulaire d'édition du fournisseur
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:5001/Tier/clients/${id}`, formData)
-      console.log('Réponse serveur:', response.data)
-      navigate('/admin/list_client')
+      const response = await axios.put(`http://localhost:5001/Tier/upload-supplier/${id}`, formData);
+      console.log('Réponse serveur:', response.data);
+      navigate('/admin/list_fournisseur'); // Rediriger vers la liste des fournisseurs après édition
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
-        setModalMessage(error.response.data.error)
-        setShowModal(true)
+        setModalMessage(error.response.data.error);
+        setShowModal(true);
       } else {
-        console.error('Erreur lors de la soumission du formulaire:', error)
-      }
-      if (error.message.includes('sendEmail')) {
-        setModalMessage("Erreur lors de l'envoi de l'email de confirmation.")
-        setShowModal(true)
+        console.error('Erreur lors de la soumission du formulaire:', error);
       }
     }
-  }
+  };
+
   return (
     <CRow>
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Modifier</strong> <small>Client</small>
+            <strong>Modifier</strong> <small>Fournisseur</small>
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
@@ -100,6 +112,7 @@ const EditClient = () => {
                 <CFormLabel htmlFor="name">Nom</CFormLabel>
                 <CFormInput id="name" value={formData.name} onChange={handleChange} />
               </CCol>
+             
               <CCol md={6}>
                 <CFormLabel htmlFor="code">Code</CFormLabel>
                 <CFormInput id="code" value={formData.code} onChange={handleChange} />
@@ -164,7 +177,7 @@ const EditClient = () => {
         </CModalFooter>
       </CModal>
     </CRow>
-  )
-}
+  );
+};
 
-export default EditClient
+export default EditSupplier;
