@@ -85,7 +85,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
   },
 }, {
   tableName: 'invoices_lignes',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Define relationships

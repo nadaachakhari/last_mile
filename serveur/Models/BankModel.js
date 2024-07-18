@@ -23,7 +23,7 @@ const Bank = sequelize.define('Bank', {
   },
 }, {
   tableName: 'bank',
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = Bank;

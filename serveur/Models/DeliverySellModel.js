@@ -94,7 +94,7 @@ const DeliverySell = sequelize.define('DeliverySell', {
   },
 }, {
   tableName: 'delivery_sell',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Définir les relations

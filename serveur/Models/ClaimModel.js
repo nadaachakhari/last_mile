@@ -67,7 +67,7 @@ const Claim = sequelize.define('Claim', {
   },
 }, {
   tableName: 'claim',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Define relationships

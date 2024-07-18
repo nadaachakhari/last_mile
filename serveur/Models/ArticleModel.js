@@ -70,7 +70,7 @@ const Article = sequelize.define('Article', {
 }
 }, {
   tableName: 'articles',
-  timestamps: true,
+  timestamps: false,
 });
 
 // Define relationships
