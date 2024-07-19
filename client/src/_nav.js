@@ -25,6 +25,67 @@ const _nav = [
       color: 'info',
       text: 'NEW',
     },
+
+    
+  },
+    //client
+  {
+    component: CNavGroup,
+    name: 'clients',
+    to: '/user',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des clients',
+        to: '/admin/list_client',
+      },
+
+    ],
+  },
+  //suppliers
+  {
+    component: CNavGroup,
+    name: 'Fournisseurs',
+    to: '/user',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des Fournisseurs',
+        to: '/admin/list_fournisseur',
+      },
+
+    ],
+  },
+  //
+  {
+    component: CNavGroup,
+    name: 'type de tiers',
+    to: '/user',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des type de tiers',
+        to: '/admin/list_type_tiers',
+      },
+
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Ville',
+    to: '/City',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de villes',
+        to: '/admin/list_city',
+      },
+
+    ],
   },
   {
     component: CNavTitle,
@@ -40,16 +101,6 @@ const _nav = [
         component: CNavItem,
         name: 'liste de tiers',
         to: '/admin/list_tiers',
-      },
-      {
-        component: CNavItem,
-        name: 'liste type de tiers',
-        to: '/admin/list_type_tiers',
-      },
-      {
-        component: CNavItem,
-        name: 'liste des client',
-        to: '/admin/list_client',
       },
     ],
   },
@@ -73,20 +124,7 @@ const _nav = [
 
     ],
   },
-  {
-    component: CNavGroup,
-    name: 'Ville',
-    to: '/City',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'liste de villes',
-        to: '/admin/list_city',
-      },
 
-    ],
-  },
 
   //payment methode
 
@@ -141,18 +179,6 @@ const _nav = [
         to: '/admin/list_state',
       }
     ],
-  },
-  {
-    component: CNavItem,
-    name: 'Fourniseur',
-    to: '/administrateur/ajouter_fournisseur',
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Livreur',
-    to: '/administrateur/ajouter_livreur',
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

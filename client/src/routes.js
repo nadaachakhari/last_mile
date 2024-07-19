@@ -165,32 +165,32 @@ const routes = [
   { path: '/admin/edit_type_tiers/:id', name: 'edit_type_tiers', element: edit_type_tiers },
 
   //role users
-  { path: '/admin/add_role_users', element: add_role_users },
-  { path: '/admin/list_role_users', element: liset_role_users },
-  { path: '/admin/detail_role_users/:id', element: detail_role_users },
-  { path: '/admin/edit_role_users/:id', name: 'edit_role_users', element: edit_role_users },
+  { path: '/admin/add_role_users', name: 'Ajouter Role utilisateur', element: add_role_users },
+  { path: '/admin/list_role_users', name: 'Liste Role utilisateur',element: liset_role_users },
+  { path: '/admin/detail_role_users/:id',name: 'Détail Role utilisateur', element: detail_role_users },
+  { path: '/admin/edit_role_users/:id', name: 'Edit Role utilisateur', element: edit_role_users },
 
   //les routes de city
   { path: '/admin/add_city', name: 'Ajouter Ville', element: add_city },
-  { path: '/admin/list_city', element: list_city },
-  { path: '/admin/detail_city/:id', element: detail_city },
-  { path: '/admin/edit_city/:id', name: 'modifer city', element: edit_city },
+  { path: '/admin/list_city', name: 'Liste des ville', element: list_city },
+  { path: '/admin/detail_city/:id',name: 'Détail ville', element: detail_city },
+  { path: '/admin/edit_city/:id', name: 'Modifer ville', element: edit_city },
   //routes de tiers
-  { path: '/admin/add_tiers', element: add_tiers },
-  { path: '/admin/list_tiers', element: list_tiers },
-  { path: '/admin/detail_tiers/:id', element: detail_tiers },
-  { path: '/admin/edit_tiers/:id', name: 'edit_tiers', element: edit_tiers },
+  { path: '/admin/add_tiers',name: 'Ajouter Tier', element: add_tiers },
+  { path: '/admin/list_tiers',name: 'Lister Tier', element: list_tiers },
+  { path: '/admin/detail_tiers/:id', name: 'Détail Tier', element: detail_tiers },
+  { path: '/admin/edit_tiers/:id', name: 'Modifer Tiers', element: edit_tiers },
 
   //routes de vat
-  { path: '/admin/add_vat', element: add_vat },
-  { path: '/admin/list_vat', element: list_vat },
-  { path: '/admin/detail_vat/:id', element: detail_vat },
-  { path: '/admin/edit_vat/:id', name: 'modifer vat', element: edit_vat },
+  { path: '/admin/add_vat', name: 'Ajouter TVA', element: add_vat },
+  { path: '/admin/list_vat', name: 'Lister TVA',element: list_vat },
+  { path: '/admin/detail_vat/:id', name: 'Détail TVA',element: detail_vat },
+  { path: '/admin/edit_vat/:id', name: 'Modifer TVA', element: edit_vat },
   //routes de category
-  { path: '/admin/add_category', element: add_category },
-  { path: '/admin/list_category', element: list_category },
-  { path: '/admin/detail_category/:id', element: detail_category },
-  { path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
+  { path: '/admin/add_category', name: 'Ajouter category',element: add_category },
+  { path: '/admin/list_category', name: 'Lister category', element: list_category },
+  { path: '/admin/detail_category/:id', name: 'Détail category', element: detail_category },
+  { path: '/admin/edit_category/:id', name: 'Modifer category', element: edit_category },
 
   //
   { path: '/admin/add_user', name: 'Ajouter utilisateur', element: add_users },
