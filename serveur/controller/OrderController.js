@@ -8,7 +8,8 @@ const PaymentMethod = require('../Models/PaymentMethodModel');
 const OrderState = require('../Models/OrderStateModel');
 const OrderLignes = require('../Models/OrderLignesModel')
 const Article = require('../Models/ArticleModel.js');
-
+const User = require('../Models/UserModel.js')
+const RoleUser = require('../Models/RoleUserModel.js')
 const sequelize = require('../config/database')
 
 
@@ -129,36 +130,6 @@ const createOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
-
-const getOrder = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const order = await Order.findOne({
-            where: { id },
-            include: [
-                { model: OrderLignes, as: 'orderLignes', include: [Article] },
-                { model: Tiers, as: 'customer' },
-                { model: Tiers, as: 'supplier' },
-                { model: User, as: 'user' },
-                { model: PaymentMethod, as: 'PaymentMethod' },
-                { model: State, as: 'state' },
-            ],
-        });
-
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
-
-        res.status(200).json(order);
-    } catch (error) {
-        console.error('Error fetching order:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
 
 
 const getAllOrders = async (req, res) => {
@@ -468,14 +439,104 @@ const getOrderWithArticlesAndLines = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+const assignDeliveryPerson = async (req, res) => {
+    const { orderId, deliveryPersonId } = req.body;
+    const adminID = req.user.id;
+
+    if (!adminID) {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
+    }
+
+    const user = req.user;
+    if (!user || user.role !== 'Administrateur') {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    const transaction = await sequelize.transaction();
+
+    try {
+        console.log('Transaction start');
+        const deliveryState = await State.findOne({
+            where: {
+                value: 'en cours de livraison',
+                deleted: false,
+            },
+        });
+
+        if (!deliveryState) {
+            await transaction.rollback();
+            return res.status(400).json({ error: 'État "en cours de livraison" non trouvé' });
+        }
+        const order = await Order.findOne({
+            where: {
+                id: orderId,
+                deleted: false,
+            },
+            include: [
+                {
+                    model: Tiers,
+                    as: 'customer',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: Tiers,
+                    as: 'supplier',
+                    attributes: ['id', 'name', 'email']
+                }
+            ]
+        });
+
+        if (!order) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Commande non trouvée' });
+        }
+        const deliveryPerson = await User.findOne({
+            where: {
+                id: deliveryPersonId,
+                deleted: false,
+                role_usersID: (await RoleUser.findOne({ where: { name: 'livreur' } })).id
+            }
+        });
+
+        if (!deliveryPerson) {
+            await transaction.rollback();
+            return res.status(400).json({ error: 'Livreur non trouvé ou rôle incorrect' });
+        }
+        await order.update({ deliveryID: deliveryPersonId, StatesID: deliveryState.id, adminID }, { transaction });
+        await OrderState.create({
+            orderID: order.id,
+            stateID: deliveryState.id,
+            date: new Date(),
+        }, { transaction });
+
+        await transaction.commit();
+        console.log('Transaction committed');
+        const customerEmail = order.customer.email;
+        const emailSubject = 'Votre commande est en cours de livraison';
+        const emailText = `Bonjour ${order.customer.name},\n\nVotre commande avec le code ${order.code} est maintenant en cours de livraison et sera livrée dans les 3 prochains jours.\n\nCordialement,\nVotre fournisseur.`;
+
+        await sendEmail(customerEmail, emailSubject, emailText);
+
+        res.status(200).json({ message: 'Livreur assigné avec succès' });
+    } catch (error) {
+        await transaction.rollback();
+        console.error('Transaction rollback:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
 module.exports = {
     createOrder,
     getAllOrders,
     getOrderById,
     updateOrder,
-    getOrder,
     getOrderWithoutArticles,
     getOrderWithArticles,
     getOrderLignesByParentID,
-    getOrderWithArticlesAndLines
+    getOrderWithArticlesAndLines,
+    assignDeliveryPerson
 };
