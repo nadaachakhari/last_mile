@@ -1,200 +1,332 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
-    CButton,
-    CCard,
-    CCardBody,
-    CCardHeader,
-    CCol,
-    CForm,
-    CFormInput,
-    CFormLabel,
-    CRow,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CModalFooter,
-    CFormSelect,
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CRow,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CFormSelect,
 } from '@coreui/react';
 
 const EditOrder = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        code: '',
-        date: '',
-        customerID: '',
-        observation: '',
-        note: '',
-        ID_payment_method: '',
+  const [formData, setFormData] = useState({
+    code: '',
+    date: '',
+    customerID: '',
+    observation: '',
+    note: '',
+    ID_payment_method: '',
+    total_amount: '', // Ensure total_amount is included in formData
+    articles: [{ id: '', quantity: '' }],
+  });
+  const [grossAmount, setGrossAmount] = useState(0);
+  const [customers, setCustomers] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [articles, setArticles] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/Order/ordrelines/${id}`);
+        const { order, orderLignes } = response.data;
+
+        // Set formData and grossAmount based on the fetched order
+        setFormData({
+          code: order.code || '',
+          date: new Date(order.date).toISOString().split('T')[0],
+          customerID: order.customerID || '',
+          observation: order.observation || '',
+          note: order.note || '',
+          ID_payment_method: order.ID_payment_method || '',
+          total_amount: order.total_amount || '', // Set the total amount
+          articles: orderLignes.map(line => ({
+            id: line.article.id,
+            quantity: line.quantity
+          })),
+        });
+
+        // Calculate gross amount based on fetched articles
+        calculateGrossAmount(orderLignes);
+      } catch (error) {
+        console.error('Erreur lors de la récupération de la commande:', error);
+      }
+    };
+
+    const fetchCustomers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/Tier/');
+        const allTiers = response.data;
+        const filteredCustomers = allTiers.filter(
+          (tier) => tier.TypeTier && tier.TypeTier.name === 'client'
+        );
+        setCustomers(filteredCustomers);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des clients:', error);
+      }
+    };
+
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/PaymentMethode/');
+        setPaymentMethods(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des méthodes de paiement:', error);
+      }
+    };
+
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/Article/');
+        setArticles(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+      }
+    };
+
+    fetchOrder();
+    fetchCustomers();
+    fetchPaymentMethods();
+    fetchArticles();
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+  };
+
+  const handleArticleChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedArticles = [...formData.articles];
+    updatedArticles[index] = { ...updatedArticles[index], [name]: value };
+    setFormData({ ...formData, articles: updatedArticles });
+    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article change
+  };
+
+  const addArticle = () => {
+    setFormData({
+      ...formData,
+      articles: [...formData.articles, { id: '', quantity: '' }],
     });
-    const [showModal, setShowModal] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
-    const [customers, setCustomers] = useState([]);
-    const [paymentMethods, setPaymentMethods] = useState([]);
+  };
 
-    useEffect(() => {
-        const fetchOrderDetails = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.error('Token non trouvé dans localStorage.');
-                    return;
-                }
+  const removeArticle = (index) => {
+    const updatedArticles = [...formData.articles];
+    updatedArticles.splice(index, 1);
+    setFormData({ ...formData, articles: updatedArticles });
+    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article removal
+  };
 
-                const response = await axios.get(`http://localhost:5001/Order/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const formattedData = { ...response.data, date: formatDateForInput(response.data.date) };
-                setFormData(formattedData);
-            } catch (error) {
-                console.error(`Erreur lors de la récupération des détails de la commande avec l'ID ${id}:`, error);
-            }
-        };
+  const calculateGrossAmount = (updatedArticles) => {
+    let total = 0;
+    updatedArticles.forEach((article) => {
+      const selectedArticle = articles.find((a) => a.id === parseInt(article.id));
+      if (selectedArticle) {
+        total += selectedArticle.sale_ttc * article.quantity;
+      }
+    });
+    setGrossAmount(total);
+  };
 
-        const fetchCustomers = async () => {
-            try {
-                const response = await axios.get('http://localhost:5001/Tier/');
-                const allTiers = response.data;
-                const filteredCustomers = allTiers.filter(tier => tier.TypeTier && tier.TypeTier.name === 'client');
-                setCustomers(filteredCustomers);
-            } catch (error) {
-                console.error('Erreur lors de la récupération des clients:', error);
-            }
-        };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
 
-        const fetchPaymentMethods = async () => {
-            try {
-                const response = await axios.get('http://localhost:5001/PaymentMethode/');
-                setPaymentMethods(response.data);
-                console.log(response.data);
-            } catch (error) {
-                console.error('Erreur lors de la récupération des méthodes de paiement:', error);
-            }
-        };
+    if (!token) {
+      console.error('Token non trouvé dans localStorage.');
+      return;
+    }
 
-        fetchOrderDetails();
-        fetchCustomers();
-        fetchPaymentMethods();
-    }, [id]);
-
-    const formatDateForInput = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+    const dataToSubmit = {
+      ...formData,
+      gross_amount: grossAmount,  // Use grossAmount for submission
     };
 
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormData({ ...formData, [id]: value });
-    };
+    try {
+      const response = await axios.put(`http://localhost:5001/Order/${id}`, dataToSubmit, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token non trouvé dans localStorage.');
-                return;
-            }
-
-            const response = await axios.put(`http://localhost:5001/Order/${id}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            console.log('Réponse serveur:', response.data);
-            navigate('/admin/list_order');
-        } catch (error) {
-            if (error.response && error.response.status === 400 && error.response.data.error) {
-                setModalMessage(error.response.data.error);
-                setShowModal(true);
-            } else {
-                console.error('Erreur lors de la soumission du formulaire:', error);
-            }
-            if (error.message.includes('sendEmail')) {
-                setModalMessage("Erreur lors de l'envoi de l'email de confirmation.");
-                setShowModal(true);
-            }
+      console.log('Réponse serveur:', response.data);
+      navigate('/admin/list_order');
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 403) {
+          console.error('Accès refusé: Vérifiez les autorisations.');
+        } else if (error.response.status === 400 && error.response.data.error) {
+          setModalMessage(error.response.data.error);
+          setShowModal(true);
+        } else {
+          console.error('Erreur inattendue:', error.response.data);
         }
-    };
+      } else {
+        console.error('Erreur lors de la soumission du formulaire:', error.message);
+      }
+    }
+  };
 
-    return (
-        <CRow>
-            <CCol xs={12}>
-                <CCard className="mb-4">
-                    <CCardHeader>
-                        <strong>Modifier</strong> <small>Commande</small>
-                    </CCardHeader>
-                    <CCardBody>
-                        <CForm className="row g-3" onSubmit={handleSubmit}>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="code">Code</CFormLabel>
-                                <CFormInput id="code" value={formData.code} onChange={handleChange} />
-                            </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="date">Date</CFormLabel>
-                                <CFormInput type="date" id="date" value={formData.date} onChange={handleChange} />
-                            </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="customerID">Client</CFormLabel>
-                                <CFormSelect id="customerID" value={formData.customerID} onChange={handleChange}>
-                                    <option value="">Choisir...</option>
-                                    {customers.map((customer) => (
-                                        <option key={customer.id} value={customer.id}>
-                                            {customer.name}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="ID_payment_method">Méthode de Paiement</CFormLabel>
-                                <CFormSelect id="ID_payment_method" value={formData.ID_payment_method} onChange={handleChange}>
-                                    <option value="">Choisir...</option>
-                                    {paymentMethods.map((method) => (
-                                        <option key={method.id} value={method.id}>
-                                            {method.value}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            </CCol>
-                            <CCol md={12}>
-                                <CFormLabel htmlFor="observation">Observation</CFormLabel>
-                                <CFormInput id="observation" value={formData.observation} onChange={handleChange} />
-                            </CCol>
-                            <CCol md={12}>
-                                <CFormLabel htmlFor="note">Note</CFormLabel>
-                                <CFormInput id="note" value={formData.note} onChange={handleChange} />
-                            </CCol>
-                            <CCol xs={12}>
-                                <CButton color="primary" type="submit">
-                                    Modifier
-                                </CButton>
-                            </CCol>
-                        </CForm>
-                    </CCardBody>
-                </CCard>
-            </CCol>
-            <CModal visible={showModal} onClose={() => setShowModal(false)}>
-                <CModalHeader>
-                    <CModalTitle>Erreur</CModalTitle>
-                </CModalHeader>
-                <CModalBody>{modalMessage}</CModalBody>
-                <CModalFooter>
-                    <CButton color="secondary" onClick={() => setShowModal(false)}>
-                        Fermer
+  return (
+    <CRow>
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardHeader>
+            <strong>Modifier</strong> <small>Commande</small>
+          </CCardHeader>
+          <CCardBody>
+            <CForm className="row g-3" onSubmit={handleSubmit}>
+              <CCol md={6}>
+                <CFormLabel htmlFor="code">Code</CFormLabel>
+                <CFormInput
+                  id="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  required
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="date">Date</CFormLabel>
+                <CFormInput
+                  type="date"
+                  id="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                />
+              </CCol>
+              <CCol md={3}>
+                <CFormLabel htmlFor="customerID">Client</CFormLabel>
+                <CFormSelect
+                  id="customerID"
+                  value={formData.customerID}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Choisir...</option>
+                  {customers.map((customer) => (
+                    <option key={customer.id} value={customer.id}>
+                      {customer.name}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+              <CCol md={3}>
+                <CFormLabel htmlFor="ID_payment_method">Méthode de paiement</CFormLabel>
+                <CFormSelect
+                  id="ID_payment_method"
+                  value={formData.ID_payment_method}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Choisir...</option>
+                  {paymentMethods.map((method) => (
+                    <option key={method.id} value={method.id}>
+                      {method.value}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="observation">Observation</CFormLabel>
+                <CFormInput
+                  id="observation"
+                  value={formData.observation}
+                  onChange={handleChange}
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="note">Note</CFormLabel>
+                <CFormInput
+                  id="note"
+                  value={formData.note}
+                  onChange={handleChange}
+                />
+              </CCol>
+              <CCol xs={12}>
+                <CButton color="primary" onClick={addArticle}>
+                  Ajouter Article
+                </CButton>
+              </CCol>
+              {formData.articles.map((article, index) => (
+                <React.Fragment key={index}>
+                  <CCol md={6}>
+                    <CFormLabel>Article</CFormLabel>
+                    <CFormSelect
+                      name="id"
+                      value={article.id}
+                      onChange={(e) => handleArticleChange(e, index)}
+                      required
+                    >
+                      <option value="">Choisir un article...</option>
+                      {articles.map((article) => (
+                        <option key={article.id} value={article.id}>
+                          {article.name} - {article.code}
+                        </option>
+                      ))}
+                    </CFormSelect>
+                  </CCol>
+                  <CCol md={3}>
+                    <CFormLabel>Quantité</CFormLabel>
+                    <CFormInput
+                      name="quantity"
+                      type="number"
+                      value={article.quantity}
+                      onChange={(e) => handleArticleChange(e, index)}
+                      required
+                    />
+                  </CCol>
+                  <CCol md={3}>
+                    <CButton color="danger" onClick={() => removeArticle(index)}>
+                      Supprimer
                     </CButton>
-                </CModalFooter>
-            </CModal>
-        </CRow>
-    );
+                  </CCol>
+                </React.Fragment>
+              ))}
+              <CCol xs={12} className="d-flex align-items-center">
+                <CFormLabel className="ms-3">Montant Total :</CFormLabel>
+                <CFormInput
+                  type="text"
+                  value={grossAmount.toFixed(2)}
+                  disabled
+                />
+              </CCol>
+              <CCol xs={12}>
+                <CButton color="primary" type="submit">
+                  Sauvegarder les Modifications
+                </CButton>
+              </CCol>
+            </CForm>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CModal visible={showModal} onClose={() => setShowModal(false)}>
+        <CModalHeader>
+          <CModalTitle>Erreur</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{modalMessage}</CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowModal(false)}>
+            Fermer
+          </CButton>
+        </CModalFooter>
+      </CModal>
+    </CRow>
+  );
 };
 
 export default EditOrder;

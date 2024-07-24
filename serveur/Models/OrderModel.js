@@ -1,11 +1,13 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Tiers = require('./TiersModel');
 const User = require('./UserModel');
 const PaymentMethod = require('./PaymentMethodModel');
 const State = require('./StateModel');
 
-const Order = sequelize.define('Order', {
+class Order extends Model {}
+
+Order.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -83,12 +85,23 @@ const Order = sequelize.define('Order', {
       notNull: true,
     }
   },
+  total_amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+    validate: {
+      isDecimal: true,
+      min: 0,
+    }
+  },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   },
 }, {
+  sequelize,
+  modelName: 'Order',
   tableName: 'orders',
   timestamps: false,
 });
@@ -98,6 +111,5 @@ Order.belongsTo(Tiers, { as: 'supplier', foreignKey: 'supplierID' });
 Order.belongsTo(User, { foreignKey: 'userID' });
 Order.belongsTo(PaymentMethod, { as: 'PaymentMethod', foreignKey: 'ID_payment_method' });
 Order.belongsTo(State, { as: 'state', foreignKey: 'StatesID' });
-
 
 module.exports = Order;

@@ -1,76 +1,56 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { useParams, Link } from 'react-router-dom'
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CButton } from '@coreui/react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams, Link } from 'react-router-dom';
+import {
+    CButton,
+    CCard,
+    CCardBody,
+    CCardHeader,
+    CCol,
+    CRow,
+    CTable,
+    CTableHead,
+    CTableRow,
+    CTableHeaderCell,
+    CTableBody,
+    CTableDataCell,
+} from '@coreui/react';
 
-const DetailOrder = () => {
-    const { id } = useParams()
-    const [order, setOrder] = useState(null)
-    const [paymentMethods, setPaymentMethods] = useState([])
+const OrderDetail = () => {
+    const { id } = useParams();
+    const [order, setOrder] = useState(null);
 
     useEffect(() => {
-        const fetchOrder = async () => {
-            const token = localStorage.getItem('token')
+        const fetchOrderDetails = async () => {
+            const token = localStorage.getItem('token');
             if (!token) {
-                console.error('Token non trouvé dans localStorage.')
-                return
+                console.error('Token non trouvé dans localStorage.');
+                return;
             }
-
             try {
-                const response = await axios.get(`http://localhost:5001/Order/${id}`, {
+                const response = await axios.get(`http://localhost:5001/order/ordrelines/${id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                setOrder(response.data)
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setOrder(response.data);
+                console.log(response.data);
             } catch (error) {
-                console.error(
-                    `Erreur lors de la récupération des détails de la commande avec l'ID ${id}:`,
-                    error,
-                )
+                console.error('Erreur lors de la récupération des détails de la commande:', error);
             }
-        }
+        };
 
-        fetchOrder()
-    }, [id])
-
-    useEffect(() => {
-        const fetchPaymentMethods = async () => {
-            try {
-                const response = await axios.get('http://localhost:5001/PaymentMethode/')
-                setPaymentMethods(response.data)
-            } catch (error) {
-                console.error('Erreur lors de la récupération des méthodes de paiement:', error)
-            }
-        }
-        fetchPaymentMethods()
-    }, [])
-
-    const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric' }
-        return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString))
-    }
+        fetchOrderDetails();
+    }, [id]);
 
     if (!order) {
-        return (
-            <CRow className="mt-4">
-                <CCol>
-                    <CCard>
-                        <CCardHeader>
-                            <strong>Chargement en cours...</strong>
-                        </CCardHeader>
-                        <CCardBody>
-                            <p>Veuillez patienter pendant le chargement des détails de la commande...</p>
-                        </CCardBody>
-                    </CCard>
-                </CCol>
-            </CRow>
-        )
+        return <div>Loading...</div>;
     }
 
-    const handleBack = () => {
-        window.history.back()
-    }
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
+    };
 
     return (
         <CRow>
@@ -80,35 +60,50 @@ const DetailOrder = () => {
                         <strong>Détails de la Commande</strong>
                     </CCardHeader>
                     <CCardBody>
-                        <p>
-                            <strong>Code:</strong> {order.code}
-                        </p>
-                        <p>
-                            <strong>Date:</strong> {formatDate(order.date)}
-                        </p>
-                        <p>
-                            <strong>Client:</strong> {order.customer.name} ({order.customer.email})
-                        </p>
-                        <p>
-                            <strong>État:</strong> {order.state.value}
-                        </p>
-                        <p>
-                            <strong>Observation:</strong> {order.observation}
-                        </p>
-                        <p>
-                            <strong>Note:</strong> {order.note}
-                        </p>
-                        <p>
-                            <strong>Méthode de paiement:</strong> {order.PaymentMethod?.value}
-                        </p>
+                        <h5>Informations de la Commande</h5>
+                        <p><strong>Code:</strong> {order.order.code}</p>
+                        <p><strong>Date:</strong> {formatDate(order.order.date)}</p>
+                        <p><strong>Client:</strong> {order.order.customer.name}</p>
+                        {/*   <p><strong>Fournisseur:</strong> {order.order.supplier.name}</p> */}
+                   
+                        <p><strong>Méthode de paiement:</strong> {order.order.PaymentMethod.name}</p>
+                        <p><strong>État:</strong> {order.order.state.value}</p>
+                        <p><strong>Observation:</strong> {order.order.observation}</p>
+                        <p><strong>Note:</strong> {order.order.note}</p>
+                        <p><strong>Montant total:</strong> {order.order.total_amount}</p>
+
+                        <h5>Lignes de Commande</h5>
+                        <CTable hover responsive>
+                            <CTableHead>
+                                <CTableRow>
+                                    <CTableHeaderCell>ID</CTableHeaderCell>
+                                    <CTableHeaderCell>Article</CTableHeaderCell>
+                                    <CTableHeaderCell>Quantité</CTableHeaderCell>
+                                    <CTableHeaderCell>Montant Brut</CTableHeaderCell>
+                                </CTableRow>
+                            </CTableHead>
+                            <CTableBody>
+                                {order.orderLignes.map((ligne, index) => (
+                                    <CTableRow key={ligne.id}>
+                                        <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                                        <CTableDataCell>{ligne.article.name}</CTableDataCell>
+                                        <CTableDataCell>{ligne.quantity}</CTableDataCell>
+                                        <CTableDataCell>{ligne.gross_amount}</CTableDataCell>
+                                    </CTableRow>
+                                ))}
+                            </CTableBody>
+                        </CTable>
+
                         <Link to="/admin/list_order">
-                            <CButton color="primary" onClick={handleBack}>Retour à la liste</CButton>
+                            <CButton color="primary" className="mt-3">
+                                Retour à la Liste des Commandes
+                            </CButton>
                         </Link>
                     </CCardBody>
                 </CCard>
             </CCol>
         </CRow>
-    )
-}
+    );
+};
 
-export default DetailOrder
+export default OrderDetail;

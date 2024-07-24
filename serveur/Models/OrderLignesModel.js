@@ -1,10 +1,11 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Order = require('./OrderModel'); 
 const Article = require('./ArticleModel');
-const Vat = require('./VatModel'); 
-const Order = require('./OrderModel');
 
-const OrderLignes = sequelize.define('OrderLignes', {
+class OrderLignes extends Model {}
+
+OrderLignes.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -40,15 +41,6 @@ const OrderLignes = sequelize.define('OrderLignes', {
       min: 1, 
     }
   },
-  sale_ht: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-    validate: {
-      notNull: true,
-      isDecimal: true, 
-      min: 0, 
-    }
-  },
   gross_amount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
@@ -58,30 +50,20 @@ const OrderLignes = sequelize.define('OrderLignes', {
       min: 0, 
     }
   },
-  vatID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Vat,
-      key: 'id',
-    },
-    validate: {
-      notNull: true,
-    }
-  },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   },
 }, {
+  sequelize,
+  modelName: 'OrderLignes',
   tableName: 'order_lignes',
   timestamps: false,
 });
 
-// Define relationships
-OrderLignes.belongsTo(Order, { foreignKey: 'parentID' });
-OrderLignes.belongsTo(Article, { foreignKey: 'articleID' });
-OrderLignes.belongsTo(Vat, { foreignKey: 'vatID' });
-
+OrderLignes.belongsTo(Order, { as: 'order', foreignKey: 'parentID' });
+Order.hasOne(OrderLignes, { foreignKey: 'parentID' });
+OrderLignes.belongsTo(Article, { as: 'article', foreignKey: 'articleID' });
+Article.hasOne(OrderLignes, { foreignKey: 'articleID' });
 module.exports = OrderLignes;
