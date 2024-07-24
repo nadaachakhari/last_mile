@@ -73,7 +73,6 @@ const createOrder = async (req, res) => {
             ID_payment_method,
             StatesID: pendingState.id,
             deleted: false,
-            userID: null,
             total_amount: totalAmount, // Initialement 0, sera mis à jour après calcul
         }, { transaction });
 
@@ -130,6 +129,8 @@ const createOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 const getOrder = async (req, res) => {
     const { id } = req.params;

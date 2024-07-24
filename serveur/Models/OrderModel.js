@@ -47,7 +47,15 @@ Order.init({
       notNull: true,
     }
   },
-  userID: {
+  adminID: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
+  deliveryID: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
@@ -108,7 +116,8 @@ Order.init({
 
 Order.belongsTo(Tiers, { as: 'customer', foreignKey: 'customerID' });
 Order.belongsTo(Tiers, { as: 'supplier', foreignKey: 'supplierID' });
-Order.belongsTo(User, { foreignKey: 'userID' });
+Order.belongsTo(User, { as: 'administrator', foreignKey: 'adminID' });
+Order.belongsTo(User, { as: 'delivery', foreignKey: 'deliveryID' });
 Order.belongsTo(PaymentMethod, { as: 'PaymentMethod', foreignKey: 'ID_payment_method' });
 Order.belongsTo(State, { as: 'state', foreignKey: 'StatesID' });
 
