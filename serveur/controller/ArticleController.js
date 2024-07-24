@@ -1,23 +1,47 @@
 const Article = require('../Models/ArticleModel');
 const Vat = require('../Models/VatModel');
 const Category = require('../Models/CategoryModel');
+const Tiers = require('../Models/TiersModel');
 
 
 const createArticle = async (req, res) => {
   const { code, name, vatID, sale_ht, categoryID, bar_code, deleted } = req.body;
   const photo = req.file ? req.file.filename : '';
+  const supplierID = req.user.id;
+
+  if (!supplierID) {
+      return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
+  }
+
+  const user = req.user;
+  if (!user || user.role !== 'fournisseur') {
+      return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+  }
+
   try {
-    // Récupérer le taux de TVA à partir de l'ID de la TVA
+    // Retrieve VAT rate from VAT ID
     const vat = await Vat.findByPk(vatID);
     if (!vat) {
       return res.status(400).json({ error: 'Invalid VAT ID' });
     }
 
-    // Calculer le prix TTC
+    // Calculate sale_ttc
     const sale_ttc = sale_ht * (1 + vat.value / 100);
 
-    // Créer un nouvel article avec le prix TTC calculé
-    const newArticle = await Article.create({ code, name, vatID, sale_ht, sale_ttc, categoryID, photo, bar_code, deleted: false });
+    // Create a new article with the calculated sale_ttc and supplier ID
+    const newArticle = await Article.create({
+      code,
+      name,
+      vatID,
+      sale_ht,
+      sale_ttc,
+      categoryID,
+      id_supplier: user.id, // Assign the supplier ID from the authenticated user
+      photo,
+      bar_code,
+      deleted: false
+    });
+
     res.status(201).json(newArticle);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -25,21 +49,46 @@ const createArticle = async (req, res) => {
 };
 
 
+
 // Lire tous les Articles
 const getAllArticles = async (req, res) => {
+  const user = req.user; // Assuming user information is available in req.user
+
   try {
+    // Determine if the user is a supplier
+    const isSupplier = user && user.role === 'fournisseur';
+    const supplierID = isSupplier ? user.id : null;
+
     const articles = await Article.findAll({
-        where: { deleted: false }, 
+      where: {
+        deleted: false, // Ensure we are not fetching deleted articles
+        ...(supplierID && { id_supplier: supplierID }) // Filter by supplierID if the user is a supplier
+      },
       include: [
-        { model: Vat, attributes: ['value'] },
-        { model: Category, attributes: ['name'] }
+        {
+          model: Vat,
+          attributes: ['value']
+        },
+        {
+          model: Category,
+          attributes: ['name']
+        },
+        // Include supplier model if it is part of the relationship
+        {
+          model: Tiers,
+          as: 'supplier', // Assuming 'supplier' is the alias used in the Article model definition
+          attributes: ['id', 'name'],
+          required: false // Adjust as needed
+        }
       ]
     });
+
     res.status(200).json(articles);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Lire un seul Article par ID
 const getArticleById = async (req, res) => {

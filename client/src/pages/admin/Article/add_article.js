@@ -91,6 +91,12 @@ const AddArticle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.error('Token non trouvé dans localStorage.');
+      return;
+    }
 
     const data = new FormData();
     data.append('code', formData.code);
@@ -108,6 +114,9 @@ const AddArticle = () => {
     try {
       const response = await axios.post('http://localhost:5001/Article', data, {
         headers: {
+         
+            Authorization: `Bearer ${token}`,
+          
           'Content-Type': 'multipart/form-data',
         },
       });

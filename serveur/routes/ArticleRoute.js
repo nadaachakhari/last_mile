@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const articleController = require('../controller/ArticleController');
-
+const { authenticateToken } = require('../controller/AuthController')
 // Configuration de multer pour le stockage des images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -16,8 +16,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/', upload.single('photo'), articleController.createArticle);
-router.get('/', articleController.getAllArticles);
+router.post('/', authenticateToken,upload.single('photo'), articleController.createArticle);
+router.get('/', authenticateToken,articleController.getAllArticles);
 router.get('/:id', articleController.getArticleById);
 router.put('/:id', upload.single('photo'), articleController.updateArticle);
 router.put('/update_deleted/:id', articleController.deleteArticle);

@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Vat = require('./VatModel');
 const Category = require('./CategoryModel');
+const Tiers = require('./TiersModel'); // Import the Tiers model
 
 const Article = sequelize.define('Article', {
   id: {
@@ -55,6 +56,14 @@ const Article = sequelize.define('Article', {
       key: 'id',
     },
   },
+  id_supplier: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Tiers,
+      key: 'id',
+    },
+  },
   photo: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -67,7 +76,7 @@ const Article = sequelize.define('Article', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false
-}
+  }
 }, {
   tableName: 'articles',
   timestamps: false,
@@ -76,5 +85,6 @@ const Article = sequelize.define('Article', {
 // Define relationships
 Article.belongsTo(Vat, { foreignKey: 'vatID' });
 Article.belongsTo(Category, { foreignKey: 'categoryID' });
+Article.belongsTo(Tiers, {  as: 'supplier',foreignKey: 'id_supplier' });
 
 module.exports = Article;
