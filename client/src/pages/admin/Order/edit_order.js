@@ -36,6 +36,7 @@ const EditOrder = () => {
   const [articles, setArticles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [dateError, setDateError] = useState(''); // New state for date error
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -115,6 +116,21 @@ const EditOrder = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+
+    // Date validation
+    if (id === 'date') {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set time to 00:00:00 to compare only date part
+
+      if (selectedDate < today) {
+        setDateError("La date ne peut pas être antérieure à aujourd'hui.");
+        return;
+      } else {
+        setDateError('');
+      }
+    }
+
     setFormData({ ...formData, [id]: value });
   };
 
@@ -159,7 +175,10 @@ const EditOrder = () => {
       console.error('Token non trouvé dans localStorage.');
       return;
     }
-
+    if (dateError) {
+      console.error('Date invalide');
+      return;
+    }
     const dataToSubmit = {
       ...formData,
       gross_amount: grossAmount,  // Use grossAmount for submission
@@ -217,6 +236,7 @@ const EditOrder = () => {
                   onChange={handleChange}
                   required
                 />
+                   {dateError && <p className="text-danger">{dateError}</p>}
               </CCol>
               <CCol md={3}>
                 <CFormLabel htmlFor="customerID">Client</CFormLabel>
