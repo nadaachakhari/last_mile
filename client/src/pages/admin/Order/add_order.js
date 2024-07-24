@@ -61,8 +61,17 @@ const AddOrder = () => {
     };
 
     const fetchArticles = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Token non trouvé dans localStorage.');
+          return;
+      }
       try {
-        const response = await axios.get('http://localhost:5001/Article/');
+        const response = await axios.get('http://localhost:5001/Article/', {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          }
+      });
         setArticles(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
