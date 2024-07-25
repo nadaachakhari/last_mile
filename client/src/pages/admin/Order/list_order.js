@@ -14,16 +14,22 @@ import {
     CTableBody,
     CTableDataCell,
 } from '@coreui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
+    const [userRole, setUserRole] = useState('');
+    const navigate = useNavigate(); 
 
+    
     useEffect(() => {
         const fetchOrders = async () => {
             const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            setUserRole(role);
+
             if (!token) {
                 console.error('Token non trouvé dans localStorage.');
                 return;
@@ -35,7 +41,6 @@ const OrderList = () => {
                     }
                 });
                 setOrders(response.data);
-                console.log(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des commandes:', error);
             }
@@ -47,10 +52,6 @@ const OrderList = () => {
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
-    };
-
-    const handleModifier = (id) => {
-        console.log(`Modifier commande avec id: ${id}`);
     };
 
     return (
@@ -92,10 +93,25 @@ const OrderList = () => {
                                                 </CButton>
                                             </Link>
                                             <Link to={`/admin/edit_order/${order.id}`}>
-                                                <CButton size="md" color="warning" onClick={() => handleModifier(order.id)} className="me-2">
+                                                <CButton size="md" color="warning" className="me-2">
                                                     <FaEdit className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
+                                            {userRole === 'Administrateur' && (
+                                                <CButton
+                                                    size="md"
+                                                    color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
+                                                    className="me-2"
+                                                    disabled={order.state.value !== 'En attente de livraison'}
+                                                    onClick={() => {
+                                                        if (order.state.value === 'En attente de livraison') {
+                                                            navigate(`/admin/affecter_livreur/${order.id}`);
+                                                        }
+                                                    }}
+                                                >
+                                                    Affecter Livreur
+                                                </CButton>
+                                            )}
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}
