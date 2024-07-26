@@ -5,17 +5,18 @@ const { authenticateToken } = require('../controller/AuthController')
 const {
     createOrder,
     getAllOrders,
+    getOrderById,
     updateOrder,
-    getOrder,
     getOrderWithoutArticles,
     getOrderWithArticles,
     getOrderLignesByParentID,
-    getOrderWithArticlesAndLines
+    getOrderWithArticlesAndLines,
+    assignDeliveryPerson
 } = require('../controller/OrderController')
 
 router.post('/', authenticateToken, createOrder);
-//get order par fournisseurs
 router.get('/', authenticateToken, getAllOrders);
+router.put('/assign_delivery', authenticateToken, assignDeliveryPerson)
 router.get('/ordre/:id', getOrderWithoutArticles);
 router.get('/ordre/lines/:id', getOrderLignesByParentID);
 router.get('/ordrelines/:id', getOrderWithArticlesAndLines);

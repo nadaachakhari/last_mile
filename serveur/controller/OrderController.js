@@ -6,9 +6,10 @@ const { Op } = require('sequelize');
 const { sendEmail } = require('../config/emailConfig');
 const PaymentMethod = require('../Models/PaymentMethodModel');
 const OrderState = require('../Models/OrderStateModel');
-const OrderLignes = require('../Models/OrderLignesModel');
+const OrderLignes = require('../Models/OrderLignesModel')
 const Article = require('../Models/ArticleModel.js');
-
+const User = require('../Models/UserModel.js')
+const RoleUser = require('../Models/RoleUserModel.js')
 const sequelize = require('../config/database')
 
 
@@ -131,49 +132,18 @@ const createOrder = async (req, res) => {
 };
 
 
-
-const getOrder = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const order = await Order.findOne({
-            where: { id },
-            include: [
-                { model: OrderLignes, as: 'orderLignes', include: [Article] },
-                { model: Tiers, as: 'customer' },
-                { model: Tiers, as: 'supplier' },
-                { model: User, as: 'user' },
-                { model: PaymentMethod, as: 'PaymentMethod' },
-                { model: State, as: 'state' },
-            ],
-        });
-
-        if (!order) {
-            return res.status(404).json({ error: 'Order not found' });
-        }
-
-        res.status(200).json(order);
-    } catch (error) {
-        console.error('Error fetching order:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-
-
 const getAllOrders = async (req, res) => {
     const user = req.user;
-    const supplierID = user && user.role === 'fournisseur' ? user.id : null;
-
+    const supplierID = user.role === 'fournisseur' ? user.id : null; 
+ 
     if (!user || (user.role !== 'Administrateur' && user.role !== 'fournisseur')) {
         return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
     }
 
     try {
-        const whereCondition = user.role === 'fournisseur' ? { supplierID } : {};
-
+  
         const orders = await Order.findAll({
-            where: whereCondition,
+            where: supplierID ? { supplierID } : {}, 
             include: [
                 {
                     model: PaymentMethod,
@@ -198,11 +168,59 @@ const getAllOrders = async (req, res) => {
             ]
         });
 
-        return res.status(200).json(orders);
+        res.status(200).json(orders);
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
+
+
+
+const getOrderById = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+    const supplierID = user === 'fournisseur' ? user.id : null;
+    console.log(user.role)
+
+    // Vérifie que l'utilisateur est authentifié et est soit fournisseur soit administrateur
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'fournisseur')) {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    try {
+        const order = await Order.findOne({
+            //where: { id, supplierID },
+            where: { id, ...(supplierID && { supplierID }) },
+            include: [
+                {
+                    model: Tiers,
+                    as: 'customer',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: State,
+                    as: 'state',
+                    attributes: ['id', 'value']
+                },
+                {
+                    model: PaymentMethod,
+                    as: 'PaymentMethod',
+                    attributes: ['id', 'value']
+                }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Commande non trouvée' });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
 
 const getChangesMessage = (original, updated) => {
     let changes = '';
@@ -292,6 +310,94 @@ const updateOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
+
+
+
+
+const getOrderWithArticles = async (req, res) => {
+    const orderId = req.params.id;
+
+    try {
+        const order = await Order.findOne({
+            where: { id: orderId, deleted: false },
+            include: [
+                { model: Tiers, as: 'customer' },
+                { model: Tiers, as: 'supplier' },
+            
+                { model: PaymentMethod, as: 'PaymentMethod' },
+                { model: State, as: 'state' },
+                {
+                    model: OrderLignes,
+                    include: [
+                
+                        { model: Article, as: 'article' } 
+                    ]
+                }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getOrderWithoutArticles = async (req, res) => {
+    const orderId = req.params.id;
+
+    try {
+        const order = await Order.findOne({
+            where: { id: orderId, deleted: false },
+            include: [
+                { model: Tiers, as: 'customer' },
+                { model: Tiers, as: 'supplier' },
+              
+                { model: PaymentMethod, as: 'PaymentMethod' },
+                { model: State, as: 'state' },
+                { model: OrderLignes, }
+            ]
+        });
+
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+const getOrderLignesByParentID = async (req, res) => {
+    const orderId = req.params.id;
+
+    try {
+        const orderLignes = await OrderLignes.findAll({
+            where: { parentID: orderId, deleted: false },
+            include: [
+                { model: Article, as: 'article' }
+            ]
+        });
+
+        if (!orderLignes.length) {
+            return res.status(404).json({ error: 'OrderLignes not found' });
+        }
+
+        res.status(200).json(orderLignes);
+    } catch (error) {
+        console.error('Error fetching order lignes:', error);
+        res.status(500).json({ error: error.message });
+    }
+
+};
 const getOrderWithArticlesAndLines = async (req, res) => {
     const orderId = req.params.id;
 
@@ -337,6 +443,7 @@ const getOrderWithArticlesAndLines = async (req, res) => {
 
 const assignDeliveryPerson = async (req, res) => {
     const { orderId, deliveryPersonId } = req.body;
+    console.log({ orderId, deliveryPersonId });
     const adminID = req.user.id;
 
     if (!adminID) {
@@ -426,10 +533,11 @@ const assignDeliveryPerson = async (req, res) => {
 module.exports = {
     createOrder,
     getAllOrders,
+    getOrderById,
     updateOrder,
-    getOrder,
     getOrderWithoutArticles,
     getOrderWithArticles,
     getOrderLignesByParentID,
-    getOrderWithArticlesAndLines
+    getOrderWithArticlesAndLines,
+    assignDeliveryPerson
 };
