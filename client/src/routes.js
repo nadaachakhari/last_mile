@@ -1,3 +1,4 @@
+import { element } from 'prop-types'
 import React from 'react'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -106,6 +107,7 @@ const add_order = React.lazy(() => import('./pages/admin/Order/add_order'))
 const list_order = React.lazy(() => import('./pages/admin/Order/list_order'))
 const detail_order = React.lazy(() => import('./pages/admin/Order/detail_order'))
 const edit_order = React.lazy(() => import('./pages/admin/Order/edit_order'))
+const affecter_livreur = React.lazy(() => import('./pages/admin/Order/affecter_livreur'))
 
 
 //list order state : 
@@ -260,6 +262,7 @@ const routes = [
   { path: '/admin/list_order', element: list_order },
   { path: '/admin/detail_order/:id', element: detail_order },
   { path: '/admin/edit_order/:id', name: 'modifer commande', element: edit_order },
+  { path: '/admin/affecter_livreur/:id', name: 'Affecter Livreur', element: affecter_livreur  },
   //order state :
   { path: '/admin/list_order_state', element: list_order_state },
   { path: '/admin/detail_order_state/:id', element: detail_order_state},
