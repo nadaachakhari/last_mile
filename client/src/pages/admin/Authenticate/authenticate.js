@@ -15,10 +15,11 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CAvatar,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
-
+import avatar from '../../../assets/images/pages/login/Livraison6.png';
 const Authenticate = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -38,18 +39,15 @@ const Authenticate = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5001/Authenticate', { username, password });
-      const { token, role, nameTiers,nameusers } = response.data;
+      const { token, role, nameTiers, nameusers } = response.data;
 
-      // Stocker les détails de l'utilisateur dans le localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
-      localStorage.setItem('name', nameTiers||nameusers);
+      localStorage.setItem('name', nameTiers || nameusers);
 
-      // Décoder le token pour obtenir les détails de l'utilisateur
       const decodedToken = jwtDecode(token);
       setUserDetails(decodedToken);
 
-      // Redirection en fonction du rôle
       switch (role) {
         case 'admin':
           navigate('/dashboard');
@@ -75,7 +73,10 @@ const Authenticate = () => {
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={8}>
+          <CCol md={3}>
+            <img src={avatar}  style={{ width: '280px', height: '330px', marginLeft: '0px' }}  />
+          </CCol>
+          <CCol md={6}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
