@@ -120,7 +120,6 @@ const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
 
 
-
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
