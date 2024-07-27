@@ -35,7 +35,8 @@ const AddOrder = () => {
   const [articles, setArticles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [dateError, setDateError] = useState(''); // New state for date error
+  const [dateError, setDateError] = useState('');
+  const [codeError, setCodeError] = useState(''); // New state for code error
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,15 +65,15 @@ const AddOrder = () => {
     const fetchArticles = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
-          console.error('Token non trouvé dans localStorage.');
-          return;
+        console.error('Token non trouvé dans localStorage.');
+        return;
       }
       try {
         const response = await axios.get('http://localhost:5001/Article/', {
           headers: {
-              'Authorization': `Bearer ${token}`
-          }
-      });
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setArticles(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
@@ -84,10 +85,19 @@ const AddOrder = () => {
     fetchArticles();
   }, []);
 
-  const handleChange = (e) => {
+  const checkOrderCodeExists = async (code) => {
+    try {
+      const response = await axios.get(`http://localhost:5001/Order/check-code/${code}`);
+      return response.data.exists;
+    } catch (error) {
+      console.error('Erreur lors de la vérification du code de commande:', error);
+      return false;
+    }
+  };
+
+  const handleChange = async (e) => {
     const { id, value } = e.target;
 
-    // Date validation
     if (id === 'date') {
       const selectedDate = new Date(value);
       const today = new Date();
@@ -98,6 +108,18 @@ const AddOrder = () => {
         return;
       } else {
         setDateError('');
+      }
+    }
+
+    if (id === 'code') {
+      const codeExists = await checkOrderCodeExists(value);
+      if (codeExists) {
+        setCodeError('Le code de commande existe déjà. Veuillez en choisir un autre.');
+        setModalMessage('Le code de commande existe déjà. Veuillez en choisir un autre.');
+        setShowModal(true);
+        return;
+      } else {
+        setCodeError('');
       }
     }
 
@@ -146,8 +168,8 @@ const AddOrder = () => {
       return;
     }
 
-    if (dateError) {
-      console.error('Date invalide');
+    if (dateError || codeError) {
+      console.error('Formulaire invalide');
       return;
     }
 
@@ -198,6 +220,7 @@ const AddOrder = () => {
                   onChange={handleChange}
                   required
                 />
+                {codeError && <p className="text-danger">{codeError}</p>}
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="date">Date</CFormLabel>

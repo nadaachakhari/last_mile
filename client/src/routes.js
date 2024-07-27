@@ -110,7 +110,7 @@ const edit_order = React.lazy(() => import('./pages/admin/Order/edit_order'))
 const affecter_livreur = React.lazy(() => import('./pages/admin/Order/affecter_livreur'))
 
 
-//list order state : 
+//list order state
 const list_order_state = React.lazy(() => import('./pages/admin/OrderState/list_order_state'))
 const detail_order_state = React.lazy(() => import('./pages/admin/OrderState/detail_order_state'))
 //fournisseur
@@ -118,7 +118,12 @@ const add_fournisseur = React.lazy(() => import('./pages/admin/Tiers/add_supplie
 const list_fournisseur = React.lazy(() => import('./pages/admin/Tiers/list_supplier'))
 const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_supplier'))
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
+<<<<<<< HEAD
 
+=======
+//profile 
+const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
+>>>>>>> aaf94fb48ad028cff183d57e29719f3814537f16
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
@@ -270,7 +275,8 @@ const routes = [
 { path: '/admin/list_fournisseur', element: list_fournisseur },
 { path: '/admin/detail_fournisseur/:id', element: detail_fournisseur },
 { path: '/admin/edit_fournisseur/:id', name: 'modifer fournisseur', element: edit_fournisseur },
-
+//profile 
+{ path: '/profil/changer_mot_passe', element: changer_mot_passe },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

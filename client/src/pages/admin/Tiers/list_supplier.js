@@ -82,6 +82,8 @@ const ListSupplier = () => {
                         <CTable hover responsive>
                             <CTableHead>
                                 <CTableRow>
+                                
+                                <CTableHeaderCell>#</CTableHeaderCell>
                                     <CTableHeaderCell>Nom</CTableHeaderCell>
                                     <CTableHeaderCell>Code</CTableHeaderCell>
                                     <CTableHeaderCell>Adresse</CTableHeaderCell>

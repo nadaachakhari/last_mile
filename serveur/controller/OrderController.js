@@ -220,8 +220,6 @@ const getOrderById = async (req, res) => {
     }
 };
 
-
-
 const getChangesMessage = (original, updated) => {
     let changes = '';
     for (let key in updated) {
@@ -231,6 +229,7 @@ const getChangesMessage = (original, updated) => {
     }
     return changes;
 };
+
 const updateOrder = async (req, res) => {
     const orderId = req.params.id;
     const { code, date, customerID, observation, note, ID_payment_method, articles } = req.body;
@@ -259,6 +258,17 @@ const updateOrder = async (req, res) => {
             await transaction.rollback();
             return res.status(404).json({ error: 'Commande non trouvée' });
         }
+
+        // Sauvegarder les données originales de la commande
+        const originalOrderData = {
+            code: order.code,
+            date: order.date,
+            customerID: order.customerID,
+            observation: order.observation,
+            note: order.note,
+            ID_payment_method: order.ID_payment_method,
+            total_amount: order.total_amount,
+        };
 
         let totalAmount = 0;
 
@@ -303,19 +313,27 @@ const updateOrder = async (req, res) => {
 
         await transaction.commit();
 
-        res.status(200).json(order);
+        // Obtenir les nouvelles données de la commande pour la comparaison
+        const updatedOrderData = {
+            code,
+            date,
+            customerID,
+            observation,
+            note,
+            ID_payment_method,
+            total_amount: totalAmount,
+        };
+
+        // Générer le message des changements
+        const changesMessage = getChangesMessage(originalOrderData, updatedOrderData);
+
+        res.status(200).json({ order, changes: changesMessage });
     } catch (error) {
         await transaction.rollback();
         console.error('Transaction rollback:', error);
         res.status(500).json({ error: error.message });
     }
 };
-
-
-
-
-
-
 
 const getOrderWithArticles = async (req, res) => {
     const orderId = req.params.id;
@@ -443,6 +461,7 @@ const getOrderWithArticlesAndLines = async (req, res) => {
 
 const assignDeliveryPerson = async (req, res) => {
     const { orderId, deliveryPersonId } = req.body;
+    console.log({ orderId, deliveryPersonId });
     const adminID = req.user.id;
 
     if (!adminID) {
@@ -527,7 +546,22 @@ const assignDeliveryPerson = async (req, res) => {
     }
 };
 
-
+checkOrderCode = async (req, res) => {
+    const { code } = req.params;
+  
+    try {
+      const order = await Order.findOne({ where: { code } });
+  
+      if (order) {
+        return res.status(200).json({ exists: true });
+      } else {
+        return res.status(200).json({ exists: false });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification du code de commande:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  };
 
 module.exports = {
     createOrder,
@@ -538,5 +572,6 @@ module.exports = {
     getOrderWithArticles,
     getOrderLignesByParentID,
     getOrderWithArticlesAndLines,
-    assignDeliveryPerson
+    assignDeliveryPerson,
+    checkOrderCode
 };

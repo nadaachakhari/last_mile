@@ -44,7 +44,9 @@ const AppHeaderDropdown = () => {
     setUserDetails(null);
     navigate('/authenticate');
   };
-
+  const handleAddCategory = () => {
+    navigate('/profil/changer_mot_passe'); // Navigate to the add page
+  };
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -89,10 +91,10 @@ const AppHeaderDropdown = () => {
           <CIcon icon={cilUser} className="me-2" />
           Profile
         </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilSettings} className="me-2" />
-          Settings
-        </CDropdownItem>
+        <CDropdownItem  onClick={handleAddCategory} >
+        <CIcon icon={cilSettings} className="me-2" />
+        Changer mot de passe
+    </CDropdownItem>
         <CDropdownItem href="#">
           <CIcon icon={cilCreditCard} className="me-2" />
           Payments

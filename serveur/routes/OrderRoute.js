@@ -11,7 +11,8 @@ const {
     getOrderWithArticles,
     getOrderLignesByParentID,
     getOrderWithArticlesAndLines,
-    assignDeliveryPerson
+    assignDeliveryPerson,
+    checkOrderCode
 } = require('../controller/OrderController')
 
 router.post('/', authenticateToken, createOrder);
@@ -23,5 +24,8 @@ router.get('/ordrelines/:id', getOrderWithArticlesAndLines);
 router.get('/ordree/:id', getOrderWithArticles);
 router.get('/:id', authenticateToken, getOrderById);
 router.put('/:id', authenticateToken, updateOrder);
+//
+router.get('/check-code/:code', checkOrderCode);
+
 
 module.exports = router;
