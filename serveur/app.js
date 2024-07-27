@@ -20,6 +20,7 @@ const AuthRoutes = require('./routes/AuthRoutes');
 const ArticleRoutes = require('./routes/ArticleRoute');
 const OrderRoutes = require('./routes/OrderRoute')
 const OrderStateRoutes = require('./routes/OrderStateRoute')
+const PasswordResetRoutes = require('./routes/PasswordResetRoute');
 
 
 // Configuration de multer pour le stockage des images
@@ -82,7 +83,7 @@ app.use('/Authenticate', AuthRoutes);
 app.use('/Order', OrderRoutes);
 app.use('/OrderState', OrderStateRoutes);
 
-
+app.use('/password', PasswordResetRoutes);
 app.use('/Article', ArticleRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../client/src/assets/images')));
 app.use('/users_uploads', express.static(path.join(__dirname, '../client/src/assets/images/users')));

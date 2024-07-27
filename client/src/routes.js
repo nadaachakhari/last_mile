@@ -118,8 +118,12 @@ const add_fournisseur = React.lazy(() => import('./pages/admin/Tiers/add_supplie
 const list_fournisseur = React.lazy(() => import('./pages/admin/Tiers/list_supplier'))
 const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_supplier'))
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
+<<<<<<< HEAD
+
+=======
 //profile 
 const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
+>>>>>>> aaf94fb48ad028cff183d57e29719f3814537f16
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
