@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Tiers = require('./TiersModel'); 
-const Order = require('./OrderModel'); 
-const PaymentMethod = require('./PaymentMethodModel'); 
+const Tiers = require('./TiersModel');
+const Order = require('./OrderModel');
+const PaymentMethod = require('./PaymentMethodModel');
 
 const Invoice = sequelize.define('Invoice', {
   id: {
@@ -76,7 +76,7 @@ const Invoice = sequelize.define('Invoice', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   total_ht: {
@@ -85,7 +85,7 @@ const Invoice = sequelize.define('Invoice', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   total_net: {
@@ -94,7 +94,7 @@ const Invoice = sequelize.define('Invoice', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   deleted: {
