@@ -16,14 +16,13 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
-    
     useEffect(() => {
         const fetchOrders = async () => {
             const token = localStorage.getItem('token');
@@ -52,6 +51,19 @@ const OrderList = () => {
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
+    };
+
+    const handleInvoiceClick = async (orderID) => {
+        try {
+            const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
+            if (response.status === 201) {
+                navigate(`/admin/afficher_facture/${orderID}`);
+            } else if (response.status === 200) {
+                navigate(`/admin/display_invoice_exist/${orderID}`);
+            }
+        } catch (error) {
+            console.error('Error creating or fetching invoice:', error);
+        }
     };
 
     return (
@@ -112,6 +124,14 @@ const OrderList = () => {
                                                     Affecter Livreur
                                                 </CButton>
                                             )}
+                                            <CButton
+                                                size="md"
+                                                color="primary"
+                                                className="me-2"
+                                                onClick={() => handleInvoiceClick(order.id)}
+                                            >
+                                                <FaFileInvoice className="icon-white icon-lg me-1" />
+                                            </CButton>
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

@@ -6,11 +6,63 @@ const Tiers = require('../Models/TiersModel');
 const PaymentMethod = require('../Models/PaymentMethodModel');
 const Vat = require('../Models/VatModel');
 const Article = require('../Models/ArticleModel');
+const State = require('../Models/StateModel');
+const User = require('../Models/UserModel');
+
+const getInvoiceByOrderID = async (req, res) => {
+    const orderID = req.params.orderID;
+
+    try {
+        const invoice = await Invoice.findOne({
+            where: { orderID: orderID },
+            include: [
+                {
+                    model: Order, as: 'order',
+                    include: [
+                        { model: Tiers, as: 'customer' },
+                        { model: Tiers, as: 'supplier' },
+                        { model: PaymentMethod, as: 'PaymentMethod' },
+                        { model: State, as: 'state' },
+                        { model: User, as: 'delivery' },
+                    ]
+                }
+            ]
+        });
+
+        if (!invoice) {
+            return res.status(404).json({ message: 'Invoice not found for this order' });
+        }
+
+        const invoiceLignes = await InvoiceLignes.findAll({
+            where: { parentID: invoice.id, deleted: false },
+            include: [
+                { model: Article, as: 'article' },
+                { model: Vat, as: 'vat' }
+            ]
+        });
+
+        const detailedInvoice = {
+            ...invoice.toJSON(),
+            invoiceLignes: invoiceLignes
+        };
+
+        res.status(200).json(detailedInvoice);
+    } catch (error) {
+        console.error('Error fetching invoice:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 const createInvoiceFromOrder = async (req, res) => {
     const orderID = req.params.orderID;
     console.log(orderID);
+
     try {
+        const existingInvoice = await Invoice.findOne({ where: { orderID: orderID } });
+        if (existingInvoice) {
+            return getInvoiceByOrderID(req, res);
+        }
+
         const order = await Order.findOne({
             where: { id: orderID },
             include: [
@@ -23,13 +75,14 @@ const createInvoiceFromOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
+
         const invoiceData = {
             code: `INV-${Date.now()}`,
             date: new Date(),
             tiersID: order.customerID,
             orderID: order.id,
             ID_payment_method: order.ID_payment_method,
-            taxStamp: order.taxStamp || 0,
+            taxStamp: 1,
             observation: order.observation || '',
             note: order.note || '',
             total_ttc: order.total_amount,
@@ -96,5 +149,6 @@ const createInvoiceFromOrder = async (req, res) => {
 };
 
 module.exports = {
-    createInvoiceFromOrder
+    createInvoiceFromOrder,
+    getInvoiceByOrderID
 };
