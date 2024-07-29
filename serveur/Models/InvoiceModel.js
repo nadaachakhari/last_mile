@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 const Tiers = require('./TiersModel');
 const Order = require('./OrderModel');
 const PaymentMethod = require('./PaymentMethodModel');
+//const InvoiceLignes = require('./InvoiceLignesModel'); // Assurez-vous que ce chemin est correct
 
 const Invoice = sequelize.define('Invoice', {
   id: {
@@ -108,8 +109,9 @@ const Invoice = sequelize.define('Invoice', {
 });
 
 // Define relationships
-Invoice.belongsTo(Tiers, { foreignKey: 'tiersID' });
-Invoice.belongsTo(Order, { foreignKey: 'orderID' });
-Invoice.belongsTo(PaymentMethod, { foreignKey: 'ID_payment_method' });
+Invoice.belongsTo(Tiers, { foreignKey: 'tiersID', as: 'customer' });
+Invoice.belongsTo(Order, { foreignKey: 'orderID', as: 'order' });
+Invoice.belongsTo(PaymentMethod, { foreignKey: 'ID_payment_method', as: 'paymentMethod' });
+//Invoice.hasMany(InvoiceLignes, { foreignKey: 'parentID', as: 'invoiceLines' });
 
 module.exports = Invoice;

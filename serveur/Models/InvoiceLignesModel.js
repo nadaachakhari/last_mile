@@ -89,8 +89,8 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
 });
 
 // Define relationships
-InvoiceLignes.belongsTo(Invoice, { foreignKey: 'parentID' });
-InvoiceLignes.belongsTo(Article, { foreignKey: 'articleID' });
-InvoiceLignes.belongsTo(Vat, { foreignKey: 'vatID' });
+InvoiceLignes.belongsTo(Invoice, { foreignKey: 'parentID', as: 'invoice' });
+InvoiceLignes.belongsTo(Article, { foreignKey: 'articleID', as: 'article' });
+InvoiceLignes.belongsTo(Vat, { foreignKey: 'vatID', as: 'vat' });
 
 module.exports = InvoiceLignes;
