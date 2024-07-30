@@ -107,6 +107,10 @@ Order.init({
     allowNull: false,
     defaultValue: false,
   },
+  destination: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   sequelize,
   modelName: 'Order',

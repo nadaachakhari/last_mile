@@ -27,16 +27,17 @@ const EditOrder = () => {
     observation: '',
     note: '',
     ID_payment_method: '',
-    total_amount: '', // Ensure total_amount is included in formData
+    total_amount: '',
+    destination: '',
     articles: [{ id: '', quantity: '' }],
   });
   const [grossAmount, setGrossAmount] = useState(0);
   const [customers, setCustomers] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [articles, setArticles] = useState([]);
+  const [availableArticles, setAvailableArticles] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [dateError, setDateError] = useState(''); // New state for date error
+  const [dateError, setDateError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -46,7 +47,7 @@ const EditOrder = () => {
         const response = await axios.get(`http://localhost:5001/Order/ordrelines/${id}`);
         const { order, orderLignes } = response.data;
 
-        // Set formData and grossAmount based on the fetched order
+        // Initialize formData with order and orderLignes data
         setFormData({
           code: order.code || '',
           date: new Date(order.date).toISOString().split('T')[0],
@@ -54,14 +55,15 @@ const EditOrder = () => {
           observation: order.observation || '',
           note: order.note || '',
           ID_payment_method: order.ID_payment_method || '',
-          total_amount: order.total_amount || '', // Set the total amount
+          total_amount: order.total_amount || '',
+          destination: order.destination || '',
           articles: orderLignes.map(line => ({
             id: line.article.id,
             quantity: line.quantity
           })),
         });
 
-        // Calculate gross amount based on fetched articles
+        // Calculate gross amount based on fetched order lines
         calculateGrossAmount(orderLignes);
       } catch (error) {
         console.error('Erreur lors de la récupération de la commande:', error);
@@ -102,7 +104,7 @@ const EditOrder = () => {
               'Authorization': `Bearer ${token}`
           }
       });
-        setArticles(response.data);
+        setAvailableArticles(response.data); // Rename state to avoid confusion
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
       }
@@ -117,11 +119,10 @@ const EditOrder = () => {
   const handleChange = (e) => {
     const { id, value } = e.target;
 
-    // Date validation
     if (id === 'date') {
       const selectedDate = new Date(value);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set time to 00:00:00 to compare only date part
+      today.setHours(0, 0, 0, 0);
 
       if (selectedDate < today) {
         setDateError("La date ne peut pas être antérieure à aujourd'hui.");
@@ -139,7 +140,7 @@ const EditOrder = () => {
     const updatedArticles = [...formData.articles];
     updatedArticles[index] = { ...updatedArticles[index], [name]: value };
     setFormData({ ...formData, articles: updatedArticles });
-    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article change
+    calculateGrossAmount(updatedArticles);
   };
 
   const addArticle = () => {
@@ -153,13 +154,13 @@ const EditOrder = () => {
     const updatedArticles = [...formData.articles];
     updatedArticles.splice(index, 1);
     setFormData({ ...formData, articles: updatedArticles });
-    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article removal
+    calculateGrossAmount(updatedArticles);
   };
 
   const calculateGrossAmount = (updatedArticles) => {
     let total = 0;
     updatedArticles.forEach((article) => {
-      const selectedArticle = articles.find((a) => a.id === parseInt(article.id));
+      const selectedArticle = availableArticles.find((a) => a.id === parseInt(article.id));
       if (selectedArticle) {
         total += selectedArticle.sale_ttc * article.quantity;
       }
@@ -181,7 +182,7 @@ const EditOrder = () => {
     }
     const dataToSubmit = {
       ...formData,
-      gross_amount: grossAmount,  // Use grossAmount for submission
+      gross_amount: grossAmount,
     };
 
     try {
@@ -236,7 +237,7 @@ const EditOrder = () => {
                   onChange={handleChange}
                   required
                 />
-                   {dateError && <p className="text-danger">{dateError}</p>}
+                {dateError && <p className="text-danger">{dateError}</p>}
               </CCol>
               <CCol md={3}>
                 <CFormLabel htmlFor="customerID">Client</CFormLabel>
@@ -286,6 +287,14 @@ const EditOrder = () => {
                   onChange={handleChange}
                 />
               </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="destination">Destination</CFormLabel>
+                <CFormInput
+                  id="destination"
+                  value={formData.destination}
+                  onChange={handleChange}
+                />
+              </CCol>
               <CCol xs={12}>
                 <CButton color="primary" onClick={addArticle}>
                   Ajouter Article
@@ -302,9 +311,9 @@ const EditOrder = () => {
                       required
                     >
                       <option value="">Choisir un article...</option>
-                      {articles.map((article) => (
-                        <option key={article.id} value={article.id}>
-                          {article.name} - {article.code}
+                      {availableArticles.map((availableArticle) => (
+                        <option key={availableArticle.id} value={availableArticle.id}>
+                          {availableArticle.name} - {availableArticle.code}
                         </option>
                       ))}
                     </CFormSelect>

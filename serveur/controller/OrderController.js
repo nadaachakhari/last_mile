@@ -14,7 +14,7 @@ const sequelize = require('../config/database')
 
 
 const createOrder = async (req, res) => {
-    const { code, date, customerID, observation, note, ID_payment_method, articles } = req.body;
+    const { code, date, customerID, observation, note, ID_payment_method, articles, destination } = req.body;
     const supplierID = req.user.id;
 
     if (!supplierID) {
@@ -74,6 +74,7 @@ const createOrder = async (req, res) => {
             ID_payment_method,
             StatesID: pendingState.id,
             deleted: false,
+            destination,
             total_amount: totalAmount, // Initialement 0, sera mis à jour après calcul
         }, { transaction });
 
@@ -130,6 +131,9 @@ const createOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
 
 
 const getAllOrders = async (req, res) => {

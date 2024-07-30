@@ -120,7 +120,9 @@ const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
 //profile 
 const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
-
+//BonDeLivraison
+const BonDeLivraison= React.lazy(() => import('./pages/admin/Order/delivery_sell'))
+const display_delivery_exist = React.lazy(() => import('./pages/admin/Order/display_delivery_exist'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -273,6 +275,9 @@ const routes = [
 { path: '/admin/edit_fournisseur/:id', name: 'modifer fournisseur', element: edit_fournisseur },
 //profile 
 { path: '/profil/changer_mot_passe', element: changer_mot_passe },
+  //DeliverySell
+  { path: '/admin/bon_de_livraison/:orderID', element: BonDeLivraison },
+  { path: '/admin/display_delivery_exist/:orderID', element: display_delivery_exist },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },
