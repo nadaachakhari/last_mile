@@ -31,11 +31,7 @@ const AfficherLivraison = () => {
         const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
         setDelivery(response.data);
         console.log(response.data);
-        if (response.status === 201) {
-          navigate(`/admin/afficher_facture/${orderID}`);
-      } else if (response.status === 200) {
-          navigate(`/admin/display_invoice_exist/${orderID}`);
-      }
+     
       } catch (error) {
         setError('Erreur lors de la récupération de la livraison.');
       } finally {
