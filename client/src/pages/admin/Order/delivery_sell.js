@@ -38,6 +38,7 @@ const AfficherLivraison = () => {
         setLoading(false);
       }
     };
+    //resolve
 
     fetchDelivery();
   }, [orderID]);
