@@ -118,14 +118,16 @@ const add_fournisseur = React.lazy(() => import('./pages/admin/Tiers/add_supplie
 const list_fournisseur = React.lazy(() => import('./pages/admin/Tiers/list_supplier'))
 const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_supplier'))
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
+
 //profile 
 const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
 //BonDeLivraison
 const BonDeLivraison= React.lazy(() => import('./pages/admin/Order/delivery_sell'))
 const display_delivery_exist = React.lazy(() => import('./pages/admin/Order/display_delivery_exist'))
 //afficher facture:
-const afficher_facture = React.lazy(() => import('./pages/admin/Order/aff'))
+const afficher_facture = React.lazy(() => import('./pages/admin/Order/afficher_facture'))
 const display_invoice_exist = React.lazy(() => import('./pages/admin/Order/display_invoice_exist'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 

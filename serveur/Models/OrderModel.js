@@ -125,4 +125,5 @@ Order.belongsTo(User, { as: 'delivery', foreignKey: 'deliveryID' });
 Order.belongsTo(PaymentMethod, { as: 'PaymentMethod', foreignKey: 'ID_payment_method' });
 Order.belongsTo(State, { as: 'state', foreignKey: 'StatesID' });
 
+
 module.exports = Order;

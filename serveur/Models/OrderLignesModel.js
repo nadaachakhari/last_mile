@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Order = require('./OrderModel'); 
+const Order = require('./OrderModel');
 const Article = require('./ArticleModel');
 
-class OrderLignes extends Model {}
+class OrderLignes extends Model { }
 
 OrderLignes.init({
   id: {
@@ -38,7 +38,7 @@ OrderLignes.init({
     allowNull: false,
     validate: {
       notNull: true,
-      min: 1, 
+      min: 1,
     }
   },
   gross_amount: {
@@ -46,8 +46,8 @@ OrderLignes.init({
     allowNull: false,
     validate: {
       notNull: true,
-      isDecimal: true, 
-      min: 0, 
+      isDecimal: true,
+      min: 0,
     }
   },
   deleted: {

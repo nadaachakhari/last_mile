@@ -16,7 +16,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck  } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -57,7 +57,7 @@ const OrderList = () => {
         try {
             const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
             if (response.status === 201) {
-                navigate(`/admin/bon_de_livraison/${response.data.id}`);
+                navigate(`/admin/bon_de_livraison/${orderID}`);
             } else if (response.status === 200) {
                 navigate(`/admin/display_delivery_exist/${orderID}`);
             }

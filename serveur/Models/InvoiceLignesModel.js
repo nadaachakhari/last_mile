@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Article = require('./ArticleModel'); 
-const Vat = require('./VatModel'); 
-const Invoice = require('./InvoiceModel'); 
+const Article = require('./ArticleModel');
+const Vat = require('./VatModel');
+const Invoice = require('./InvoiceModel');
 
 const InvoiceLignes = sequelize.define('InvoiceLignes', {
   id: {
@@ -36,7 +36,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
-      notNull: true, 
+      notNull: true,
       min: 1,
     }
   },
@@ -46,7 +46,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   gross_amount: {
@@ -55,7 +55,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   vatID: {
@@ -75,7 +75,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     validate: {
       notNull: true,
       isDecimal: true,
-      min: 0, 
+      min: 0,
     }
   },
   deleted: {
@@ -89,8 +89,8 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
 });
 
 // Define relationships
-InvoiceLignes.belongsTo(Invoice, { foreignKey: 'parentID' });
-InvoiceLignes.belongsTo(Article, { foreignKey: 'articleID' });
-InvoiceLignes.belongsTo(Vat, { foreignKey: 'vatID' });
+InvoiceLignes.belongsTo(Invoice, { foreignKey: 'parentID', as: 'invoice' });
+InvoiceLignes.belongsTo(Article, { foreignKey: 'articleID', as: 'article' });
+InvoiceLignes.belongsTo(Vat, { foreignKey: 'vatID', as: 'vat' });
 
 module.exports = InvoiceLignes;
