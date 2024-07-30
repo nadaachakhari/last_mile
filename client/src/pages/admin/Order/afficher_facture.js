@@ -61,7 +61,7 @@ const AfficherFacture = () => {
     code,
     date,
     observation,
-    note,
+    taxStamp,
     total_ttc,
     total_ht,
     total_net,
@@ -71,6 +71,8 @@ const AfficherFacture = () => {
 
   const customerName = order.customer?.name || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
+  const codeCMD = order.code || 'Non défini';
+  const dateCMD = order.date || 'Non défini';
   const paymentMethodValue = order.PaymentMethod?.value || 'Non défini';
 
   const formatDate = (dateString) => {
@@ -86,21 +88,28 @@ const AfficherFacture = () => {
             <strong>Facture</strong> <small>{code}</small>
           </CCardHeader>
           <CCardBody>
-            <p><strong>Date:</strong> {formatDate(date)}</p>
+            <p><strong>Date facture:</strong> {formatDate(date)}</p>
             <p><strong>Client:</strong> {customerName}</p>
             <p><strong>Fournisseur:</strong> {supplierName}</p>
+            <p><strong>Code commande:</strong> {codeCMD}</p>
+            <p><strong>Date commande:</strong> {dateCMD}</p>
             <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
             <p><strong>Observation:</strong> {observation}</p>
-            <p><strong>Note:</strong> {note}</p>
-            <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} €</p>
-            <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} €</p>
-            <p><strong>Total Net:</strong> {parseFloat(total_net).toFixed(2)} €</p>
+            <p><strong>Timbre fiscal:</strong> {parseFloat(taxStamp).toFixed(2)} Dt </p>
+            <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} Dt</p>
+            <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} Dt</p>
+            <p><strong>Total Net:</strong> {parseFloat(total_net).toFixed(2)} Dt</p>
 
             <CTable hover responsive>
               <CTableHead>
                 <CTableRow>
+                  <CTableHeaderCell>Article Code</CTableHeaderCell>
                   <CTableHeaderCell>Article</CTableHeaderCell>
                   <CTableHeaderCell>Quantité</CTableHeaderCell>
+                  <CTableHeaderCell>Sale HT</CTableHeaderCell>
+                  <CTableHeaderCell>Gross Amount</CTableHeaderCell>
+                  <CTableHeaderCell>VAT Value</CTableHeaderCell>
+                  <CTableHeaderCell>Sale TTC</CTableHeaderCell>
                   <CTableHeaderCell>Prix Unitaire</CTableHeaderCell>
                   <CTableHeaderCell>Total</CTableHeaderCell>
                 </CTableRow>
@@ -108,10 +117,15 @@ const AfficherFacture = () => {
               <CTableBody>
                 {invoiceLignes.map((line, index) => (
                   <CTableRow key={index}>
+                    <CTableDataCell>{line.article?.code || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.article?.name || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.quantity}</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.sale_ht).toFixed(2)} €</CTableDataCell>
-                    <CTableDataCell>{(line.quantity * parseFloat(line.sale_ht)).toFixed(2)} €</CTableDataCell>
+                    <CTableDataCell>{line.sale_ht} Dt</CTableDataCell>
+                    <CTableDataCell>{line.gross_amount} Dt</CTableDataCell>
+                    <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
+                    <CTableDataCell>{line.sale_ttc} Dt</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.sale_ht).toFixed(2)} Dt</CTableDataCell>
+                    <CTableDataCell>{(line.quantity * parseFloat(line.sale_ht)).toFixed(2)} Dt</CTableDataCell>
                   </CTableRow>
                 ))}
               </CTableBody>
