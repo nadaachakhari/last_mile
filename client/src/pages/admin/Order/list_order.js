@@ -16,7 +16,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck  } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck, FaTimes } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -65,6 +65,7 @@ const OrderList = () => {
             console.error('Error creating or fetching delivery:', error);
         }
     };
+
     const handleInvoiceClick = async (orderID) => {
         try {
             const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
@@ -77,6 +78,35 @@ const OrderList = () => {
             console.error('Error creating or fetching invoice:', error);
         }
     };
+
+    const handleCancelOrderClick = async (orderID) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token non trouvé dans localStorage.');
+            return;
+        }
+        try {
+            const response = await axios.put(
+                `http://localhost:5001/Order/cancelCMD/${orderID}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                setOrders(prevOrders =>
+                    prevOrders.map(order =>
+                        order.id === orderID ? { ...order, state: { ...order.state, value: 'Commande annulée' } } : order
+                    )
+                );
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+        }
+    };
+
     return (
         <CRow>
             <CCol xs={12}>
@@ -135,7 +165,7 @@ const OrderList = () => {
                                                     Affecter Livreur
                                                 </CButton>
                                             )}
-                                             <CButton
+                                            <CButton
                                                 size="md"
                                                 color="primary"
                                                 className="me-2"
@@ -151,6 +181,17 @@ const OrderList = () => {
                                             >
                                                 <FaTruck className="icon-white icon-lg me-1" />
                                             </CButton>
+                                            {userRole === 'fournisseur' && order.state.value === 'En attente de livraison' && (
+                                                <CButton
+                                                    size="md"
+                                                    color="danger"
+                                                    className="me-2"
+                                                    onClick={() => handleCancelOrderClick(order.id)}
+                                                    title="Annuler Commande"
+                                                >
+                                                    <FaTimes className="icon-white icon-lg me-1" />
+                                                </CButton>
+                                            )}
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}
