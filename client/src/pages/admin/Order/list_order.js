@@ -16,7 +16,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck  } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -53,6 +53,30 @@ const OrderList = () => {
         return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
     };
 
+    const handleDeliveryClick = async (orderID) => {
+        try {
+            const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
+            if (response.status === 201) {
+                navigate(`/admin/bon_de_livraison/${orderID}`);
+            } else if (response.status === 200) {
+                navigate(`/admin/display_delivery_exist/${orderID}`);
+            }
+        } catch (error) {
+            console.error('Error creating or fetching delivery:', error);
+        }
+    };
+    const handleInvoiceClick = async (orderID) => {
+        try {
+            const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
+            if (response.status === 201) {
+                navigate(`/admin/afficher_facture/${orderID}`);
+            } else if (response.status === 200) {
+                navigate(`/admin/display_invoice_exist/${orderID}`);
+            }
+        } catch (error) {
+            console.error('Error creating or fetching invoice:', error);
+        }
+    };
     return (
         <CRow>
             <CCol xs={12}>
@@ -111,6 +135,22 @@ const OrderList = () => {
                                                     Affecter Livreur
                                                 </CButton>
                                             )}
+                                             <CButton
+                                                size="md"
+                                                color="primary"
+                                                className="me-2"
+                                                onClick={() => handleInvoiceClick(order.id)}
+                                            >
+                                                <FaFileInvoice className="icon-white icon-lg me-1" />
+                                            </CButton>
+                                            <CButton
+                                                size="md"
+                                                color="primary"
+                                                className="me-2"
+                                                onClick={() => handleDeliveryClick(order.id)}
+                                            >
+                                                <FaTruck className="icon-white icon-lg me-1" />
+                                            </CButton>
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

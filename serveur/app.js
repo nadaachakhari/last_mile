@@ -20,6 +20,9 @@ const AuthRoutes = require('./routes/AuthRoutes');
 const ArticleRoutes = require('./routes/ArticleRoute');
 const OrderRoutes = require('./routes/OrderRoute')
 const OrderStateRoutes = require('./routes/OrderStateRoute')
+const DeliverySellRoutes = require('./routes/DeliverySellRoute')
+const PasswordResetRoutes = require('./routes/PasswordResetRoute');
+const InvoiceRoute = require('./routes/InvoiceRoute')
 
 
 // Configuration de multer pour le stockage des images
@@ -51,7 +54,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT
+    //port: process.env.DB_PORT
 });
 
 db.connect((err) => {
@@ -81,6 +84,9 @@ app.use('/State', StateRoutes);
 app.use('/Authenticate', AuthRoutes);
 app.use('/Order', OrderRoutes);
 app.use('/OrderState', OrderStateRoutes);
+app.use('/DeliverySell', DeliverySellRoutes);
+app.use('/Invoice', InvoiceRoute);
+app.use('/password', PasswordResetRoutes);
 
 
 app.use('/Article', ArticleRoutes);

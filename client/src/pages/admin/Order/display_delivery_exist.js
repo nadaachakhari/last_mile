@@ -122,7 +122,7 @@ const DisplayDeliveryExists = () => {
                         <CButton color="primary" onClick={handlePrint} className="mt-3">
                             Imprimer Livraison
                         </CButton>
-                        <CButton color="secondary" onClick={() => navigate('/admin/list_delivery')} className="mt-3 ms-2">
+                        <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
                             Retourner à la Liste des Livraisons
                         </CButton>
                     </CCardBody>
