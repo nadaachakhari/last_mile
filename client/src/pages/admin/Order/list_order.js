@@ -102,6 +102,7 @@ const OrderList = () => {
                         order.id === orderID ? { ...order, state: { ...order.state, value: 'Commande annulée' } } : order
                     )
                 );
+                // Forcer un re-rendu en mettant à jour updateKey
                 setUpdateKey(prevKey => prevKey + 1);
             }
         } catch (error) {
