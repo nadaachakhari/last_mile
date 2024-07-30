@@ -123,6 +123,9 @@ const changer_mot_passe= React.lazy(() => import('./pages/profile/change_passwor
 //BonDeLivraison
 const BonDeLivraison= React.lazy(() => import('./pages/admin/Order/delivery_sell'))
 const display_delivery_exist = React.lazy(() => import('./pages/admin/Order/display_delivery_exist'))
+//afficher facture:
+const afficher_facture = React.lazy(() => import('./pages/admin/Order/aff'))
+const display_invoice_exist = React.lazy(() => import('./pages/admin/Order/display_invoice_exist'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -278,6 +281,10 @@ const routes = [
   //DeliverySell
   { path: '/admin/bon_de_livraison/:orderID', element: BonDeLivraison },
   { path: '/admin/display_delivery_exist/:orderID', element: display_delivery_exist },
+    //taxstamp de facture
+    { path: '/admin/afficher_facture/:orderID', element: afficher_facture },
+    { path: '/admin/display_invoice_exist/:orderID', element: display_invoice_exist },
+  
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

@@ -65,7 +65,18 @@ const OrderList = () => {
             console.error('Error creating or fetching delivery:', error);
         }
     };
-
+    const handleInvoiceClick = async (orderID) => {
+        try {
+            const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
+            if (response.status === 201) {
+                navigate(`/admin/afficher_facture/${orderID}`);
+            } else if (response.status === 200) {
+                navigate(`/admin/display_invoice_exist/${orderID}`);
+            }
+        } catch (error) {
+            console.error('Error creating or fetching invoice:', error);
+        }
+    };
     return (
         <CRow>
             <CCol xs={12}>
@@ -124,7 +135,14 @@ const OrderList = () => {
                                                     Affecter Livreur
                                                 </CButton>
                                             )}
-                                           
+                                             <CButton
+                                                size="md"
+                                                color="primary"
+                                                className="me-2"
+                                                onClick={() => handleInvoiceClick(order.id)}
+                                            >
+                                                <FaFileInvoice className="icon-white icon-lg me-1" />
+                                            </CButton>
                                             <CButton
                                                 size="md"
                                                 color="primary"
