@@ -89,8 +89,10 @@ const DeliverySellLignes = sequelize.define('DeliverySellLignes', {
 });
 
 // Define relationships
-DeliverySellLignes.belongsTo(DeliverySell, { foreignKey: 'parentID' });
-DeliverySellLignes.belongsTo(Article, { foreignKey: 'articleID' });
-DeliverySellLignes.belongsTo(Vat, { foreignKey: 'vatID' });
+DeliverySellLignes.belongsTo(DeliverySell, { foreignKey: 'parentID', as: 'deliverySell'  });
+DeliverySellLignes.belongsTo(Article, { foreignKey: 'articleID', as: 'article'  });
+DeliverySellLignes.belongsTo(Vat, { foreignKey: 'vatID', as: 'vat'  });
+
+
 
 module.exports = DeliverySellLignes;

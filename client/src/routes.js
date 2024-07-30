@@ -120,11 +120,7 @@ const detail_fournisseur  = React.lazy(() => import('./pages/admin/Tiers/detail_
 const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_supplier'))
 
 //profile 
-const changer_mot_passe = React.lazy(() => import('./pages/profile/change_password'))
-
-//afficher facture:
-const afficher_facture = React.lazy(() => import('./pages/admin/Order/afficher_facture'))
-const display_invoice_exist = React.lazy(() => import('./pages/admin/Order/display_invoice_exist'))
+const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
 
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
@@ -277,11 +273,7 @@ const routes = [
 { path: '/admin/detail_fournisseur/:id', element: detail_fournisseur },
 { path: '/admin/edit_fournisseur/:id', name: 'modifer fournisseur', element: edit_fournisseur },
 //profile 
-  { path: '/profil/changer_mot_passe', element: changer_mot_passe },
-
-  //taxstamp de facture
-  { path: '/admin/afficher_facture/:orderID', element: afficher_facture },
-  { path: '/admin/display_invoice_exist/:orderID', element: display_invoice_exist },
+{ path: '/profil/changer_mot_passe', element: changer_mot_passe },
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

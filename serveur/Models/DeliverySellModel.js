@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 const Tiers = require('./TiersModel');
 const Order = require('./OrderModel');
 const User = require('./UserModel');
+const OrderLignes = require('./OrderLignesModel');
 
 const DeliverySell = sequelize.define('DeliverySell', {
   id: {
@@ -38,19 +39,23 @@ const DeliverySell = sequelize.define('DeliverySell', {
   total_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    references: {
+      model: OrderLignes,
+      key: 'id',
+    },
     validate: {
       notNull: true,
-      isDecimal: true,
-      min: 0,
     }
   },
   total_ttc: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+    references: {
+      model: OrderLignes,
+      key: 'id',
+    },
     validate: {
       notNull: true,
-      isDecimal: true,
-      min: 0,
     }
   },
   orderID: {
@@ -98,8 +103,22 @@ const DeliverySell = sequelize.define('DeliverySell', {
 });
 
 // Définir les relations
-DeliverySell.belongsTo(Tiers, { foreignKey: 'tiersID' });
-DeliverySell.belongsTo(Order, { foreignKey: 'orderID' });
-DeliverySell.belongsTo(User, { foreignKey: 'userID' });
+DeliverySell.belongsTo(Tiers, { foreignKey: 'tiersID', as: 'customer'  });
+DeliverySell.belongsTo(Order, { foreignKey: 'orderID', as: 'order'  });
+DeliverySell.belongsTo(User, { foreignKey: 'userID',as :'delivery' });
 
+
+/**
+ *  deliveryID: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
+
+  
+
+ */
 module.exports = DeliverySell;

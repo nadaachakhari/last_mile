@@ -64,8 +64,8 @@ const OrderDetail = () => {
                         <p><strong>Code:</strong> {order.order.code}</p>
                         <p><strong>Date:</strong> {formatDate(order.order.date)}</p>
                         <p><strong>Client:</strong> {order.order.customer.name}</p>
-                        {/*   <p><strong>Fournisseur:</strong> {order.order.supplier.name}</p> */}
-                   
+                        {/* <p><strong>Fournisseur:</strong> {order.order.supplier.name}</p> */}
+                        <p><strong>Destination:</strong> {order.order.destination}</p>
                         <p><strong>Méthode de paiement:</strong> {order.order.PaymentMethod.name}</p>
                         <p><strong>État:</strong> {order.order.state.value}</p>
                         <p><strong>Observation:</strong> {order.order.observation}</p>

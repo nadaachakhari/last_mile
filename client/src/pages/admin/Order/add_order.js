@@ -27,6 +27,7 @@ const AddOrder = () => {
     observation: '',
     note: '',
     ID_payment_method: '',
+    destination: '',
     articles: [{ id: '', quantity: '' }],
   });
   const [grossAmount, setGrossAmount] = useState(0); // État pour grossAmount
@@ -281,6 +282,16 @@ const AddOrder = () => {
                   onChange={handleChange}
                 />
               </CCol>
+              <CCol md={6}>
+  <CFormLabel htmlFor="destination">Destination</CFormLabel>
+  <CFormInput
+    id="destination"
+    value={formData.destination}
+    onChange={handleChange}
+    required
+  />
+</CCol>
+
               <CCol xs={12}>
                 <CButton color="primary" onClick={addArticle}>
                   Ajouter Article
