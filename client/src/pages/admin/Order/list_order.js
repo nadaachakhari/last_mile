@@ -21,6 +21,7 @@ import { FaEdit, FaFileInvoice, FaTruck, FaTimes } from 'react-icons/fa';
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
+    const [updateKey, setUpdateKey] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,7 +47,7 @@ const OrderList = () => {
         };
 
         fetchOrders();
-    }, []);
+    }, [updateKey]); // Ajout de updateKey dans le tableau des dépendances
 
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -101,10 +102,15 @@ const OrderList = () => {
                         order.id === orderID ? { ...order, state: { ...order.state, value: 'Commande annulée' } } : order
                     )
                 );
+                setUpdateKey(prevKey => prevKey + 1);
             }
         } catch (error) {
             console.error('Error cancelling order:', error);
         }
+    };
+
+    const getRowStyle = (orderState) => {
+        return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000' } : {};
     };
 
     return (
@@ -133,7 +139,7 @@ const OrderList = () => {
                             </CTableHead>
                             <CTableBody>
                                 {orders.map((order, index) => (
-                                    <CTableRow key={order.id}>
+                                    <CTableRow key={order.id} style={getRowStyle(order.state.value)}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{order.code}</CTableDataCell>
                                         <CTableDataCell>{formatDate(order.date)}</CTableDataCell>
