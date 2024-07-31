@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const User = require('../Models/UserModel');
 const RoleUser = require('../Models/RoleUserModel');
+const Order = require('../Models/OrderModel')
+const Tiers = require('../Models/TiersModel')
+const State = require('../Models/StateModel')
 
 
 
@@ -130,10 +133,67 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const getOrdersByDeliveryPerson = async (req, res) => {
+    try {
+        const deliveryPersonId = req.user.id;
+
+        if (!deliveryPersonId) {
+            return res.status(403).json({ error: 'Utilisateur non authentifié' });
+        }
+
+        const deliveryPersonRole = await RoleUser.findOne({ where: { name: 'livreur' } });
+        const deliveryPerson = await User.findOne({
+            where: {
+                id: deliveryPersonId,
+                role_usersID: deliveryPersonRole.id,
+                deleted: false,
+            }
+        });
+
+        if (!deliveryPerson) {
+            return res.status(403).json({ error: 'Accès interdit : Utilisateur non autorisé' });
+        }
+
+        const orders = await Order.findAll({
+            where: {
+                deliveryID: deliveryPersonId,
+                deleted: false,
+            },
+            include: [
+                {
+                    model: Tiers,
+                    as: 'customer',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: Tiers,
+                    as: 'supplier',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: State,
+                    as: 'state',
+                    attributes: ['id', 'value']
+                }
+            ]
+        });
+
+        if (!orders.length) {
+            return res.status(404).json({ error: 'Aucune commande trouvée pour ce livreur' });
+        }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
     deleteUser,
+    getOrdersByDeliveryPerson
 };

@@ -35,11 +35,20 @@ const OrderList = () => {
                 return;
             }
             try {
-                const response = await axios.get('http://localhost:5001/Order/', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                let response;
+                if (role === 'livreur') {
+                    response = await axios.get('http://localhost:5001/Users/orders/delivery-person', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } else {
+                    response = await axios.get('http://localhost:5001/Order/', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }
                 setOrders(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des commandes:', error);
@@ -122,11 +131,13 @@ const OrderList = () => {
                         <strong>Liste</strong> <small>des Commandes</small>
                     </CCardHeader>
                     <CCardBody>
-                        <Link to={`/admin/add_order`}>
-                            <CButton color="primary" className="mb-3">
-                                Ajouter Commande
-                            </CButton>
-                        </Link>
+                        {userRole !== 'livreur' && (
+                            <Link to={`/admin/add_order`}>
+                                <CButton color="primary" className="mb-3">
+                                    Ajouter Commande
+                                </CButton>
+                            </Link>
+                        )}
                         <CTable hover responsive>
                             <CTableHead>
                                 <CTableRow>
@@ -152,42 +163,46 @@ const OrderList = () => {
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
-                                            <Link to={`/admin/edit_order/${order.id}`}>
-                                                <CButton size="md" color="warning" className="me-2">
-                                                    <FaEdit className="icon-white icon-lg me-1" />
-                                                </CButton>
-                                            </Link>
-                                            {userRole === 'Administrateur' && (
-                                                <CButton
-                                                    size="md"
-                                                    color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
-                                                    className="me-2"
-                                                    disabled={order.state.value !== 'En attente de livraison'}
-                                                    onClick={() => {
-                                                        if (order.state.value === 'En attente de livraison') {
-                                                            navigate(`/admin/affecter_livreur/${order.id}`);
-                                                        }
-                                                    }}
-                                                >
-                                                    Affecter Livreur
-                                                </CButton>
+                                            {userRole !== 'livreur' && (
+                                                <>
+                                                    <Link to={`/admin/edit_order/${order.id}`}>
+                                                        <CButton size="md" color="warning" className="me-2">
+                                                            <FaEdit className="icon-white icon-lg me-1" />
+                                                        </CButton>
+                                                    </Link>
+                                                    {userRole === 'Administrateur' && (
+                                                        <CButton
+                                                            size="md"
+                                                            color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
+                                                            className="me-2"
+                                                            disabled={order.state.value !== 'En attente de livraison'}
+                                                            onClick={() => {
+                                                                if (order.state.value === 'En attente de livraison') {
+                                                                    navigate(`/admin/affecter_livreur/${order.id}`);
+                                                                }
+                                                            }}
+                                                        >
+                                                            Affecter Livreur
+                                                        </CButton>
+                                                    )}
+                                                    <CButton
+                                                        size="md"
+                                                        color="primary"
+                                                        className="me-2"
+                                                        onClick={() => handleInvoiceClick(order.id)}
+                                                    >
+                                                        <FaFileInvoice className="icon-white icon-lg me-1" />
+                                                    </CButton>
+                                                    <CButton
+                                                        size="md"
+                                                        color="primary"
+                                                        className="me-2"
+                                                        onClick={() => handleDeliveryClick(order.id)}
+                                                    >
+                                                        <FaTruck className="icon-white icon-lg me-1" />
+                                                    </CButton>
+                                                </>
                                             )}
-                                            <CButton
-                                                size="md"
-                                                color="primary"
-                                                className="me-2"
-                                                onClick={() => handleInvoiceClick(order.id)}
-                                            >
-                                                <FaFileInvoice className="icon-white icon-lg me-1" />
-                                            </CButton>
-                                            <CButton
-                                                size="md"
-                                                color="primary"
-                                                className="me-2"
-                                                onClick={() => handleDeliveryClick(order.id)}
-                                            >
-                                                <FaTruck className="icon-white icon-lg me-1" />
-                                            </CButton>
                                             {userRole === 'fournisseur' && order.state.value === 'En attente de livraison' && (
                                                 <CButton
                                                     size="md"
