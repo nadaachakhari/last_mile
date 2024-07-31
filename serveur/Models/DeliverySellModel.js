@@ -104,6 +104,7 @@ const DeliverySell = sequelize.define('DeliverySell', {
 
 // Définir les relations
 DeliverySell.belongsTo(Tiers, { foreignKey: 'tiersID', as: 'customer'  });
+//DeliverySell.belongsTo(Tiers, { foreignKey: 'tiersID', as: 'supplier'  });
 DeliverySell.belongsTo(Order, { foreignKey: 'orderID', as: 'order'  });
 DeliverySell.belongsTo(User, { foreignKey: 'userID',as :'delivery' });
 
