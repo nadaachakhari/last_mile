@@ -8,7 +8,9 @@ const {
     getUserById,
     updateUser,
     deleteUser,
+    getOrdersByDeliveryPerson
 } = require('../controller/UsersController');
+const { authenticateToken } = require('../controller/AuthController')
 
 // Configuration de multer pour le stockage des images
 const storage = multer.diskStorage({
@@ -24,6 +26,8 @@ const upload = multer({ storage: storage });
 
 router.post('/', upload.single('photo'), createUser);
 router.get('/', getAllUsers);
+
+router.get('/orders/delivery-person', authenticateToken, getOrdersByDeliveryPerson);
 router.get('/:id', getUserById);
 router.put('/:id', upload.single('photo'), updateUser);
 router.put('/update_deleted/:id', deleteUser);

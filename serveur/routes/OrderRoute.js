@@ -12,7 +12,8 @@ const {
     getOrderLignesByParentID,
     getOrderWithArticlesAndLines,
     assignDeliveryPerson,
-    checkOrderCode
+    checkOrderCode,
+    cancelOrder
 } = require('../controller/OrderController')
 
 router.post('/', authenticateToken, createOrder);
@@ -26,6 +27,6 @@ router.get('/:id', authenticateToken, getOrderById);
 router.put('/:id', authenticateToken, updateOrder);
 //
 router.get('/check-code/:code', checkOrderCode);
-
+router.put('/cancelCMD/:orderId', authenticateToken, cancelOrder );
 
 module.exports = router;

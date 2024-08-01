@@ -16,11 +16,12 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck  } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck, FaTimes } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
+    const [updateKey, setUpdateKey] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,11 +35,20 @@ const OrderList = () => {
                 return;
             }
             try {
-                const response = await axios.get('http://localhost:5001/Order/', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                let response;
+                if (role === 'livreur') {
+                    response = await axios.get('http://localhost:5001/Users/orders/delivery-person', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } else {
+                    response = await axios.get('http://localhost:5001/Order/', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }
                 setOrders(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des commandes:', error);
@@ -46,7 +56,7 @@ const OrderList = () => {
         };
 
         fetchOrders();
-    }, []);
+    }, [updateKey]); // Ajout de updateKey dans le tableau des dépendances
 
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -65,6 +75,7 @@ const OrderList = () => {
             console.error('Error creating or fetching delivery:', error);
         }
     };
+
     const handleInvoiceClick = async (orderID) => {
         try {
             const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
@@ -77,6 +88,41 @@ const OrderList = () => {
             console.error('Error creating or fetching invoice:', error);
         }
     };
+
+    const handleCancelOrderClick = async (orderID) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token non trouvé dans localStorage.');
+            return;
+        }
+        try {
+            const response = await axios.put(
+                `http://localhost:5001/Order/cancelCMD/${orderID}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                setOrders(prevOrders =>
+                    prevOrders.map(order =>
+                        order.id === orderID ? { ...order, state: { ...order.state, value: 'Commande annulée' } } : order
+                    )
+                );
+                // Forcer un re-rendu en mettant à jour updateKey
+                setUpdateKey(prevKey => prevKey + 1);
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+        }
+    };
+
+    const getRowStyle = (orderState) => {
+        return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000' } : {};
+    };
+
     return (
         <CRow>
             <CCol xs={12}>
@@ -85,11 +131,13 @@ const OrderList = () => {
                         <strong>Liste</strong> <small>des Commandes</small>
                     </CCardHeader>
                     <CCardBody>
-                        <Link to={`/admin/add_order`}>
-                            <CButton color="primary" className="mb-3">
-                                Ajouter Commande
-                            </CButton>
-                        </Link>
+                        {userRole !== 'livreur' && (
+                            <Link to={`/admin/add_order`}>
+                                <CButton color="primary" className="mb-3">
+                                    Ajouter Commande
+                                </CButton>
+                            </Link>
+                        )}
                         <CTable hover responsive>
                             <CTableHead>
                                 <CTableRow>
@@ -103,7 +151,7 @@ const OrderList = () => {
                             </CTableHead>
                             <CTableBody>
                                 {orders.map((order, index) => (
-                                    <CTableRow key={order.id}>
+                                    <CTableRow key={order.id} style={getRowStyle(order.state.value)}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{order.code}</CTableDataCell>
                                         <CTableDataCell>{formatDate(order.date)}</CTableDataCell>
@@ -115,42 +163,57 @@ const OrderList = () => {
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
-                                            <Link to={`/admin/edit_order/${order.id}`}>
-                                                <CButton size="md" color="warning" className="me-2">
-                                                    <FaEdit className="icon-white icon-lg me-1" />
-                                                </CButton>
-                                            </Link>
-                                            {userRole === 'Administrateur' && (
+                                            {userRole !== 'livreur' && (
+                                                <>
+                                                    <Link to={`/admin/edit_order/${order.id}`}>
+                                                        <CButton size="md" color="warning" className="me-2">
+                                                            <FaEdit className="icon-white icon-lg me-1" />
+                                                        </CButton>
+                                                    </Link>
+                                                    {userRole === 'Administrateur' && (
+                                                        <CButton
+                                                            size="md"
+                                                            color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
+                                                            className="me-2"
+                                                            disabled={order.state.value !== 'En attente de livraison'}
+                                                            onClick={() => {
+                                                                if (order.state.value === 'En attente de livraison') {
+                                                                    navigate(`/admin/affecter_livreur/${order.id}`);
+                                                                }
+                                                            }}
+                                                        >
+                                                            Affecter Livreur
+                                                        </CButton>
+                                                    )}
+                                                    <CButton
+                                                        size="md"
+                                                        color="primary"
+                                                        className="me-2"
+                                                        onClick={() => handleInvoiceClick(order.id)}
+                                                    >
+                                                        <FaFileInvoice className="icon-white icon-lg me-1" />
+                                                    </CButton>
+                                                    <CButton
+                                                        size="md"
+                                                        color="primary"
+                                                        className="me-2"
+                                                        onClick={() => handleDeliveryClick(order.id)}
+                                                    >
+                                                        <FaTruck className="icon-white icon-lg me-1" />
+                                                    </CButton>
+                                                </>
+                                            )}
+                                            {userRole === 'fournisseur' && order.state.value === 'En attente de livraison' && (
                                                 <CButton
                                                     size="md"
-                                                    color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
+                                                    color="danger"
                                                     className="me-2"
-                                                    disabled={order.state.value !== 'En attente de livraison'}
-                                                    onClick={() => {
-                                                        if (order.state.value === 'En attente de livraison') {
-                                                            navigate(`/admin/affecter_livreur/${order.id}`);
-                                                        }
-                                                    }}
+                                                    onClick={() => handleCancelOrderClick(order.id)}
+                                                    title="Annuler Commande"
                                                 >
-                                                    Affecter Livreur
+                                                    <FaTimes className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             )}
-                                             <CButton
-                                                size="md"
-                                                color="primary"
-                                                className="me-2"
-                                                onClick={() => handleInvoiceClick(order.id)}
-                                            >
-                                                <FaFileInvoice className="icon-white icon-lg me-1" />
-                                            </CButton>
-                                            <CButton
-                                                size="md"
-                                                color="primary"
-                                                className="me-2"
-                                                onClick={() => handleDeliveryClick(order.id)}
-                                            >
-                                                <FaTruck className="icon-white icon-lg me-1" />
-                                            </CButton>
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

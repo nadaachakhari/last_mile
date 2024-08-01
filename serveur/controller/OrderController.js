@@ -565,7 +565,45 @@ checkOrderCode = async (req, res) => {
       console.error('Erreur lors de la vérification du code de commande:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
     }
-  };
+};
+  
+
+
+const cancelOrder = async (req, res) => {
+    const { orderId } = req.params;
+    const user = req.user;
+
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'fournisseur')) {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+    try {
+        const order = await Order.findByPk(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Commande non trouvée' });
+        }
+
+        const pendingState = await State.findOne({ where: { value: 'En attente de livraison' } });
+        if (user.role === 'fournisseur' && order.StatesID !== pendingState.id) {
+            return res.status(403).json({ error: 'Accès interdit : Vous ne pouvez annuler que les commandes en attente de livraison' });
+        }
+
+        const canceledState = await State.findOne({ where: { value: 'Commande annulée' } });
+        if (!canceledState) {
+            return res.status(500).json({ error: 'État "Commande annulée" non trouvé dans la base de données' });
+        }
+
+        order.StatesID = canceledState.id;
+        await order.save();
+
+        res.status(200).json({ message: 'État de la commande mis à jour à "Commande annulée"' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'état de la commande' });
+    }
+};
+
+
+
 
 module.exports = {
     createOrder,
@@ -577,5 +615,6 @@ module.exports = {
     getOrderLignesByParentID,
     getOrderWithArticlesAndLines,
     assignDeliveryPerson,
-    checkOrderCode
+    checkOrderCode,
+    cancelOrder
 };
