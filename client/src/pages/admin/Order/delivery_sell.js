@@ -18,6 +18,51 @@ import {
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
 
+const numberToWords = (number) => {
+  const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
+  const teens = ["dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
+  const tens = ["", "dix", "vingt", "trente", "quarante", "cinquante", "soixante", "soixante-dix", "quatre-vingt", "quatre-vingt-dix"];
+
+  const convert_hundreds = (number) => {
+    if (number === 0) return '';
+    if (number > 99) {
+      return ones[Math.floor(number / 100)] + " cent " + convert_tens(number % 100);
+    } else {
+      return convert_tens(number);
+    }
+  };
+
+  const convert_tens = (number) => {
+    if (number < 10) return ones[number];
+    else if (number >= 10 && number < 20) return teens[number - 10];
+    else {
+      return tens[Math.floor(number / 10)] + (number % 10 > 0 ? "-" + ones[number % 10] : "");
+    }
+  };
+
+  const convert_thousands = (number) => {
+    if (number >= 1000) {
+      return convert_hundreds(Math.floor(number / 1000)) + " mille " + convert_hundreds(number % 1000);
+    } else {
+      return convert_hundreds(number);
+    }
+  };
+
+  if (number === 0) return "zéro";
+  return convert_thousands(number).trim();
+};
+
+const numberToWordsWithDecimals = (number) => {
+  const parts = number.toString().split('.');
+  const integerPart = parseInt(parts[0], 10);
+  const decimalPart = parts[1] ? parseInt(parts[1], 10) : 0;
+
+  const integerWords = numberToWords(integerPart);
+  const decimalWords = decimalPart > 0 ? numberToWords(decimalPart) : '';
+
+  return decimalWords ? `${integerWords} dinars et ${decimalWords} millimes` : `${integerWords} dinars`;
+};
+
 const AfficherLivraison = () => {
   const { orderID } = useParams();
   const [delivery, setDelivery] = useState(null);
@@ -31,7 +76,6 @@ const AfficherLivraison = () => {
       try {
         const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
         setDelivery(response.data);
-        console.log(response.data);
       } catch (error) {
         setError('Erreur lors de la récupération de la livraison.');
       } finally {
@@ -46,17 +90,9 @@ const AfficherLivraison = () => {
     content: () => componentRef.current,
   });
 
-  if (loading) {
-    return <div>Chargement...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!delivery) {
-    return <div>Aucune livraison trouvée.</div>;
-  }
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>{error}</div>;
+  if (!delivery) return <div>Aucune livraison trouvée.</div>;
 
   const {
     code,
@@ -90,28 +126,28 @@ const AfficherLivraison = () => {
             <div>
               <strong>Livraison</strong> <small>{code}</small>
             </div>
+            <div>
+              <p><strong>Date:</strong> {formatDate(date)}</p>
+              <p><strong>Adressé à:</strong> {customerName}</p>
+              <p><strong>Fournisseur:</strong> {supplierName}</p>
+              <p><strong>Livreur:</strong> {deliveryUserName}</p>
+            </div>
           </CCardHeader>
           <CCardBody style={{ backgroundColor: '#f9f9f9' }}>
-            <CRow className="mb-4" style={{ borderBottom: '2px solid black' }}>
+            <CRow>
               <CCol xs={6}>
-                <p><strong>Émetteur:</strong> Axeserp</p>
-                <p><strong>MF:</strong> 1699211/V/A/P/000</p>
-                <p>B11, Sfax Innovation 2 Route Saltnia km 3 ZI Poudrière 2</p>
-                <p>Tél.: 29 300 034 | Email: contact@axeserp.com</p>
+                <p><strong>Observation:</strong> {observation}</p>
+                <p><strong>Destination:</strong> {destination}</p>
+             
               </CCol>
-              <CCol xs={6}>
-                <p><strong>Adressé à:</strong> {customerName}</p>
-                <p><strong>Fournisseur:</strong> {supplierName}</p>
-                <p><strong>Livreur:</strong> {deliveryUserName}</p>
-                <p><strong>Date:</strong> {formatDate(date)}</p>
+              <CCol xs={6} className="text-right">
+                <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} DT</p>
+                <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} DT</p>
+                <p><strong>Différence TTC - HT:</strong> {differenceTTC_HT} DT</p>
               </CCol>
             </CRow>
 
-            <p style={{ borderBottom: '1px solid black' }}><strong>Observation:</strong> {observation}</p>
-            <p style={{ borderBottom: '1px solid black' }}><strong>Destination:</strong> {destination}</p>
-            <p style={{ borderBottom: '1px solid black' }}><strong>Note:</strong> {note}</p>
-
-            <CTable hover responsive style={{ border: '2px solid black' }}>
+            <CTable hover responsive style={{ border: '2px solid black', marginBottom: '20px' }}>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>Article Code</CTableHeaderCell>
@@ -138,18 +174,64 @@ const AfficherLivraison = () => {
               </CTableBody>
             </CTable>
 
-            <div className="mt-4" style={{ borderTop: '2px solid black' }}>
-              <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} DT</p>
-              <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} DT</p>
-              <p><strong>Différence TTC - HT:</strong> {differenceTTC_HT} DT</p>
+            {/* Footer Section */}
+            <CTable responsive style={{ borderTop: '2px solid black', marginTop: '20px' }}>
+              <CTableBody>
+                <CTableRow>
+                  <CTableDataCell style={{ borderRight: '2px solid black', height: '100px', verticalAlign: 'bottom' }}>
+                    <p>Cachet et Signature</p>
+                    <p>.          </p>
+                  </CTableDataCell>
+                  <CTableDataCell className="text-right" style={{ verticalAlign: 'bottom' }}>
+                    <p>La présente livraison à la somme de :</p>
+                    <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(2))}</strong></p>
+                  </CTableDataCell>
+                </CTableRow>
+                <CTableRow>
+                  <CTableDataCell colSpan="2" className="text-center">
+                    <p>AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000</p>
+                  </CTableDataCell>
+                </CTableRow>
+              </CTableBody>
+            </CTable>
+
+            {/* Styles for printing */}
+            <style>
+              {`
+                @media print {
+                  .no-print {
+                    display: none;
+                  }
+                  .footer {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    border-top: 2px solid black;
+                    padding-top: 20px;
+                  }
+                  @page {
+                    margin: 20mm;
+                  }
+                  .footer::after {
+                    content: "AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000";
+                    display: block;
+                    text-align: center;
+                    margin-top: 20px;
+                  }
+                }
+              `}
+            </style>
+
+            <div className="no-print" style={{ marginBottom: '20px' }}>
+              <CButton color="primary" onClick={handlePrint} className="mt-3">
+                Imprimer Livraison
+              </CButton>
+              <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
+                Retourner à la Liste des Commandes
+              </CButton>
             </div>
 
-            <CButton color="primary" onClick={handlePrint} className="mt-3">
-              Imprimer Livraison
-            </CButton>
-            <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
-              Retourner à la Liste des Livraisons
-            </CButton>
           </CCardBody>
         </CCard>
       </CCol>
