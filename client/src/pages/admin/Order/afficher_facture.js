@@ -18,13 +18,13 @@ import {
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
 
+// Function to convert number to words in French
 const numberToWords = (number) => {
   const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
   const teens = ["dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
   const tens = ["", "dix", "vingt", "trente", "quarante", "cinquante", "soixante", "soixante-dix", "quatre-vingt", "quatre-vingt-dix"];
-
+  
   const convert_hundreds = (number) => {
-    if (number === 0) return '';
     if (number > 99) {
       return ones[Math.floor(number / 100)] + " cent " + convert_tens(number % 100);
     } else {
@@ -56,10 +56,10 @@ const numberToWordsWithDecimals = (number) => {
   const parts = number.toString().split('.');
   const integerPart = parseInt(parts[0], 10);
   const decimalPart = parts[1] ? parseInt(parts[1], 10) : 0;
-
+  
   const integerWords = numberToWords(integerPart);
   const decimalWords = decimalPart > 0 ? numberToWords(decimalPart) : '';
-
+  
   return decimalWords ? `${integerWords} dinars et ${decimalWords} millimes` : `${integerWords} dinars`;
 };
 
@@ -98,7 +98,7 @@ const AfficherFacture = () => {
     code,
     date,
     observation,
-    taxStamp,
+    note,
     total_ttc,
     total_ht,
     total_net,
@@ -108,8 +108,6 @@ const AfficherFacture = () => {
 
   const customerName = order.customer?.name || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
-  const codeCMD = order.code || 'Non défini';
-  const dateCMD = order.date || 'Non défini';
   const paymentMethodValue = order.PaymentMethod?.value || 'Non défini';
 
   const formatDate = (dateString) => {
@@ -127,7 +125,6 @@ const AfficherFacture = () => {
               <strong>Facture</strong> <small>{code}</small>
             </div>
           </CCardHeader>
-
           <CCardBody style={{ backgroundColor: '#f9f9f9' }}>
             <CRow>
               <CCol xs={6}>
@@ -146,31 +143,10 @@ const AfficherFacture = () => {
             </CRow>
 
             <CTable hover responsive style={{ border: '2px solid black', marginBottom: '20px' }}>
-
-          <CCardBody>
-            <p><strong>Date facture:</strong> {formatDate(date)}</p>
-            <p><strong>Client:</strong> {customerName}</p>
-            <p><strong>Fournisseur:</strong> {supplierName}</p>
-            <p><strong>Code commande:</strong> {codeCMD}</p>
-            <p><strong>Date commande:</strong> {dateCMD}</p>
-            <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
-            <p><strong>Observation:</strong> {observation}</p>
-            <p><strong>Timbre fiscal:</strong> {parseFloat(taxStamp).toFixed(2)} Dt </p>
-            <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} Dt</p>
-            <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} Dt</p>
-            <p><strong>Total Net:</strong> {parseFloat(total_net).toFixed(2)} Dt</p>
-
-            <CTable hover responsive>
-
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell>Article Code</CTableHeaderCell>
                   <CTableHeaderCell>Article</CTableHeaderCell>
                   <CTableHeaderCell>Quantité</CTableHeaderCell>
-                  <CTableHeaderCell>Sale HT</CTableHeaderCell>
-                  <CTableHeaderCell>Gross Amount</CTableHeaderCell>
-                  <CTableHeaderCell>VAT Value</CTableHeaderCell>
-                  <CTableHeaderCell>Sale TTC</CTableHeaderCell>
                   <CTableHeaderCell>Prix Unitaire</CTableHeaderCell>
                   <CTableHeaderCell>Total</CTableHeaderCell>
                 </CTableRow>
@@ -178,20 +154,10 @@ const AfficherFacture = () => {
               <CTableBody>
                 {invoiceLignes.map((line, index) => (
                   <CTableRow key={index}>
-                    <CTableDataCell>{line.article?.code || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.article?.name || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.quantity}</CTableDataCell>
-
                     <CTableDataCell>{parseFloat(line.sale_ht).toFixed(2)}  DT</CTableDataCell>
                     <CTableDataCell>{(line.quantity * parseFloat(line.sale_ht)).toFixed(2)}  DT</CTableDataCell>
-
-                    <CTableDataCell>{line.sale_ht} Dt</CTableDataCell>
-                    <CTableDataCell>{line.gross_amount} Dt</CTableDataCell>
-                    <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
-                    <CTableDataCell>{line.sale_ttc} Dt</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.sale_ht).toFixed(2)} Dt</CTableDataCell>
-                    <CTableDataCell>{(line.quantity * parseFloat(line.sale_ht)).toFixed(2)} Dt</CTableDataCell>
-
                   </CTableRow>
                 ))}
               </CTableBody>
@@ -219,7 +185,7 @@ const AfficherFacture = () => {
                   </CTableDataCell>
                   <CTableDataCell className="text-right" style={{ verticalAlign: 'bottom' }}>
                   <p>La présente facture à la somme de :</p>
-                  <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(2))} </strong></p>
+                  <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(2))} DT</strong></p>
                   </CTableDataCell>
                 </CTableRow>
                 <CTableRow>

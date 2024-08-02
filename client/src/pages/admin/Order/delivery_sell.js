@@ -177,16 +177,7 @@ const AfficherLivraison = () => {
             {/* Footer Section */}
             <CTable responsive style={{ borderTop: '2px solid black', marginTop: '20px' }}>
               <CTableBody>
-                <CTableRow>
-                  <CTableDataCell style={{ borderRight: '2px solid black', height: '100px', verticalAlign: 'bottom' }}>
-                    <p>Cachet et Signature</p>
-                    <p>.          </p>
-                  </CTableDataCell>
-                  <CTableDataCell className="text-right" style={{ verticalAlign: 'bottom' }}>
-                    <p>La présente livraison à la somme de :</p>
-                    <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(2))}</strong></p>
-                  </CTableDataCell>
-                </CTableRow>
+               
                 <CTableRow>
                   <CTableDataCell colSpan="2" className="text-center">
                     <p>AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000</p>

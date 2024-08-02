@@ -13,6 +13,7 @@ import {
     CTableHeaderCell,
     CTableBody,
     CTableDataCell,
+    CAlert,
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
@@ -22,6 +23,8 @@ const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [userRole, setUserRole] = useState('');
     const [updateKey, setUpdateKey] = useState(0);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -56,7 +59,7 @@ const OrderList = () => {
         };
 
         fetchOrders();
-    }, [updateKey]); // Ajout de updateKey dans le tableau des dépendances
+    }, [updateKey]);
 
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -111,7 +114,6 @@ const OrderList = () => {
                         order.id === orderID ? { ...order, state: { ...order.state, value: 'Commande annulée' } } : order
                     )
                 );
-                // Forcer un re-rendu en mettant à jour updateKey
                 setUpdateKey(prevKey => prevKey + 1);
             }
         } catch (error) {
@@ -123,9 +125,32 @@ const OrderList = () => {
         return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000' } : {};
     };
 
+    const handleInvoiceButtonClick = (order) => {
+        if (order.state.value === 'En attente de livraison') {
+            setAlertMessage("Vous devez affecter un livreur avant de générer une facture.");
+            setShowAlert(true);
+        } else {
+            handleInvoiceClick(order.id);
+        }
+    };
+
+    const handleDeliveryButtonClick = (order) => {
+        if (order.state.value === 'En attente de livraison') {
+            setAlertMessage("Vous devez affecter un livreur avant de générer un bon de livraison.");
+            setShowAlert(true);
+        } else {
+            handleDeliveryClick(order.id);
+        }
+    };
+
     return (
         <CRow>
             <CCol xs={12}>
+                {showAlert && (
+                    <CAlert color="danger" onClose={() => setShowAlert(false)} dismissible>
+                        {alertMessage}
+                    </CAlert>
+                )}
                 <CCard className="mb-4">
                     <CCardHeader>
                         <strong>Liste</strong> <small>des Commandes</small>
@@ -189,7 +214,7 @@ const OrderList = () => {
                                                         size="md"
                                                         color="primary"
                                                         className="me-2"
-                                                        onClick={() => handleInvoiceClick(order.id)}
+                                                        onClick={() => handleInvoiceButtonClick(order)}
                                                     >
                                                         <FaFileInvoice className="icon-white icon-lg me-1" />
                                                     </CButton>
@@ -197,22 +222,11 @@ const OrderList = () => {
                                                         size="md"
                                                         color="primary"
                                                         className="me-2"
-                                                        onClick={() => handleDeliveryClick(order.id)}
+                                                        onClick={() => handleDeliveryButtonClick(order)}
                                                     >
                                                         <FaTruck className="icon-white icon-lg me-1" />
                                                     </CButton>
                                                 </>
-                                            )}
-                                            {userRole === 'fournisseur' && order.state.value === 'En attente de livraison' && (
-                                                <CButton
-                                                    size="md"
-                                                    color="danger"
-                                                    className="me-2"
-                                                    onClick={() => handleCancelOrderClick(order.id)}
-                                                    title="Annuler Commande"
-                                                >
-                                                    <FaTimes className="icon-white icon-lg me-1" />
-                                                </CButton>
                                             )}
                                         </CTableDataCell>
                                     </CTableRow>
