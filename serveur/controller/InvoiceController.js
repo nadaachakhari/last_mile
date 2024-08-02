@@ -53,16 +53,18 @@ const getInvoiceByOrderID = async (req, res) => {
     }
 };
 
+
 const createInvoiceFromOrder = async (req, res) => {
     const orderID = req.params.orderID;
-    console.log(orderID);
 
     try {
+        // Check if the invoice already exists for the order
         const existingInvoice = await Invoice.findOne({ where: { orderID: orderID } });
         if (existingInvoice) {
             return getInvoiceByOrderID(req, res);
         }
 
+        // Fetch the order details
         const order = await Order.findOne({
             where: { id: orderID },
             include: [
@@ -76,22 +78,7 @@ const createInvoiceFromOrder = async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        const invoiceData = {
-            code: `INV-${Date.now()}`,
-            date: new Date(),
-            tiersID: order.customerID,
-            orderID: order.id,
-            ID_payment_method: order.ID_payment_method,
-            taxStamp: 1,
-            observation: order.observation || '',
-            note: order.note || '',
-            total_ttc: order.total_amount,
-            total_ht: order.total_amount,
-            total_net: order.total_amount,
-            deleted: false,
-        };
-        const invoice = await Invoice.create(invoiceData);
-
+        // Fetch the order lines
         const orderLines = await OrderLignes.findAll({
             where: { parentID: order.id },
             include: [
@@ -99,27 +86,66 @@ const createInvoiceFromOrder = async (req, res) => {
             ]
         });
 
+        // Validate VAT IDs and calculate totals
+        let total_ht = 0;
+        let total_ttc = 0;
+
         for (const line of orderLines) {
             const vatExists = await Vat.findByPk(line.article.vatID);
-            console.log(`VAT ID ${line.article.vatID}:`, vatExists);
             if (!vatExists) {
                 return res.status(400).json({ message: `VAT ID ${line.article.vatID} not found` });
             }
+
+            const sale_ht = line.quantity * line.article.sale_ht;
+            const sale_ttc = line.quantity * line.article.sale_ttc;
+
+            total_ht += sale_ht;
+            total_ttc += sale_ttc;
         }
 
-        const invoiceLinesData = orderLines.map(line => ({
-            parentID: invoice.id,
-            articleID: line.articleID,
-            quantity: line.quantity,
-            sale_ht: line.gross_amount,
-            gross_amount: line.gross_amount,
-            vatID: line.article.vatID,
-            sale_ttc: line.gross_amount,
-            deleted: false,
-        }));
+        // Calculate total_net
+        const taxStamp = 1000; // Assume taxStamp is a percentage value
+        const total_tax = (total_ttc - total_ht) * (taxStamp / 100);
+        const total_net = total_ttc - total_tax;
 
+        // Create the invoice
+        const invoiceData = {
+            code: `INV-${Date.now()}`,
+            date: new Date(),
+            tiersID: order.customerID,
+            orderID: order.id,
+            ID_payment_method: order.ID_payment_method,
+            taxStamp: taxStamp,
+            observation: order.observation || '',
+            note: order.note || '',
+            total_ttc: total_ttc,
+            total_ht: total_ht,
+            total_net: total_net, 
+            deleted: false,
+        };
+        const invoice = await Invoice.create(invoiceData);
+
+        // Prepare invoice lines data
+        const invoiceLinesData = orderLines.map((line) => {
+            const sale_ht = line.quantity * line.article.sale_ht;
+            const sale_ttc = line.quantity * line.article.sale_ttc;
+
+            return {
+                parentID: invoice.id,
+                articleID: line.articleID,
+                quantity: line.quantity,
+                sale_ht: sale_ht,
+                gross_amount: line.gross_amount,
+                vatID: line.article.vatID,
+                sale_ttc: sale_ttc,
+                deleted: false,
+            };
+        });
+
+        // Bulk create invoice lines
         await InvoiceLignes.bulkCreate(invoiceLinesData);
 
+        // Fetch additional details for the response
         const customer = await Tiers.findByPk(order.customerID);
         const supplier = await Tiers.findByPk(order.supplierID);
         const paymentMethod = await PaymentMethod.findByPk(order.ID_payment_method);
@@ -144,9 +170,12 @@ const createInvoiceFromOrder = async (req, res) => {
 
         res.status(201).json(detailedInvoice);
     } catch (error) {
+        console.error('Error creating invoice:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
 
 module.exports = {
     createInvoiceFromOrder,
