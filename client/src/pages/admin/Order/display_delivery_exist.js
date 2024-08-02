@@ -98,6 +98,7 @@ const DisplayInvoiceExists = () => {
   const {
     code,
     date,
+    destination,
     observation,
     taxStamp,
     total_ttc,
@@ -110,7 +111,6 @@ const DisplayInvoiceExists = () => {
   const customerName = order.customer?.name || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
   const paymentMethodValue = order.PaymentMethod?.value || 'Non défini';
-
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
@@ -140,6 +140,7 @@ const DisplayInvoiceExists = () => {
                 <p><strong>Fournisseur:</strong> {supplierName}</p>
                 <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
                 <p><strong>Observation:</strong> {observation}</p>
+                <p><strong>Adressé à:</strong> {order.destination}</p>
                 <p><strong>Timbre fiscal:</strong> {parseFloat(taxStamp).toFixed(2)} DT</p>
               </CCol>
             </CRow>
