@@ -21,7 +21,7 @@ router.get('/', authenticateToken, getAllOrders);
 router.put('/assign_delivery', authenticateToken, assignDeliveryPerson)
 router.get('/ordre/:id', getOrderWithoutArticles);
 router.get('/ordre/lines/:id', getOrderLignesByParentID);
-router.get('/ordrelines/:id', getOrderWithArticlesAndLines);
+router.get('/ordrelines/:orderId', getOrderWithArticlesAndLines);
 router.get('/ordree/:id', getOrderWithArticles);
 router.get('/:id', authenticateToken, getOrderById);
 router.put('/:id', authenticateToken, updateOrder);
