@@ -421,7 +421,7 @@ const getOrderLignesByParentID = async (req, res) => {
 
 };
 const getOrderWithArticlesAndLines = async (req, res) => {
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
 
     try {
         // Fetch the order with associated data

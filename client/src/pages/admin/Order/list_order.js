@@ -17,7 +17,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck, FaTimes, FaExchangeAlt } from 'react-icons/fa'; // Importer FaExchangeAlt
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -37,19 +37,16 @@ const OrderList = () => {
                 console.error('Token non trouvé dans localStorage.');
                 return;
             }
+
             try {
                 let response;
                 if (role === 'livreur') {
                     response = await axios.get('http://localhost:5001/Users/orders/delivery-person', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                 } else {
                     response = await axios.get('http://localhost:5001/Order/', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                 }
                 setOrders(response.data);
@@ -98,16 +95,14 @@ const OrderList = () => {
             console.error('Token non trouvé dans localStorage.');
             return;
         }
+
         try {
             const response = await axios.put(
                 `http://localhost:5001/Order/cancelCMD/${orderID}`,
                 {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
+                { headers: { 'Authorization': `Bearer ${token}` } }
             );
+
             if (response.status === 200) {
                 setOrders(prevOrders =>
                     prevOrders.map(order =>
@@ -121,8 +116,12 @@ const OrderList = () => {
         }
     };
 
+    const handleChangeStateClick = (orderID) => {
+        navigate(`/admin/change_order_state/${orderID}`); // Remplacez cette URL par celle de votre route pour changer l'état de la commande
+    };
+
     const getRowStyle = (orderState) => {
-        return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000' } : {};
+        return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000', color: '#fff' } : {};
     };
 
     const handleInvoiceButtonClick = (order) => {
@@ -188,6 +187,17 @@ const OrderList = () => {
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
+                                            {userRole === 'livreur' && (
+                                                <CButton
+                                                    size="md"
+                                                    color="primary"
+                                                    className="me-2"
+                                                    onClick={() => handleChangeStateClick(order.id)}
+                                                    title="Changer état de commande"
+                                                >
+                                                    <FaExchangeAlt className="icon-white icon-lg me-1" />
+                                                </CButton>
+                                            )}
                                             {userRole !== 'livreur' && (
                                                 <>
                                                     <Link to={`/admin/edit_order/${order.id}`}>
@@ -228,6 +238,17 @@ const OrderList = () => {
                                                     </CButton>
                                                 </>
                                             )}
+                                            {userRole === 'Administrateur' || (userRole === 'fournisseur' && order.state.value === 'En attente de livraison') ? (
+                                                <CButton
+                                                    size="md"
+                                                    color="danger"
+                                                    className="me-2"
+                                                    onClick={() => handleCancelOrderClick(order.id)}
+                                                    title="Annuler Commande"
+                                                >
+                                                    <FaTimes className="icon-white icon-lg me-1" />
+                                                </CButton>
+                                            ) : null}
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

@@ -128,6 +128,9 @@ const display_delivery_exist = React.lazy(() => import('./pages/admin/Order/disp
 const afficher_facture = React.lazy(() => import('./pages/admin/Order/afficher_facture'))
 const display_invoice_exist = React.lazy(() => import('./pages/admin/Order/display_invoice_exist'))
 
+//change state by livreur
+const change_order_state = React.lazy(() => import('./pages/admin/Order/change_order_state'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -285,7 +288,11 @@ const routes = [
   { path: '/admin/display_delivery_exist/:orderID', element: display_delivery_exist },
     //taxstamp de facture
     { path: '/admin/afficher_facture/:orderID', element: afficher_facture },
-    { path: '/admin/display_invoice_exist/:orderID', element: display_invoice_exist },
+  { path: '/admin/display_invoice_exist/:orderID', element: display_invoice_exist },
+    
+
+  //change state order by livreur
+  { path: '/admin/change_order_state/:orderId', element: change_order_state },
   
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

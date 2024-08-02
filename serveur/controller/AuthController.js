@@ -90,6 +90,47 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+const isLivreur = (req, res, next) => {
+  if (req.user.role !== 'livreur') {
+    return res.sendStatus(403);
+  }
+  next();
+};
+
+
+
+// const authenticateToken = async (req, res, next) => {
+//   const authHeader = req.headers["authorization"];
+//   const token = authHeader && authHeader.split(" ")[1];
+
+//   if (token == null) return res.sendStatus(401);
+// console.log(token);
+//   try {
+//     const decoded = jwt.verify(token, "hex");
+
+//     const user = await User.findOne({
+//       where: { id: decoded.id, deleted: false },
+//       include: [{ model: RoleUser, attributes: ['name'] }]
+//     });
+
+//     if (!user) {
+//       return res.status(401).json({ error: 'User not found' });
+//     }
+
+//     req.user = {
+//       id: user.id,
+//       role: user.RoleUser.name // Assuming RoleUser model has a 'name' attribute
+//     };
+
+//     next();
+//   } catch (err) {
+//     return res.sendStatus(403);
+//   }
+// };
+
+
+
 //changePassword
 const changePassword = async (req, res) => {
   const userId = req.user.id; // Obtenir l'ID de l'utilisateur authentifié depuis le token
@@ -129,4 +170,5 @@ module.exports = {
   authenticate,
   authenticateToken,
   changePassword,
+  isLivreur
 };
