@@ -14,7 +14,8 @@ const {
   uploadSupplier,
   getSupplierById ,
   getAllSuppliers,
-  deleteSupplier
+  deleteSupplier,
+  //getOrdersByCustomer
  
 } = require('../controller/TierController');
 const { authenticateToken } = require('../controller/AuthController')
@@ -27,7 +28,6 @@ router.get('/', getAllTiers);
 //client
 router.post('/create-client', authenticateToken, createClient);
 router.get('/clients', getAllClients);
-
 
 //Supplier
 router.post('/create-supplier', createSupplier);
@@ -42,5 +42,7 @@ router.put('/update_deleted_Supplier/:id', deleteSupplier);
 router.get('/:id', getTierById);
 router.put('/:id', updateTier);
 router.put('/update_deleted/:id', deleteTier);
+
+
 
 module.exports = router;
