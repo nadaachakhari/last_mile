@@ -74,7 +74,7 @@ const DisplayInvoiceExists = () => {
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/Invoice/invoice/${orderID}`);
+        const response = await axios.get(`http://localhost:5001/DeliverySell/delivery/${orderID}`);
         setInvoice(response.data);
       } catch (error) {
         setError('Erreur lors de la récupération de la facture.');

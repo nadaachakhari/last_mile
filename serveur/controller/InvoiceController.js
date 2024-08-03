@@ -104,8 +104,10 @@ const createInvoiceFromOrder = async (req, res) => {
         }
 
         // Calculate total_net
-        const taxStamp = 1000; // Assume taxStamp is a percentage value
+        const taxStamp = 1; // Assume taxStamp is a percentage value
         const total_tax = (total_ttc - total_ht) * (taxStamp / 100);
+
+
         const total_net = total_ttc - total_tax;
 
         // Create the invoice
@@ -120,7 +122,8 @@ const createInvoiceFromOrder = async (req, res) => {
             note: order.note || '',
             total_ttc: total_ttc,
             total_ht: total_ht,
-            total_net: total_net, 
+            total_net: total_net,
+            //total_net: 0,
             deleted: false,
         };
         const invoice = await Invoice.create(invoiceData);
