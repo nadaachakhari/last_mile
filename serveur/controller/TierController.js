@@ -5,6 +5,10 @@ const TypeTiers = require('../Models/TypeTiersModel');
 const City = require('../Models/CityModel');
 const { sendEmail } = require('../config/emailConfig')
 const { Op } = require('sequelize');
+const Order = require('../Models/OrderModel');
+const State = require('../Models/StateModel');
+const PaymentMethod = require('../Models/PaymentMethodModel');
+
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
@@ -448,6 +452,8 @@ const deleteSupplier = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+
 module.exports = {
   createTier,
   getAllTiers,
@@ -468,6 +474,5 @@ module.exports = {
   getAllSuppliers,
   getSupplierById,
   deleteSupplier,
-
 
 };

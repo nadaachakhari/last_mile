@@ -17,7 +17,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck, FaTimes, FaExchangeAlt } from 'react-icons/fa'; // Importer FaExchangeAlt
+import { FaEdit, FaFileInvoice, FaTruck, FaTimes, FaExchangeAlt } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -117,7 +117,7 @@ const OrderList = () => {
     };
 
     const handleChangeStateClick = (orderID) => {
-        navigate(`/admin/change_order_state/${orderID}`); // Remplacez cette URL par celle de votre route pour changer l'état de la commande
+        navigate(`/admin/change_order_state/${orderID}`);
     };
 
     const getRowStyle = (orderState) => {
@@ -155,7 +155,7 @@ const OrderList = () => {
                         <strong>Liste</strong> <small>des Commandes</small>
                     </CCardHeader>
                     <CCardBody>
-                        {userRole !== 'livreur' && (
+                        {userRole !== 'livreur' && userRole !== 'client' && (
                             <Link to={`/admin/add_order`}>
                                 <CButton color="primary" className="mb-3">
                                     Ajouter Commande
@@ -198,28 +198,26 @@ const OrderList = () => {
                                                     <FaExchangeAlt className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             )}
-                                            {userRole !== 'livreur' && (
+                                            {userRole === 'Administrateur' && (
                                                 <>
                                                     <Link to={`/admin/edit_order/${order.id}`}>
                                                         <CButton size="md" color="warning" className="me-2">
                                                             <FaEdit className="icon-white icon-lg me-1" />
                                                         </CButton>
                                                     </Link>
-                                                    {userRole === 'Administrateur' && (
-                                                        <CButton
-                                                            size="md"
-                                                            color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
-                                                            className="me-2"
-                                                            disabled={order.state.value !== 'En attente de livraison'}
-                                                            onClick={() => {
-                                                                if (order.state.value === 'En attente de livraison') {
-                                                                    navigate(`/admin/affecter_livreur/${order.id}`);
-                                                                }
-                                                            }}
-                                                        >
-                                                            Affecter Livreur
-                                                        </CButton>
-                                                    )}
+                                                    <CButton
+                                                        size="md"
+                                                        color={order.state.value === 'En attente de livraison' ? 'success' : 'secondary'}
+                                                        className="me-2"
+                                                        disabled={order.state.value !== 'En attente de livraison'}
+                                                        onClick={() => {
+                                                            if (order.state.value === 'En attente de livraison') {
+                                                                navigate(`/admin/affecter_livreur/${order.id}`);
+                                                            }
+                                                        }}
+                                                    >
+                                                        Affecter Livreur
+                                                    </CButton>
                                                     <CButton
                                                         size="md"
                                                         color="primary"
@@ -236,19 +234,45 @@ const OrderList = () => {
                                                     >
                                                         <FaTruck className="icon-white icon-lg me-1" />
                                                     </CButton>
+                                                    <CButton
+                                                        size="md"
+                                                        color="danger"
+                                                        className="me-2"
+                                                        onClick={() => handleCancelOrderClick(order.id)}
+                                                        title="Annuler Commande"
+                                                    >
+                                                        <FaTimes className="icon-white icon-lg me-1" />
+                                                    </CButton>
                                                 </>
                                             )}
-                                            {userRole === 'Administrateur' || (userRole === 'fournisseur' && order.state.value === 'En attente de livraison') ? (
+                                            {userRole === 'fournisseur' && order.state.value === 'En attente de livraison' && (
+                                                <>
+                                                    <Link to={`/admin/edit_order/${order.id}`}>
+                                                        <CButton size="md" color="warning" className="me-2">
+                                                            <FaEdit className="icon-white icon-lg me-1" />
+                                                        </CButton>
+                                                    </Link>
+                                                    <CButton
+                                                        size="md"
+                                                        color="danger"
+                                                        className="me-2"
+                                                        onClick={() => handleCancelOrderClick(order.id)}
+                                                        title="Annuler Commande"
+                                                    >
+                                                        <FaTimes className="icon-white icon-lg me-1" />
+                                                    </CButton>
+                                                </>
+                                            )}
+                                            {userRole !== 'client' && (
                                                 <CButton
                                                     size="md"
-                                                    color="danger"
+                                                    color="primary"
                                                     className="me-2"
-                                                    onClick={() => handleCancelOrderClick(order.id)}
-                                                    title="Annuler Commande"
+                                                    onClick={() => handleInvoiceButtonClick(order)}
                                                 >
-                                                    <FaTimes className="icon-white icon-lg me-1" />
+                                                    <FaFileInvoice className="icon-white icon-lg me-1" />
                                                 </CButton>
-                                            ) : null}
+                                            )}
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

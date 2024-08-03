@@ -132,22 +132,25 @@ const createOrder = async (req, res) => {
     }
 };
 
-
-
-
-
 const getAllOrders = async (req, res) => {
     const user = req.user;
-    const supplierID = user.role === 'fournisseur' ? user.id : null; 
- 
-    if (!user || (user.role !== 'Administrateur' && user.role !== 'fournisseur')) {
+    const supplierID = user.role === 'fournisseur' ? user.id : null;
+    const customerID = user.role === 'client' ? user.id : null; // Définir customerID pour les clients
+
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'fournisseur' && user.role !== 'client')) {
         return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
     }
 
     try {
-  
+        // Construire l'objet de condition pour Sequelize
+        const conditions = {
+            deleted: false,
+            ...(supplierID && { supplierID }), // Filtrer par supplierID si l'utilisateur est un fournisseur
+            ...(customerID && { customerID })  // Filtrer par customerID si l'utilisateur est un client
+        };
+
         const orders = await Order.findAll({
-            where: supplierID ? { supplierID } : {}, 
+            where: conditions,
             include: [
                 {
                     model: PaymentMethod,
@@ -177,6 +180,8 @@ const getAllOrders = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+
 
 
 
