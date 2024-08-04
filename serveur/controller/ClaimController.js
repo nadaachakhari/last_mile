@@ -38,36 +38,65 @@ const createClaim = async (req, res, next) => {
 
 const getAllClaims = async (req, res, next) => {
     const user = req.user;
-    if (!user || user.role !== 'Administrateur') {
+
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'client')) {
         return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
     }
 
     try {
-        const claims = await Claim.findAll({
-            include: [
-                {
-                    model: Tiers,
-                    as: 'Client',
-                    attributes: ['id', 'name', 'email']
-                },
-                {
-                    model: StatutClaim,
-                    as: 'StatutClaim',
-                    attributes: ['id', 'value']
-                },
-                {
-                    model: Order,
-                    as: 'Order',
-                    attributes: ['id', 'code', 'date']
-                }
-            ]
-        });
+        let claims;
+
+        if (user.role === 'Administrateur') {
+            claims = await Claim.findAll({
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        } else if (user.role === 'client') {
+            claims = await Claim.findAll({
+                where: { tiersID: user.id }, // Assurez-vous que tiersID correspond à la clé étrangère vers l'utilisateur (le client)
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        } else {
+            return res.status(403).json({ error: 'Accès interdit : Utilisateur non autorisé' });
+        }
 
         res.status(200).json(claims);
     } catch (error) {
         next(error);
     }
 };
+
 
 const updateClaim = async (req, res, next) => {
     const { answer, statutID } = req.body;
