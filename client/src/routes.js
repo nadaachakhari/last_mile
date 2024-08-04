@@ -135,6 +135,7 @@ const change_order_state = React.lazy(() => import('./pages/admin/Order/change_o
 //claim
 const add_claim = React.lazy(() => import('./pages/admin/Claim/add_claim'))
 const display_claim = React.lazy(() => import('./pages/admin/Claim/display_claim'))
+const list_claim = React.lazy(() => import('./pages/admin/Claim/list_claim'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -301,6 +302,7 @@ const routes = [
   //claim
   { path: '/admin/add_claim/:orderID', element: add_claim },
   { path: '/admin/display_claim/:orderID', element: display_claim },
+  { path: '/admin/list_claim', element: list_claim },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

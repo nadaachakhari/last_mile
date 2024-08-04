@@ -196,6 +196,21 @@ const _nav = [
     
     ],
   },
+  //claim
+  {
+    component: CNavGroup,
+    name: 'Les réclamations',
+    to: '/Order',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des réclamations',
+        to: '/admin/list_claim',
+      },
+
+    ],
+  },
   {
     component: CNavItem,
     name: 'Colors',
