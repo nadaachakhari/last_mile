@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CTable, CTableBody, CTableDataCell, CTableHeaderCell, CTableRow, CAlert } from '@coreui/react';
+import { CCard, CCardBody, CCardHeader, CCol, CRow, CTable, CTableBody, CTableDataCell, CTableHeaderCell, CTableRow, CAlert, CButton } from '@coreui/react';
 
 const DisplayClaim = () => {
     const { orderID } = useParams();
@@ -9,25 +9,23 @@ const DisplayClaim = () => {
     const [order, setOrder] = useState(null);
     const [status, setStatus] = useState(null);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClaimAndOrder = async () => {
             try {
                 const token = localStorage.getItem('token');
 
-                // Fetch claim details
                 const claimResponse = await axios.get(`http://localhost:5001/Claim/${orderID}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setClaim(claimResponse.data);
 
-                // Fetch order details
                 const orderResponse = await axios.get(`http://localhost:5001/Order/ordrelines/${orderID}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setOrder(orderResponse.data);
 
-                // Fetch status details
                 const statusResponse = await axios.get(`http://localhost:5001/StatutClaim/statutclaims/${claimResponse.data.statutID}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -116,6 +114,11 @@ const DisplayClaim = () => {
                         </CTable>
                     </CCardBody>
                 </CCard>
+            </CCol>
+            <CCol xs={12}>
+                <div className="text-center mt-4">
+                    <CButton color="secondary" onClick={() => navigate('/admin/list_order')}>Retour</CButton>
+                </div>
             </CCol>
         </CRow>
     );
