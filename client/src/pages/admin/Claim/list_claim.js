@@ -98,6 +98,13 @@ const ListClaims = () => {
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
+                                            {userRole === 'Administrateur' && (
+                                                <Link to={`/admin/edit_claim/${claim.id}`}>
+                                                    <CButton size="md" color="warning">
+                                                        Répondre
+                                                    </CButton>
+                                                </Link>
+                                            )}
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}
