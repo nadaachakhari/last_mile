@@ -131,6 +131,9 @@ const display_invoice_exist = React.lazy(() => import('./pages/admin/Order/displ
 //change state by livreur
 const change_order_state = React.lazy(() => import('./pages/admin/Order/change_order_state'))
 
+
+//claim
+const add_claim = React.lazy(() => import('./pages/admin/Claim/add_claim'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -294,6 +297,9 @@ const routes = [
   //change state order by livreur
   { path: '/admin/change_order_state/:orderId', element: change_order_state },
   
+  //claim
+{ path : '/admin/add_claim/:orderID', element: add_claim },
+
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },

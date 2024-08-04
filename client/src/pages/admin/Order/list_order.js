@@ -17,7 +17,7 @@ import {
 } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaFileInvoice, FaTruck, FaTimes, FaExchangeAlt } from 'react-icons/fa';
+import { FaEdit, FaFileInvoice, FaTruck, FaTimes, FaExchangeAlt, FaExclamationTriangle } from 'react-icons/fa';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -142,6 +142,9 @@ const OrderList = () => {
         }
     };
 
+    const handleClaimClick = (orderID) => {
+        navigate(`/admin/add_claim/${orderID}`);
+    };
     return (
         <CRow>
             <CCol xs={12}>
@@ -187,6 +190,7 @@ const OrderList = () => {
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
+
                                             {userRole === 'livreur' && (
                                                 <CButton
                                                     size="md"
@@ -271,6 +275,17 @@ const OrderList = () => {
                                                     onClick={() => handleInvoiceButtonClick(order)}
                                                 >
                                                     <FaFileInvoice className="icon-white icon-lg me-1" />
+                                                </CButton>
+                                            )}
+                                            {userRole === 'client' && (
+                                                <CButton
+                                                    size="md"
+                                                    color="warning"
+                                                    className="me-2"
+                                                    onClick={() => handleClaimClick(order.id)}
+                                                >
+                                                    <FaExclamationTriangle className="icon-white icon-lg me-1" />
+                                                    Réclamation
                                                 </CButton>
                                             )}
                                         </CTableDataCell>
