@@ -18,6 +18,7 @@ const AddClaim = () => {
     const [observation, setObservation] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
     const [showAlert, setShowAlert] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const { orderID } = useParams();
     const navigate = useNavigate();
 
@@ -41,12 +42,17 @@ const AddClaim = () => {
                 });
 
             if (response.status === 201) {
-                navigate('/admin/list_order');
+                setSuccessMessage('Réclamation créée avec succès.');
+                setShowAlert(false);
+                setTimeout(() => {
+                    navigate('/admin/list_order'); 
+                }, 2500); 
             }
         } catch (error) {
             console.error('Erreur lors de la création de la réclamation :', error);
             setAlertMessage('Erreur lors de la création de la réclamation.');
             setShowAlert(true);
+            setSuccessMessage(''); // Clear success message
         }
     };
 
@@ -56,6 +62,11 @@ const AddClaim = () => {
                 {showAlert && (
                     <CAlert color="danger" onClose={() => setShowAlert(false)} dismissible>
                         {alertMessage}
+                    </CAlert>
+                )}
+                {successMessage && (
+                    <CAlert color="success" onClose={() => setSuccessMessage('')} dismissible>
+                        {successMessage}
                     </CAlert>
                 )}
                 <CCard className="mb-4">
