@@ -1,11 +1,14 @@
 const Claim = require('../models/ClaimModel');
+const Order = require('../models/OrderModel');
 const StatutClaim = require('../models/StatutClaimModel');
+const Tiers = require('../models/TiersModel');
+const { sendEmail } = require('../config/emailConfig');
 
 const createClaim = async (req, res, next) => {
     const { description, observation } = req.body;
     const { orderID } = req.params;
     const user = req.user;
-    
+
     if (!user || user.role !== 'client') {
         return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
     }
@@ -19,7 +22,7 @@ const createClaim = async (req, res, next) => {
 
         const newClaim = await Claim.create({
             orderID,
-            tiersID: user.id, 
+            tiersID: user.id,
             description,
             statutID: statusInProgress.id,
             dateClaim: new Date(),
@@ -33,6 +36,82 @@ const createClaim = async (req, res, next) => {
     }
 };
 
+const getAllClaims = async (req, res, next) => {
+    const user = req.user;
+    if (!user || user.role !== 'Administrateur') {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    try {
+        const claims = await Claim.findAll({
+            include: [
+                {
+                    model: Tiers,
+                    as: 'Client',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: StatutClaim,
+                    as: 'StatutClaim',
+                    attributes: ['id', 'value']
+                },
+                {
+                    model: Order,
+                    as: 'Order',
+                    attributes: ['id', 'code', 'date']
+                }
+            ]
+        });
+
+        res.status(200).json(claims);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateClaim = async (req, res, next) => {
+    const { answer, statutID } = req.body;
+    const { claimID } = req.params;
+    const user = req.user;
+
+    if (!user || user.role !== 'Administrateur') {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    try {
+        const claim = await Claim.findByPk(claimID, {
+            include: [
+                { model: Tiers, as: 'Client', attributes: ['email'] },
+                { model: StatutClaim, as: 'StatutClaim', attributes: ['value'] }
+            ]
+        });
+
+        if (!claim) {
+            return res.status(404).json({ error: 'Réclamation non trouvée' });
+        }
+
+        claim.answer = answer;
+        claim.statutID = statutID;
+
+        await claim.save();
+
+        // Envoi de l'email
+        const clientEmail = claim.Client.email;
+        const statut = await StatutClaim.findByPk(statutID);
+        const subject = 'Mise à jour de votre réclamation';
+        const text = `Bonjour, votre réclamation a été mise à jour.\n\nNouveau statut: ${statut.value}\nRéponse: ${answer}`;
+
+        await sendEmail(clientEmail, subject, text);
+
+        res.status(200).json(claim);
+    } catch (error) {
+        console.error('Error details:', error);
+        next(error);
+    }
+};
+
 module.exports = {
     createClaim,
+    getAllClaims,
+    updateClaim
 };

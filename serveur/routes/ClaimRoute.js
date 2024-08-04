@@ -1,10 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { createClaim } = require('../controller/ClaimController');
-const { authenticateToken } = require('../controller/AuthController')
+const {
+  createClaim,
+  getAllClaims,
+  updateClaim,
+} = require("../controller/ClaimController");
+const { authenticateToken } = require("../controller/AuthController");
 
 // Routes pour les réclamations
-router.post('/:orderID', authenticateToken, createClaim);
+router.get("/", authenticateToken, getAllClaims);
+router.post("/:orderID", authenticateToken, createClaim);
+router.put("/:claimID", authenticateToken, updateClaim);
 
 module.exports = router;
