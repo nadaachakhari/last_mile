@@ -5,6 +5,7 @@ const {
   createClaim,
   getAllClaims,
   updateClaim,
+  getClaimById,
 } = require("../controller/ClaimController");
 const { authenticateToken } = require("../controller/AuthController");
 
@@ -12,5 +13,6 @@ const { authenticateToken } = require("../controller/AuthController");
 router.get("/", authenticateToken, getAllClaims);
 router.post("/:orderID", authenticateToken, createClaim);
 router.put("/:claimID", authenticateToken, updateClaim);
+router.get("/:orderID", authenticateToken, getClaimById);
 
 module.exports = router;

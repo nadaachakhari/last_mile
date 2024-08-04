@@ -14,10 +14,38 @@ const createClaim = async (req, res, next) => {
     }
 
     try {
+        const existingClaim = await Claim.findOne({
+            where: { orderID },
+            include: [
+                {
+                    model: Tiers,
+                    as: 'Client',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: StatutClaim,
+                    as: 'StatutClaim',
+                    attributes: ['id', 'value']
+                },
+                {
+                    model: Order,
+                    as: 'Order',
+                    attributes: ['id', 'code', 'date']
+                }
+            ]
+        });
+
+        if (existingClaim) {
+            return res.status(400).json({
+                message: 'Une réclamation pour cette commande existe déjà.',
+                existingClaim
+            });
+        }
+
         const statusInProgress = await StatutClaim.findOne({ where: { value: 'réclamation en cours' } });
 
         if (!statusInProgress) {
-            return res.status(404).json({ message: 'Status "réclamation en cours" not found.' });
+            return res.status(404).json({ message: 'Status "réclamation en cours" non trouvé.' });
         }
 
         const newClaim = await Claim.create({
@@ -31,7 +59,7 @@ const createClaim = async (req, res, next) => {
 
         res.status(201).json(newClaim);
     } catch (error) {
-        console.error('Error details:', error);
+        console.error('Détails de l\'erreur:', error);
         next(error);
     }
 };
@@ -68,7 +96,7 @@ const getAllClaims = async (req, res, next) => {
             });
         } else if (user.role === 'client') {
             claims = await Claim.findAll({
-                where: { tiersID: user.id }, // Assurez-vous que tiersID correspond à la clé étrangère vers l'utilisateur (le client)
+                where: { tiersID: user.id },
                 include: [
                     {
                         model: Tiers,
@@ -97,6 +125,70 @@ const getAllClaims = async (req, res, next) => {
     }
 };
 
+const getClaimById = async (req, res, next) => {
+    const { orderID } = req.params;
+    const user = req.user;
+
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'client')) {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    try {
+        let claim;
+
+        if (user.role === 'Administrateur') {
+            claim = await Claim.findOne({
+                where: { orderID },
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        } else if (user.role === 'client') {
+            claim = await Claim.findOne({
+                where: { orderID, tiersID: user.id },
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        }
+
+        if (!claim) {
+            return res.status(404).json({ message: 'Réclamation non trouvée.' });
+        }
+
+        res.status(200).json(claim);
+    } catch (error) {
+        next(error);
+    }
+};
 
 const updateClaim = async (req, res, next) => {
     const { answer, statutID } = req.body;
@@ -124,7 +216,6 @@ const updateClaim = async (req, res, next) => {
 
         await claim.save();
 
-        // Envoi de l'email
         const clientEmail = claim.Client.email;
         const statut = await StatutClaim.findByPk(statutID);
         const subject = 'Mise à jour de votre réclamation';
@@ -142,5 +233,6 @@ const updateClaim = async (req, res, next) => {
 module.exports = {
     createClaim,
     getAllClaims,
+    getClaimById,
     updateClaim
 };

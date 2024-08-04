@@ -21,6 +21,7 @@ const AddClaim = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const { orderID } = useParams();
     const navigate = useNavigate();
+console.log(orderID);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,7 +53,7 @@ const AddClaim = () => {
             console.error('Erreur lors de la création de la réclamation :', error);
             setAlertMessage('Erreur lors de la création de la réclamation.');
             setShowAlert(true);
-            setSuccessMessage(''); // Clear success message
+            setSuccessMessage('');
         }
     };
 
