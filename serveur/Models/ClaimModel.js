@@ -71,8 +71,8 @@ const Claim = sequelize.define('Claim', {
 });
 
 // Define relationships
-Claim.belongsTo(Order, { foreignKey: 'orderID' });
-Claim.belongsTo(Tiers, { foreignKey: 'tiersID' });
-Claim.belongsTo(StatutClaim, { foreignKey: 'statutID' });
+Claim.belongsTo(Order, { foreignKey: 'orderID', as: 'Order' });
+Claim.belongsTo(Tiers, { foreignKey: 'tiersID', as: 'Client' });
+Claim.belongsTo(StatutClaim, { foreignKey: 'statutID', as: 'StatutClaim' });
 
 module.exports = Claim;
