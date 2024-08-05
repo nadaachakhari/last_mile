@@ -230,9 +230,77 @@ const updateClaim = async (req, res, next) => {
     }
 };
 
+const getClaimByClaimID = async (req, res, next) => {
+    const { claimID } = req.params;
+    const user = req.user;
+    
+
+    if (!user || (user.role !== 'Administrateur' && user.role !== 'client')) {
+        return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    }
+
+    try {
+        let claim;
+
+        if (user.role === 'Administrateur') {
+            claim = await Claim.findOne({
+                where: { id: claimID },
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        } else if (user.role === 'client') {
+            claim = await Claim.findOne({
+                where: { id: claimID, tiersID: user.id },
+                include: [
+                    {
+                        model: Tiers,
+                        as: 'Client',
+                        attributes: ['id', 'name', 'email']
+                    },
+                    {
+                        model: StatutClaim,
+                        as: 'StatutClaim',
+                        attributes: ['id', 'value']
+                    },
+                    {
+                        model: Order,
+                        as: 'Order',
+                        attributes: ['id', 'code', 'date']
+                    }
+                ]
+            });
+        }
+
+        if (!claim) {
+            return res.status(404).json({ message: 'Réclamation non trouvée.' });
+        }
+
+        res.status(200).json(claim);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     createClaim,
     getAllClaims,
     getClaimById,
-    updateClaim
+    updateClaim,
+    getClaimByClaimID
 };
