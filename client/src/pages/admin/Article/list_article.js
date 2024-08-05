@@ -32,16 +32,16 @@ const ArticleList = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token non trouvé dans localStorage.');
-                return;
-            }
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
         const response = await axios.get('http://localhost:5001/Article', {
           headers: {
-              'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`
           }
-      });
+        });
         setArticles(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
@@ -79,7 +79,7 @@ const ArticleList = () => {
             <strong>Liste</strong> <small>des Articles</small>
           </CCardHeader>
           <CCardBody>
-          <Link to={`/admin/add_article`}>
+            <Link to={`/admin/add_article`}>
               <CButton color="primary" className="mb-3">
                 Ajouter Article
               </CButton>
@@ -101,9 +101,9 @@ const ArticleList = () => {
                   <CTableRow key={article.id}>
                     <CTableDataCell>{article.code}</CTableDataCell>
                     <CTableDataCell>{article.name}</CTableDataCell>
-                    <CTableDataCell>{article.sale_ht}</CTableDataCell>
-                    <CTableDataCell>{article.sale_ttc}</CTableDataCell>
-                    <CTableDataCell>{article.Category.name}</CTableDataCell>
+                    <CTableDataCell>{article.sale_ht.toFixed(3)}</CTableDataCell>
+                    <CTableDataCell>{article.sale_ttc.toFixed(3)}</CTableDataCell>
+                    <CTableDataCell>{article.Category.name}</CTableDataCell> {/* Retiré .toFixed() ici */}
                     <CTableDataCell>
                       {article.photo && (
                         <CImage
@@ -113,7 +113,6 @@ const ArticleList = () => {
                         />
                       )}
                     </CTableDataCell>
-                    
                     <CTableDataCell>
                       <Link to={`/admin/detail_article/${article.id}`}>
                         <CButton size="md" color="info" className="me-2">

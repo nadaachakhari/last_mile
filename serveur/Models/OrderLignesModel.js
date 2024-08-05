@@ -42,7 +42,7 @@ OrderLignes.init({
     }
   },
   gross_amount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,

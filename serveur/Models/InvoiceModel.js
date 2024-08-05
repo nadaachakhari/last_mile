@@ -56,7 +56,7 @@ const Invoice = sequelize.define('Invoice', {
     }
   },
   taxStamp: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: true,
     validate: {
       isDecimal: true,
@@ -72,7 +72,7 @@ const Invoice = sequelize.define('Invoice', {
     allowNull: true,
   },
   total_ttc: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,
@@ -81,7 +81,7 @@ const Invoice = sequelize.define('Invoice', {
     }
   },
   total_ht: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,
@@ -90,7 +90,7 @@ const Invoice = sequelize.define('Invoice', {
     }
   },
   total_net: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,

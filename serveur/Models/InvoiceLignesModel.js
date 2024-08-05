@@ -41,7 +41,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     }
   },
   sale_ht: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,
@@ -50,7 +50,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     }
   },
   gross_amount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,
@@ -70,7 +70,7 @@ const InvoiceLignes = sequelize.define('InvoiceLignes', {
     }
   },
   sale_ttc: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       notNull: true,

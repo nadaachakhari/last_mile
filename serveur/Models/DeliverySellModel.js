@@ -37,7 +37,7 @@ const DeliverySell = sequelize.define('DeliverySell', {
     }
   },
   total_ht: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     references: {
       model: OrderLignes,
@@ -48,7 +48,7 @@ const DeliverySell = sequelize.define('DeliverySell', {
     }
   },
   total_ttc: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     references: {
       model: OrderLignes,

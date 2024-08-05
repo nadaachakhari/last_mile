@@ -94,7 +94,7 @@ Order.init({
     }
   },
   total_amount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     defaultValue: 0,
     validate: {

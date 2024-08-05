@@ -115,7 +115,7 @@ const AfficherLivraison = () => {
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
   };
 
-  const differenceTTC_HT = parseFloat(total_ttc - total_ht).toFixed(2);
+  const differenceTTC_HT = parseFloat(total_ttc - total_ht).toFixed(3);
 
   return (
     <CRow>
@@ -141,8 +141,8 @@ const AfficherLivraison = () => {
              
               </CCol>
               <CCol xs={6} className="text-right">
-                <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} DT</p>
-                <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} DT</p>
+                <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(3)} DT</p>
+                <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(3)} DT</p>
                 <p><strong>Différence TTC - HT:</strong> {differenceTTC_HT} DT</p>
               </CCol>
             </CRow>
@@ -165,10 +165,10 @@ const AfficherLivraison = () => {
                     <CTableDataCell>{line.article?.code || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.article?.name || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.quantity}</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.article?.sale_ht).toFixed(2)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.article?.sale_ht).toFixed(3)} DT</CTableDataCell>
                     <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(2)} DT</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line?.gross_amount).toFixed(2)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(3)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line?.gross_amount).toFixed(3)} DT</CTableDataCell>
                   </CTableRow>
                 ))}
               </CTableBody>

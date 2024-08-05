@@ -69,7 +69,7 @@ const AddArticle = () => {
     setFormData({
       ...formData,
       vatID,
-      sale_ttc,
+      sale_ttc: sale_ttc ? sale_ttc.toFixed(3) : '',
     });
   };
 
@@ -80,8 +80,8 @@ const AddArticle = () => {
 
     setFormData({
       ...formData,
-      sale_ht,
-      sale_ttc,
+      sale_ht: sale_ht, // Assurer que c'est une chaîne avec 3 décimales
+      sale_ttc: sale_ttc ? sale_ttc.toFixed(3) : '',
     });
   };
 

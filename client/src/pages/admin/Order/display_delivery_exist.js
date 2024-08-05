@@ -141,7 +141,7 @@ const DisplayInvoiceExists = () => {
                 <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
                 <p><strong>Observation:</strong> {observation}</p>
                 <p><strong>Adressé à:</strong> {order.destination}</p>
-                <p><strong>Timbre fiscal:</strong> {parseFloat(taxStamp).toFixed(2)} DT</p>
+                <p><strong>Timbre fiscal:</strong> {parseFloat(taxStamp).toFixed(3)} DT</p>
               </CCol>
             </CRow>
 
@@ -163,10 +163,10 @@ const DisplayInvoiceExists = () => {
                     <CTableDataCell>{line.article?.code || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.article?.name || 'Non défini'}</CTableDataCell>
                     <CTableDataCell>{line.quantity}</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.sale_ht).toFixed(2)} DT</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.gross_amount).toFixed(2)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.sale_ht).toFixed(3)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.gross_amount).toFixed(3)} DT</CTableDataCell>
                     <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(2)} DT</CTableDataCell>
+                    <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(3)} DT</CTableDataCell>
                   </CTableRow>
                 ))}
               </CTableBody>
@@ -175,11 +175,11 @@ const DisplayInvoiceExists = () => {
             <div style={{ marginBottom: '20px' }}>
               <CRow>
                 <CCol xs={6}>
-                  <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(2)} DT</p>
-                  <p><strong>Total Net:</strong> {parseFloat(total_net).toFixed(2)} DT</p>
+                  <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(3)} DT</p>
+                  <p><strong>Total Net:</strong> {parseFloat(total_net).toFixed(3)} DT</p>
                 </CCol>
                 <CCol xs={6} className="text-right">
-                  <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(2)} DT</p>
+                  <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(3)} DT</p>
                 </CCol>
               </CRow>
             </div>
@@ -194,7 +194,7 @@ const DisplayInvoiceExists = () => {
                   </CTableDataCell>
                   <CTableDataCell className="text-right" style={{ verticalAlign: 'bottom' }}>
                     <p>La présente facture à la somme de :</p>
-                    <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(2))} DT</strong></p>
+                    <p><strong>{numberToWordsWithDecimals(parseFloat(total_ttc).toFixed(3))} DT</strong></p>
                   </CTableDataCell>
                 </CTableRow>
                 <CTableRow>

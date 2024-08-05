@@ -339,7 +339,7 @@ const EditOrder = () => {
                 <CFormLabel className="ms-3">Montant Total :</CFormLabel>
                 <CFormInput
                   type="text"
-                  value={grossAmount.toFixed(2)}
+                  value={grossAmount.toFixed(3)}
                   disabled
                 />
               </CCol>

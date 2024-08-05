@@ -33,7 +33,7 @@ const Article = sequelize.define('Article', {
     },
   },
   sale_ht: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: false,
     validate: {
       isDecimal: true,
@@ -41,7 +41,7 @@ const Article = sequelize.define('Article', {
     }
   },
   sale_ttc: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DOUBLE(100, 3),
     allowNull: true,
     validate: {
       isDecimal: true,
