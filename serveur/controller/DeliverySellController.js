@@ -8,7 +8,7 @@ const Tiers = require('../Models/TiersModel');
 const User = require('../Models/UserModel');
 const Article = require('../Models/ArticleModel');
 const Vat = require('../Models/VatModel');
-
+const sequelize = require('../config/database');
 
 
 const getDeliveryByOrderID = async (req, res) => {
@@ -53,16 +53,41 @@ const getDeliveryByOrderID = async (req, res) => {
     }
 };
 
+const generateDeliveryCode = async () => {
+    const currentYear = new Date().getFullYear();
+
+    // Récupérer le dernier bon de livraison de l'année courante
+    const lastDelivery = await DeliverySell.findOne({
+        where: sequelize.where(sequelize.fn('YEAR', sequelize.col('date')), currentYear),
+        order: [['code', 'DESC']]
+    });
+
+    // Déterminer le nouveau numéro de bon de livraison
+    let newNumber;
+    if (lastDelivery) {
+        const lastNumber = parseInt(lastDelivery.code.split('-')[2], 10);
+        newNumber = lastNumber + 1;
+    } else {
+        newNumber = 1;
+    }
+
+    // Générer le code de bon de livraison
+    const deliveryCode = `BL-${currentYear}-${newNumber.toString().padStart(4, '0')}`;
+
+    return { deliveryCode, newNumber };
+};
 const createDeliveryFromOrder = async (req, res) => {
     const orderID = req.params.orderID;
 
     try {
+        // Vérifier si un bon de livraison existe déjà pour cette commande
         const existingDeliverySell = await DeliverySell.findOne({ where: { orderID: orderID } });
 
         if (existingDeliverySell) {
             return getDeliveryByOrderID(req, res);
         }
 
+        // Récupérer la commande et les détails associés
         const order = await Order.findOne({
             where: { id: orderID },
             include: [
@@ -87,7 +112,7 @@ const createDeliveryFromOrder = async (req, res) => {
             ]
         });
 
-        // Calculate total_ht and total_ttc
+        // Calculer total_ht et total_ttc
         const deliveryLinesData = await Promise.all(orderLines.map(async (line) => {
             const vatExists = await Vat.findByPk(line.article.vatID);
             if (!vatExists) {
@@ -98,7 +123,7 @@ const createDeliveryFromOrder = async (req, res) => {
             const sale_ttc = line.quantity * line.article.sale_ttc;
 
             return {
-                parentID: null, // This will be updated later
+                parentID: null, // Ceci sera mis à jour plus tard
                 articleID: line.articleID,
                 quantity: line.quantity,
                 sale_ht: sale_ht,
@@ -112,9 +137,12 @@ const createDeliveryFromOrder = async (req, res) => {
         const total_ht = deliveryLinesData.reduce((acc, line) => acc + line.sale_ht, 0);
         const total_ttc = deliveryLinesData.reduce((acc, line) => acc + line.sale_ttc, 0);
 
-        // Create delivery
+        // Générer le code de bon de livraison
+        const { deliveryCode, newNumber } = await generateDeliveryCode();
+
+        // Créer le bon de livraison
         const deliveryData = {
-            code: `DEL-${Date.now()}`,
+            code: deliveryCode,
             date: new Date(),
             tiersID: order.customerID,
             orderID: order.id,
@@ -125,11 +153,12 @@ const createDeliveryFromOrder = async (req, res) => {
             total_ht: total_ht,
             total_ttc: total_ttc,
             deleted: false,
+            delivery_number: newNumber,
         };
 
         const delivery = await DeliverySell.create(deliveryData);
 
-        // Update deliveryLinesData with the new delivery ID and bulk create
+        // Mettre à jour deliveryLinesData avec le nouvel ID de livraison et créer en masse
         await DeliverySellLignes.bulkCreate(deliveryLinesData.map(line => ({
             ...line,
             parentID: delivery.id
@@ -159,7 +188,7 @@ const createDeliveryFromOrder = async (req, res) => {
 
         res.status(201).json(detailedDelivery);
     } catch (error) {
-        console.error('Error details:', error);
+        console.error('Error creating delivery:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

@@ -32,6 +32,7 @@ const AddSupplier = () => {
         fax: '',
         email: '',
         cityID: '',
+        tax_identification_number: '', // Correction ici
     });
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
@@ -164,6 +165,10 @@ const AddSupplier = () => {
                             <CCol md={6}>
                                 <CFormLabel htmlFor="email">Email</CFormLabel>
                                 <CFormInput id="email" value={formData.email} onChange={handleChange} />
+                            </CCol>
+                            <CCol md={6}>
+                                <CFormLabel htmlFor="tax_identification_number">Matricule Fiscal</CFormLabel>
+                                <CFormInput id="tax_identification_number" value={formData.tax_identification_number} onChange={handleChange} />
                             </CCol>
                             <CCol xs={12}>
                                 <CButton color="primary" type="submit">

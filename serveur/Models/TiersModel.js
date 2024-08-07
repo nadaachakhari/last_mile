@@ -70,6 +70,11 @@ const Tiers = sequelize.define('Tiers', {
       },
     },
   },
+  tax_identification_number: {
+    type: DataTypes.STRING,
+    allowNull: true,
+
+  },
   cityID: {
     type: DataTypes.INTEGER,
     allowNull: false,

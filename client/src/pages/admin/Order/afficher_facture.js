@@ -65,10 +65,59 @@ const AfficherFacture = () => {
     order = {},
     invoiceLignes = []
   } = invoice;
-
+  const suppliertax_identification_number = order.supplier?.tax_identification_number || 'Non défini';
   const customerName = order.customer?.name || 'Non défini';
+  const customerAddress = order.customer?.address || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
+  const supplierAddress = order.supplier?.address || 'Non défini';
+  const supplierTel = order.supplier?.phone || 'Non défini';
+  const supplierEmail = order.supplier?.email || 'Non défini';
   const paymentMethodValue = order.PaymentMethod?.value || 'Non défini';
+// Function to convert number to words in French
+const numberToWords = (number) => {
+  const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
+  const teens = ["dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
+  const tens = ["", "dix", "vingt", "trente", "quarante", "cinquante", "soixante", "soixante-dix", "quatre-vingt", "quatre-vingt-dix"];
+
+  const convert_hundreds = (number) => {
+    if (number > 99) {
+      return ones[Math.floor(number / 100)] + " cent " + convert_tens(number % 100);
+    } else {
+      return convert_tens(number);
+    }
+  };
+
+  const convert_tens = (number) => {
+    if (number < 10) return ones[number];
+    else if (number >= 10 && number < 20) return teens[number - 10];
+    else {
+      return tens[Math.floor(number / 10)] + (number % 10 > 0 ? "-" + ones[number % 10] : "");
+    }
+  };
+
+  const convert_thousands = (number) => {
+    if (number >= 1000) {
+      return convert_hundreds(Math.floor(number / 1000)) + " mille " + convert_hundreds(number % 1000);
+    } else {
+      return convert_hundreds(number);
+    }
+  };
+
+  if (number === 0) return "zéro";
+  return convert_thousands(number).trim();
+};
+
+const numberToWordsWithDecimals = (number) => {
+  const parts = number.toString().split('.');
+  const integerPart = parseInt(parts[0], 10);
+  const decimalPart = parts[1] ? parseInt(parts[1], 10) : 0;
+
+  const integerWords = numberToWords(integerPart);
+  const decimalWords = decimalPart > 0 ? numberToWords(decimalPart) : '';
+
+  return decimalWords ? `${integerWords} dinars et ${decimalWords} millimes` : `${integerWords} dinars`;
+  // (Your numberToWordsWithDecimals function implementation here)
+};
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -124,14 +173,15 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
           <CCardBody className="print-content" style={{ backgroundColor: '#f9f9f9' }}>
             <CRow>
               <CCol xs={6}>
-                <p><strong>Émetteur:</strong> Axeserp</p>
-                <p><strong>MF:</strong> 1699211/V/A/P/000</p>
-                <p>B11, Sfax Innovation 2 Route Saltnia km 3 ZI Poudrière 2</p>
-                <p>Tél.: 29 300 034 | Email: contact@axeserp.com</p>
+                <p><strong>Émetteur:</strong> {supplierName}</p>
+                <p><strong>MF:</strong> {suppliertax_identification_number}</p>
+                <p>{supplierAddress}</p>
+                <p>Tél.: {supplierTel} | Email: {supplierEmail}</p>
               </CCol>
               <CCol xs={6}>
-                <p><strong>Date:</strong> {formatDate(date)}</p>
+              
                 <p><strong>Adressé à:</strong> {customerName}</p>
+                <p> {customerAddress}</p>
               </CCol>
             </CRow>
   
@@ -140,7 +190,7 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
                 <CTableRow>
                   <CTableHeaderCell>Article</CTableHeaderCell>
                   <CTableHeaderCell>Qte</CTableHeaderCell>
-                  <CTableHeaderCell>Montant HT</CTableHeaderCell>
+                  <CTableHeaderCell>prix unitaire </CTableHeaderCell>
                   <CTableHeaderCell>Montant Net</CTableHeaderCell>
                   <CTableHeaderCell>TVA</CTableHeaderCell>
                 </CTableRow>

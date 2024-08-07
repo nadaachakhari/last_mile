@@ -290,7 +290,7 @@ const getClientById = async (req, res) => {
 
 
 const createSupplier = async (req, res) => {
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID ,tax_identification_number} = req.body;
   const createdBy = null; // Assigner createdBy à null pour les livreurs
 
   try {
@@ -329,6 +329,7 @@ const createSupplier = async (req, res) => {
       fax,
       email,
       cityID,
+      tax_identification_number,
       block: false,
       password: hashedPassword,
       deleted: false,
@@ -349,7 +350,7 @@ const createSupplier = async (req, res) => {
 };
 const uploadSupplier = async (req, res) => {
   const { id } = req.params;
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID,tax_identification_number } = req.body;
 
   try {
     const supplier = await Tiers.findByPk(id);
@@ -372,6 +373,7 @@ const uploadSupplier = async (req, res) => {
       country: country || supplier.country,
       phone: phone || supplier.phone,
       mobile: mobile || supplier.mobile,
+      tax_identification_number: tax_identification_number || supplier.tax_identification_number,
       fax: fax || supplier.fax,
       email: email || supplier.email,
       cityID: cityID || supplier.cityID

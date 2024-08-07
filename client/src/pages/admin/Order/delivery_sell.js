@@ -76,6 +76,7 @@ const AfficherLivraison = () => {
       try {
         const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
         setDelivery(response.data);
+        
       } catch (error) {
         setError('Erreur lors de la récupération de la livraison.');
       } finally {
@@ -84,6 +85,7 @@ const AfficherLivraison = () => {
     };
 
     fetchDelivery();
+    
   }, [orderID]);
 
   const handlePrint = useReactToPrint({
@@ -107,9 +109,16 @@ const AfficherLivraison = () => {
   } = delivery;
 
   const customerName = order.customer?.name || 'Non défini';
+  const customerTel = order.customer?.phone || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
   const deliveryUserName = order.delivery?.name || 'Non défini';
+  const supplierAddress = order.supplier?.address || 'Non défini';
+  const supplierPhone = order.supplier?.phone || 'Non défini';
+  const supplierEmail = order.supplier?.email || 'Non défini';
+  console.log(order.delivery); // Vérifie le contenu complet de order.supplier
+  const supplierRegistrationNumber = order.delivery?.registration_number || 'Non défini';
 
+  const paymentMethodValue = order.PaymentMethod?.value || 'Non défini';
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
@@ -118,32 +127,32 @@ const AfficherLivraison = () => {
   const differenceTTC_HT = parseFloat(total_ttc - total_ht).toFixed(3);
 
   return (
-    <CRow>
+    <CRow className='print'>
       <CCol xs={12}>
-        <CCard className="mb-4" ref={componentRef} style={{ border: '2px solid black' }}>
+        <CCard className="mb-4 print-container" ref={componentRef} style={{ border: '2px solid black' }}>
           <CCardHeader className="d-flex justify-content-between align-items-center" style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid black' }}>
             <img src={avatar} alt="Logo" style={{ height: '80px' }} />
             <div>
-              <strong>Livraison</strong> <small>{code}</small>
-            </div>
-            <div>
+              <strong>Livraison</strong><br />
+              <strong>Réf:</strong> <small>{code}</small>
               <p><strong>Date:</strong> {formatDate(date)}</p>
-              <p><strong>Adressé à:</strong> {customerName}</p>
-              <p><strong>Fournisseur:</strong> {supplierName}</p>
-              <p><strong>Livreur:</strong> {deliveryUserName}</p>
             </div>
           </CCardHeader>
-          <CCardBody style={{ backgroundColor: '#f9f9f9' }}>
+          <CCardBody className="print-content" style={{ backgroundColor: '#f9f9f9' }}>
             <CRow>
-              <CCol xs={6}>
-                <p><strong>Observation:</strong> {observation}</p>
-                <p><strong>Destination:</strong> {destination}</p>
+            <CCol xs={6}>
+                <p><strong>Expediteur:</strong> {supplierName}</p>
+              
              
+                <p>Tél.: {supplierPhone} | Email: {supplierEmail}</p>
+                <p><strong>REF TRANSPORTEUR:</strong> {supplierRegistrationNumber}</p>
               </CCol>
-              <CCol xs={6} className="text-right">
-                <p><strong>Total HT:</strong> {parseFloat(total_ht).toFixed(3)} DT</p>
-                <p><strong>Total TTC:</strong> {parseFloat(total_ttc).toFixed(3)} DT</p>
-                <p><strong>Différence TTC - HT:</strong> {differenceTTC_HT} DT</p>
+              <CCol xs={6}>
+                <p><strong>Client:</strong> {customerName}</p>
+                <p><strong>Num Client:</strong> {customerTel}</p>
+                <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
+                <p><strong>Observation:</strong> {observation}</p>
+                <p><strong>Adressé :</strong> {destination}</p>
               </CCol>
             </CRow>
 
@@ -152,8 +161,8 @@ const AfficherLivraison = () => {
                 <CTableRow>
                   <CTableHeaderCell>Article Code</CTableHeaderCell>
                   <CTableHeaderCell>Article Name</CTableHeaderCell>
-                  <CTableHeaderCell>Quantity</CTableHeaderCell>
-                  <CTableHeaderCell>Sale HT</CTableHeaderCell>
+                  <CTableHeaderCell>Qte</CTableHeaderCell>
+                  <CTableHeaderCell>prix unitaire </CTableHeaderCell>
                   <CTableHeaderCell>VAT Value</CTableHeaderCell>
                   <CTableHeaderCell>Sale TTC</CTableHeaderCell>
                   <CTableHeaderCell>Gross Amount</CTableHeaderCell>
@@ -174,10 +183,18 @@ const AfficherLivraison = () => {
               </CTableBody>
             </CTable>
 
+            <div style={{ marginBottom: '20px' }}>
+                <CRow>
+                
+                  <CCol xs={6}>
+                    <p><strong>Total HT:</strong> {total_ht} DT</p>
+                    <p><strong>Total TTC:</strong> {total_ttc} DT</p>
+                  </CCol>
+                </CRow>
+              </div>
             {/* Footer Section */}
-            <CTable responsive style={{ borderTop: '2px solid black', marginTop: '20px' }}>
+            <CTable className='print-footer' responsive style={{ borderTop: '2px solid black', marginTop: '20px' }}>
               <CTableBody>
-               
                 <CTableRow>
                   <CTableDataCell colSpan="2" className="text-center">
                     <p>AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000</p>
@@ -193,7 +210,7 @@ const AfficherLivraison = () => {
                   .no-print {
                     display: none;
                   }
-                  .footer {
+                  .print-footer {
                     position: fixed;
                     bottom: 0;
                     left: 0;
@@ -201,14 +218,14 @@ const AfficherLivraison = () => {
                     border-top: 2px solid black;
                     padding-top: 20px;
                   }
-                  @page {
-                    margin: 20mm;
-                  }
-                  .footer::after {
+                  .print-footer::after {
                     content: "AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000";
                     display: block;
                     text-align: center;
                     margin-top: 20px;
+                  }
+                  @page {
+                    margin: 20mm;
                   }
                 }
               `}
