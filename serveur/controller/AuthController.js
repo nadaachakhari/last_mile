@@ -59,7 +59,7 @@ const authenticate = async (req, res) => {
         nameTiers,
         nameusers,
       },
-      "hex",
+      "HEX",
       { expiresIn: "24h" }
     );
 
@@ -84,7 +84,7 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
-  jwt.verify(token, "hex", (err, user) => {
+  jwt.verify(token, "HEX", (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
@@ -97,37 +97,6 @@ const isLivreur = (req, res, next) => {
   }
   next();
 };
-
-
-
-// const authenticateToken = async (req, res, next) => {
-//   const authHeader = req.headers["authorization"];
-//   const token = authHeader && authHeader.split(" ")[1];
-
-//   if (token == null) return res.sendStatus(401);
-// console.log(token);
-//   try {
-//     const decoded = jwt.verify(token, "hex");
-
-//     const user = await User.findOne({
-//       where: { id: decoded.id, deleted: false },
-//       include: [{ model: RoleUser, attributes: ['name'] }]
-//     });
-
-//     if (!user) {
-//       return res.status(401).json({ error: 'User not found' });
-//     }
-
-//     req.user = {
-//       id: user.id,
-//       role: user.RoleUser.name // Assuming RoleUser model has a 'name' attribute
-//     };
-
-//     next();
-//   } catch (err) {
-//     return res.sendStatus(403);
-//   }
-// };
 
 
 

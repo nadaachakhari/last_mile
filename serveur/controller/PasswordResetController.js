@@ -30,6 +30,7 @@ const requestPasswordReset = async (req, res) => {
             token: token
         });
     } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email:', error);
         res.status(500).send('Erreur lors de l\'envoi de l\'email');
     }
 };
@@ -48,15 +49,26 @@ const resetPassword = async (req, res) => {
             return res.status(400).send('Utilisateur non trouvé');
         }
 
+        console.log(' password before save:', newPassword);
         const hashedPassword = await bcrypt.hash(newPassword, 10);
+        console.log('Hashed password before save:', hashedPassword);
+
         entity.password = hashedPassword;
-        await entity.save();
+        console.log(entity.password);
+console.log("user", user);
+
+        if (user) {
+            await User.update({ password: hashedPassword }, { where: { id: entity.id } });
+        } else {
+            await Tiers.update({ password: hashedPassword }, { where: { id: entity.id } });
+        }
 
         res.status(200).send('Le mot de passe a été réinitialisé');
     } catch (error) {
         res.status(400).send('Le token de réinitialisation du mot de passe est invalide ou a expiré');
     }
 };
+
 
 module.exports = {
     requestPasswordReset,
