@@ -32,10 +32,11 @@ const AddUser = () => {
         role_usersID: '',
         deleted: false,
     });
-    const [imageFile, setImageFile] = useState(null); // Ajout de l'état pour l'image
+    const [imageFile, setImageFile] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [roles, setRoles] = useState([]);
+    const [selectedRole, setSelectedRole] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,10 +55,16 @@ const AddUser = () => {
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
+
+        // Détecter le rôle sélectionné et stocker son nom
+        if (id === 'role_usersID') {
+            const selectedRoleObject = roles.find(role => role.id === parseInt(value));
+            setSelectedRole(selectedRoleObject ? selectedRoleObject.name : '');
+        }
     };
 
     const handleImageChange = (e) => {
-        setImageFile(e.target.files[0]); // Stocker le fichier image sélectionné
+        setImageFile(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
@@ -73,7 +80,7 @@ const AddUser = () => {
         data.append('role_usersID', formData.role_usersID);
         data.append('deleted', formData.deleted);
         if (imageFile) {
-            data.append('photo', imageFile); // Ajouter le fichier image si sélectionné
+            data.append('photo', imageFile);
         }
 
         try {
@@ -93,6 +100,8 @@ const AddUser = () => {
             }
         }
     };
+
+    const showFieldsForRole = selectedRole === 'livreur'; 
 
     return (
         <CRow>
@@ -119,14 +128,8 @@ const AddUser = () => {
                                 <CFormLabel htmlFor="email">Email</CFormLabel>
                                 <CFormInput type="email" id="email" value={formData.email} onChange={handleChange} required />
                             </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="registration_number">Numéro d'enregistrement</CFormLabel>
-                                <CFormInput id="registration_number" value={formData.registration_number} onChange={handleChange} />
-                            </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="cin">CIN</CFormLabel>
-                                <CFormInput id="cin" value={formData.cin} onChange={handleChange} />
-                            </CCol>
+
+
                             <CCol md={4}>
                                 <CFormLabel htmlFor="role_usersID">Rôle</CFormLabel>
                                 <CFormSelect id="role_usersID" value={formData.role_usersID} onChange={handleChange} required>
@@ -139,12 +142,26 @@ const AddUser = () => {
                                 </CFormSelect>
                             </CCol>
                             <CCol md={2} className="align-self-end">
-                <Link to={`/admin/add_role_users`}>
-                  <CButton color="primary">
-                    Ajouter Role
-                  </CButton>
-                </Link>
-              </CCol>
+                                <Link to={`/admin/add_role_users`}>
+                                    <CButton color="primary">
+                                        Ajouter Role
+                                    </CButton>
+                                </Link>
+                            </CCol>
+                            
+                            {/* Afficher les champs supplémentaires si  "livreur" est sélectionné */}
+                            {showFieldsForRole && (
+                                <>
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="registration_number">Numéro d'enregistrement</CFormLabel>
+                                        <CFormInput id="registration_number" value={formData.registration_number} onChange={handleChange} />
+                                    </CCol>
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="cin">CIN</CFormLabel>
+                                        <CFormInput id="cin" value={formData.cin} onChange={handleChange} />
+                                    </CCol>
+                                </>
+                            )}
                             <CCol md={6}>
                                 <CFormLabel htmlFor="photo">Photo</CFormLabel>
                                 <CFormInput type="file" id="photo" onChange={handleImageChange} />
