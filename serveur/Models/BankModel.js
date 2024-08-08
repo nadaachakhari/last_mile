@@ -5,7 +5,10 @@ const Bank = sequelize.define('Bank', {
   ref: {
     type: DataTypes.STRING,
     primaryKey: true,
+    unique: true,
+    allowNull: false,
     validate: {
+      notEmpty: true,
       notEmpty: true,
     }
   },

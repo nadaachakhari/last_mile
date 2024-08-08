@@ -12,10 +12,8 @@ const RoleUsersRoutes = require('./routes/RoleUsersRoute');
 const UsersRoutes = require('./routes/UsersRoute')
 const VatRoutes = require('./routes/VatRoute');
 const CategoryRoutes = require('./routes/CategoryRoute');
-
 const PaymentMethodRoutes = require('./routes/PaymentMethodeRoute')
 const StateRoutes = require('./routes/StateRoute')
-
 const AuthRoutes = require('./routes/AuthRoutes');
 const ArticleRoutes = require('./routes/ArticleRoute');
 const OrderRoutes = require('./routes/OrderRoute')
@@ -25,6 +23,7 @@ const PasswordResetRoutes = require('./routes/PasswordResetRoute');
 const InvoiceRoute = require('./routes/InvoiceRoute');
 const StatusClaimRoute = require('./routes/StatutClaimRoute');
 const ClaimRoute = require('./routes/ClaimRoute');
+const BankRoute = require('./routes/BankRoute');
 
 
 // Configuration de multer pour le stockage des images
@@ -94,6 +93,7 @@ app.use('/password', PasswordResetRoutes);
 app.use('/Article', ArticleRoutes);
 app.use('/StatutClaim', StatusClaimRoute);
 app.use('/Claim', ClaimRoute);
+app.use('/Bank', BankRoute);
 
 app.use('/uploads', express.static(path.join(__dirname, '../client/src/assets/images')));
 app.use('/users_uploads', express.static(path.join(__dirname, '../client/src/assets/images/users')));
