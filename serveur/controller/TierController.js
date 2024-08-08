@@ -125,7 +125,7 @@ const deleteTier = async (req, res, next) => {
 // Générer un mot de passe aléatoire
 
 const generatePassword = (length) => {
-  return crypto.randomBytes(length).toString('hex').slice(0, length);
+  return crypto.randomBytes(length).toString('HEX').slice(0, length);
 };
 
 const createClient = async (req, res) => {
