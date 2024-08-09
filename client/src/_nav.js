@@ -1,5 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
+
 import {
   cilBell,
   cilCalculator,
@@ -12,7 +13,15 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilStar,
+  cilPeople,
+  cilUser,
+  cilLocationPin,
+  cilCart,
+  cilSpeech,
+  cilGlobeAlt,
+  cilAirplay
 } from '@coreui/icons'
+
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
@@ -21,10 +30,10 @@ const _nav = [
     name: 'Dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
+   /* badge: {
       color: 'info',
       text: 'NEW',
-    },
+    },*/
 
     
   },
@@ -33,7 +42,7 @@ const _nav = [
     component: CNavGroup,
     name: 'clients',
     to: '/user',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -48,7 +57,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Fournisseurs',
     to: '/user',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -58,6 +67,25 @@ const _nav = [
 
     ],
   },
+  //
+ /* {
+    component: CNavGroup,
+    name: 'Client/Administrateurs',
+    to: '/Tier',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de tiers',
+        to: '/admin/list_tiers',
+      },{
+        component: CNavItem,
+        name: 'liste des type de tiers',
+        to: '/admin/list_type_tiers',
+      },
+
+    ],
+  },*/
   //
   {
     component: CNavGroup,
@@ -73,43 +101,13 @@ const _nav = [
 
     ],
   },
-  {
-    component: CNavGroup,
-    name: 'Ville',
-    to: '/City',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'liste de villes',
-        to: '/admin/list_city',
-      },
-
-    ],
-  },
-  {
-    component: CNavTitle,
-    name: 'Theme',
-  },
-  {
-    component: CNavGroup,
-    name: 'Tiers',
-    to: '/Tier',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'liste de tiers',
-        to: '/admin/list_tiers',
-      },
-    ],
-  },
+  
   //users 
   {
     component: CNavGroup,
     name: 'Utilisateurs',
     to: '/user',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -124,6 +122,25 @@ const _nav = [
 
     ],
   },
+
+  {
+    component: CNavGroup,
+    name: 'Ville',
+    to: '/City',
+    icon: <CIcon icon={cilGlobeAlt} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste de villes',
+        to: '/admin/list_city',
+      },
+
+    ],
+  },
+  /* {
+    component: CNavTitle,
+    name: 'Theme',
+  },*/
 
 
   //payment methode
@@ -147,7 +164,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Les articles',
     to: '/vat',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilAirplay} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -186,7 +203,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Les commande',
     to: '/Order',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -201,7 +218,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Les réclamations',
     to: '/Order',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -211,7 +228,7 @@ const _nav = [
 
     ],
   },
-  {
+ /* {
     component: CNavItem,
     name: 'Colors',
     to: '/theme/colors',
@@ -485,7 +502,7 @@ const _nav = [
     name: 'Docs',
     href: 'https://coreui.io/react/docs/templates/installation/',
     icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
-  },
+  },*/
 ]
 
 export default _nav
