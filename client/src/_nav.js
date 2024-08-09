@@ -19,7 +19,8 @@ import {
   cilCart,
   cilSpeech,
   cilGlobeAlt,
-  cilAirplay
+  cilAirplay,
+  cilBank
 } from '@coreui/icons'
 
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
@@ -224,6 +225,22 @@ const _nav = [
         component: CNavItem,
         name: 'liste des réclamations',
         to: '/admin/list_claim',
+      },
+
+    ],
+  },
+
+  //bank
+  {
+    component: CNavGroup,
+    name: 'Bank',
+    to: '/Bank',
+    icon: <CIcon icon={cilBank} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'liste des banques',
+        to: '/admin/list_bank',
       },
 
     ],
