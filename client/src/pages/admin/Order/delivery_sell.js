@@ -17,6 +17,10 @@ import {
 } from '@coreui/react';
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
+import CIcon from '@coreui/icons-react';
+import {
+  cilPrint,
+} from '@coreui/icons'
 
 const numberToWords = (number) => {
   const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
@@ -107,7 +111,7 @@ const AfficherLivraison = () => {
     order = {},
     deliveryLines = []
   } = delivery;
-
+  const suppliertax_identification_number = order.supplier?.tax_identification_number || 'Non défini';
   const customerName = order.customer?.name || 'Non défini';
   const customerTel = order.customer?.phone || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
@@ -141,18 +145,18 @@ const AfficherLivraison = () => {
           <CCardBody className="print-content" style={{ backgroundColor: '#f9f9f9' }}>
             <CRow>
             <CCol xs={6}>
-                <p><strong>Expediteur:</strong> {supplierName}</p>
+                <p><strong>Nom de l'expéditeur:</strong> {supplierName}</p>
               
-             
+                <p><strong>Matricule Fiscal:</strong> {suppliertax_identification_number}</p>
                 <p>Tél.: {supplierPhone} | Email: {supplierEmail}</p>
                 <p><strong>REF TRANSPORTEUR:</strong> {supplierRegistrationNumber}</p>
               </CCol>
               <CCol xs={6}>
-                <p><strong>Client:</strong> {customerName}</p>
-                <p><strong>Num Client:</strong> {customerTel}</p>
+                <p><strong>Nom De Destinataire::</strong> {customerName}</p>
+                <p><strong>Téléphone:</strong> {customerTel}</p>
                 <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
                 <p><strong>Observation:</strong> {observation}</p>
-                <p><strong>Adressé :</strong> {destination}</p>
+                <p><strong>Adresse :</strong> {destination}</p>
               </CCol>
             </CRow>
 
@@ -164,8 +168,8 @@ const AfficherLivraison = () => {
                   <CTableHeaderCell>Qte</CTableHeaderCell>
                   <CTableHeaderCell>prix unitaire </CTableHeaderCell>
                   <CTableHeaderCell>VAT Value</CTableHeaderCell>
-                  <CTableHeaderCell>Sale TTC</CTableHeaderCell>
-                  <CTableHeaderCell>Gross Amount</CTableHeaderCell>
+                  <CTableHeaderCell>Montant TTC</CTableHeaderCell>
+                 {/*<CTableHeaderCell>Gross Amount</CTableHeaderCell>*/ } 
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -177,7 +181,7 @@ const AfficherLivraison = () => {
                     <CTableDataCell>{parseFloat(line.article?.sale_ht).toFixed(3)} DT</CTableDataCell>
                     <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
                     <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(3)} DT</CTableDataCell>
-                    <CTableDataCell>{parseFloat(line?.gross_amount).toFixed(3)} DT</CTableDataCell>
+                   {/*<CTableDataCell>{parseFloat(line?.gross_amount).toFixed(3)} DT</CTableDataCell> */} 
                   </CTableRow>
                 ))}
               </CTableBody>
@@ -233,7 +237,7 @@ const AfficherLivraison = () => {
 
             <div className="no-print" style={{ marginBottom: '20px' }}>
               <CButton color="primary" onClick={handlePrint} className="mt-3">
-                Imprimer Livraison
+              <CIcon icon={cilPrint}style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" /> Imprimer Livraison
               </CButton>
               <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
                 Retourner à la Liste des Commandes

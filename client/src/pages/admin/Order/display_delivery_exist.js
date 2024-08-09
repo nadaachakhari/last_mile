@@ -15,6 +15,11 @@ import {
   CTableDataCell,
   CButton,
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react'
+import {
+  cilPrint,
+} from '@coreui/icons'
+
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
 
@@ -105,11 +110,15 @@ const DisplayDeliverySellExists = () => {
     order = {},
     deliveryLines = []
   } = invoice;
-
+  const suppliertax_identification_number = order.supplier?.tax_identification_number || 'Non défini';
   const customerName = order.customer?.name || 'Non défini';
+  const customerTele = order.customer?.name || 'Non défini';
+  const supplierRegistrationNumber = order.delivery?.registration_number || 'Non défini';
   const supplierName = order.supplier?.name || 'Non défini';
   const paymentMethodValue = order.paymentMethod?.value || 'Non défini';
-
+  const supplierAddress = order.supplier?.address || 'Non défini';
+  const supplierTel = order.supplier?.phone || 'Non défini';
+  const supplierEmail = order.supplier?.email || 'Non défini';
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
@@ -127,6 +136,10 @@ const DisplayDeliverySellExists = () => {
             page-break-after: always;
           }
         }
+      .icon{
+      width: 20px;
+      marginRight: 12px;
+}
         `}
       </style>
       <CRow className='print'>
@@ -142,19 +155,20 @@ const DisplayDeliverySellExists = () => {
             </CCardHeader>
             <CCardBody className="print-content" style={{ backgroundColor: '#f9f9f9' }}>
               <CRow>
+              <CCol xs={6}>
+                <p><strong>Émetteur:</strong> {supplierName}</p>
+                <p><strong>Matricule Fiscal:</strong> {suppliertax_identification_number}</p>
+                <p>{supplierAddress}</p>
+                <p>Tél.: {supplierTel} | Email: {supplierEmail}</p>
+                <p><strong>REF TRANSPORTEUR:</strong> {supplierRegistrationNumber}</p>
+              </CCol>
                 <CCol xs={6}>
-                  <p><strong>Émetteur:</strong> Axeserp</p>
-                  <p><strong>MF:</strong> 1699211/V/A/P/000</p>
-                  <p>B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2</p>
-                  <p>Tél.: 29 300 034 | Email: contact@axeserp.com</p>
-                </CCol>
-                <CCol xs={6}>
-                  <p><strong>Date:</strong> {formatDate(date)}</p>
-                  <p><strong>Client:</strong> {customerName}</p>
-                  <p><strong>Fournisseur:</strong> {supplierName}</p>
+                  
+                  <p><strong>Nom De Destinataire:</strong> {customerName}</p>
+                  <p><strong>Téléphone:</strong> {customerTele}</p>
                   <p><strong>Méthode de Paiement:</strong> {paymentMethodValue}</p>
                   <p><strong>Observation:</strong> {observation}</p>
-                  <p><strong>Adressé à:</strong> {destination}</p>
+                  <p><strong>Adresse:</strong> {destination}</p>
                 </CCol>
               </CRow>
 
@@ -165,9 +179,9 @@ const DisplayDeliverySellExists = () => {
                     <CTableHeaderCell>Article Name</CTableHeaderCell>
                     <CTableHeaderCell>Quantity</CTableHeaderCell>
                     <CTableHeaderCell>prix unitaire </CTableHeaderCell>
-                    <CTableHeaderCell>Gross Amount</CTableHeaderCell>
+                   {/*<CTableHeaderCell>Gross Amount</CTableHeaderCell>*/}
                     <CTableHeaderCell>VAT Value</CTableHeaderCell>
-                    <CTableHeaderCell>Sale TTC</CTableHeaderCell>
+                    <CTableHeaderCell>Montant TTC</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -177,7 +191,7 @@ const DisplayDeliverySellExists = () => {
                       <CTableDataCell>{line.article?.name || 'Non défini'}</CTableDataCell>
                       <CTableDataCell>{line.quantity}</CTableDataCell>
                       <CTableDataCell>{parseFloat(line.sale_ht).toFixed(3)} DT</CTableDataCell>
-                      <CTableDataCell>{parseFloat(line.gross_amount).toFixed(3)} DT</CTableDataCell>
+                    {/*   <CTableDataCell>{parseFloat(line.gross_amount).toFixed(3)} DT</CTableDataCell>*/}
                       <CTableDataCell>{line.vat?.value || 'Non défini'}%</CTableDataCell>
                       <CTableDataCell>{parseFloat(line.sale_ttc).toFixed(3)} DT</CTableDataCell>
                     </CTableRow>
@@ -200,13 +214,14 @@ const DisplayDeliverySellExists = () => {
           </CCard>
 
           <div className="d-flex justify-content-between mt-4 no-print">
-            <CButton color="info" onClick={handlePrint}>Imprimer</CButton>
+            <CButton color="primary" onClick={handlePrint}><CIcon icon={cilPrint}style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" />Imprimer</CButton>
             <CButton color="secondary" onClick={() => navigate('/admin/list_order')}>Retour</CButton>
           </div>
         </CCol>
       </CRow>
     </>
   );
+  
 };
 
 export default DisplayDeliverySellExists;

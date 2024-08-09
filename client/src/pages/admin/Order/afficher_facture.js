@@ -22,6 +22,10 @@ import {
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
 
+import {
+  cilPrint,
+} from '@coreui/icons'
+
 
 
 const numberToWordsWithDecimals = (number) => {
@@ -281,8 +285,8 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
 </style>
 
             <div className="no-print" style={{ marginBottom: '20px' }}>
-              <CButton color="primary" onClick={handlePrint} className="mt-3"><CIcon icon={cilUser} customClassName="nav-icon" />
-                Imprimer Facture
+              <CButton color="primary" onClick={handlePrint} className="mt-3">
+              <CIcon icon={cilPrint} style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" /> Imprimer Facture
               </CButton>
               <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
                 Retourner à la Liste des Commandes
