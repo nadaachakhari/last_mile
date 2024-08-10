@@ -44,7 +44,7 @@ const Regulations = sequelize.define('Regulations', {
   },
   bankID: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: Bank,
       key: 'ref',
@@ -61,9 +61,14 @@ const Regulations = sequelize.define('Regulations', {
 });
 
 // Define relationships
-Regulations.belongsTo(Order, { foreignKey: 'orderID' });
+// Regulations.belongsTo(Order, { as: 'Order', foreignKey: 'orderID' });
+// Regulations.belongsTo(Tiers, {as: 'supplier', foreignKey: 'tiersID' });
+// Regulations.belongsTo(PaymentMethod, {as: 'payment_method', foreignKey: 'ID_payment_method' });
+// Regulations.belongsTo(Bank, {as:'bank', foreignKey: 'bankID' });
+
+
+Regulations.belongsTo(Order, {  foreignKey: 'orderID' });
 Regulations.belongsTo(Tiers, { foreignKey: 'tiersID' });
 Regulations.belongsTo(PaymentMethod, { foreignKey: 'ID_payment_method' });
 Regulations.belongsTo(Bank, { foreignKey: 'bankID' });
-
 module.exports = Regulations;

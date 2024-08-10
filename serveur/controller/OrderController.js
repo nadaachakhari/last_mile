@@ -11,10 +11,12 @@ const Article = require('../Models/ArticleModel.js');
 const User = require('../Models/UserModel.js')
 const RoleUser = require('../Models/RoleUserModel.js')
 const sequelize = require('../config/database')
+const Regulations = require('../Models/RegulationsModel');
+const { cibTencentWeibo } = require('@coreui/icons');
 
 
 const createOrder = async (req, res) => {
-    const { code, date, customerID, observation, note, ID_payment_method, articles, destination } = req.body;
+    const { code, date, customerID, observation, note, ID_payment_method, articles, destination, bankID } = req.body;
     const supplierID = req.user.id;
 
     if (!supplierID) {
@@ -31,7 +33,14 @@ const createOrder = async (req, res) => {
     try {
         console.log('Transaction start');
 
-        const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+        // Vérifier si la méthode de paiement existe
+        const paymentMethod = await PaymentMethod.findByPk(ID_payment_method);
+        if (!paymentMethod) {
+            await transaction.rollback();
+            return res.status(400).json({ error: 'Méthode de paiement non trouvée' });
+        }
+
+        const typeClient = await TypeTiers.findOne({ where: { name: 'client', deleted: false } });
         if (!typeClient) {
             await transaction.rollback();
             return res.status(400).json({ error: 'Type "client" non trouvé' });
@@ -88,14 +97,14 @@ const createOrder = async (req, res) => {
 
         console.log('OrderState created for orderID:', newOrder.id);
 
-        // Add articles to OrderLignes
+        // Ajouter les articles dans OrderLignes
         for (const article of articles) {
             const { id, quantity } = article;
             const articleData = await Article.findByPk(id);
 
             if (!articleData) {
                 await transaction.rollback();
-                return res.status(400).json({ error: `Article with ID ${id} not found` });
+                return res.status(400).json({ error: `Article avec l'ID ${id} non trouvé` });
             }
 
             const sale_ttc = articleData.sale_ttc;
@@ -114,6 +123,26 @@ const createOrder = async (req, res) => {
 
         // Mettre à jour le total_amount dans la commande
         await newOrder.update({ total_amount: totalAmount }, { transaction });
+        if (paymentMethod.value === 'espèce' || paymentMethod.value === 'chèque' || paymentMethod.value === 'paiement à la livraison') {
+            const regulationData = {
+                orderID: newOrder.id,
+                tiersID: supplierID,
+                date: new Date(),
+                ID_payment_method,
+                deleted: false,
+                
+            };
+
+            if (paymentMethod.value === 'chèque') {
+                if (!bankID) {
+                    await transaction.rollback();
+                    return res.status(400).json({ error: 'Bank ID est requis pour le paiement par chèque.' });
+                }
+                regulationData.bankID = bankID;
+            }
+
+            await Regulations.create(regulationData, { transaction });
+        }
 
         await transaction.commit();
         console.log('Transaction committed');
@@ -131,6 +160,8 @@ const createOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 const getAllOrders = async (req, res) => {
     const user = req.user;

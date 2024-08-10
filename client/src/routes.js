@@ -138,6 +138,13 @@ const add_claim = React.lazy(() => import('./pages/admin/Claim/add_claim'))
 const display_claim = React.lazy(() => import('./pages/admin/Claim/display_claim'))
 const list_claim = React.lazy(() => import('./pages/admin/Claim/list_claim'))
 const edit_claim = React.lazy(() => import('./pages/admin/Claim/edit_claim'))
+
+//bank
+const add_bank = React.lazy(() => import('./pages/admin/Bank/add_bank'))
+const list_bank = React.lazy(() => import('./pages/admin/Bank/list_bank'))
+const detail_bank = React.lazy(() => import('./pages/admin/Bank/detail_bank'))
+const edit_bank = React.lazy(() => import('./pages/admin/Bank/edit_bank'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -307,6 +314,12 @@ const routes = [
   { path: '/admin/display_claim/:orderID', element: display_claim },
   { path: '/admin/list_claim', element: list_claim },
   { path: '/admin/edit_claim/:claimID', element: edit_claim },
+
+  //bank
+  { path: 'admin/add_bank', element: add_bank },
+  { path: '/admin/list_bank', element: list_bank },
+  { path: '/admin/detail_bank/:ref', element: detail_bank },
+  { path: '/admin/edit_bank/:ref', name: 'modifer bank', element: edit_bank },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

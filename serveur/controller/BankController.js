@@ -10,6 +10,9 @@ const getAllBanks = async (req, res) => {
         console.error('Erreur lors de la récupération des banques:', error);
         res.status(500).json({ message: 'Erreur lors de la récupération des banques.' });
     }
+
+
+    
 };
 
 const getBankById = async (req, res) => {
