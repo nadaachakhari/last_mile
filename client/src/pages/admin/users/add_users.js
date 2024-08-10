@@ -120,10 +120,7 @@ const AddUser = () => {
                                 <CFormLabel htmlFor="user_name">Nom d'utilisateur</CFormLabel>
                                 <CFormInput id="user_name" value={formData.user_name} onChange={handleChange} required />
                             </CCol>
-                            <CCol md={6}>
-                                <CFormLabel htmlFor="password">Mot de passe</CFormLabel>
-                                <CFormInput type="password" id="password" value={formData.password} onChange={handleChange} required />
-                            </CCol>
+                           
                             <CCol md={6}>
                                 <CFormLabel htmlFor="email">Email</CFormLabel>
                                 <CFormInput type="email" id="email" value={formData.email} onChange={handleChange} required />

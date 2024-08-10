@@ -7,18 +7,33 @@ const State = require('../Models/StateModel')
 const OrderState = require('../Models/OrderStateModel')
 const sequelize = require('../config/database')
 const {sendEmail} = require('../config/emailConfig');
+const jwt = require('jsonwebtoken');
 
+const generatePassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let password = '';
+    for (let i = 0; i < 10; i++) {
+        password += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return password;
+};
 
 const createUser = async (req, res) => {
-    const { name, user_name, password, email, registration_number, cin, role_usersID } = req.body;
+    const { name, user_name, email, registration_number, cin, role_usersID } = req.body;
     const photo = req.file ? req.file.filename : '';
+
     try {
+        // Check if the RoleUser ID is valid
         const roleUser = await RoleUser.findByPk(role_usersID);
-        console.log(roleUser);
         if (!roleUser) {
             return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
+
+        // Generate and hash the password
+        const password = generatePassword();
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create the new user
         const newUser = await User.create({
             name,
             user_name,
@@ -31,11 +46,39 @@ const createUser = async (req, res) => {
             deleted: false
         });
 
+        // Generate a JWT token for password reset
+        const token = jwt.sign({ id: newUser.id }, 'HEX', { expiresIn: '30m' });
+
+        // Create a reset link
+        const resetLink = `http://localhost:3000/#/profil/changer_motpasse/${token}`;
+
+        // Email content
+        const subject = 'Votre compte a été créé';
+        const message = `
+            Bonjour ${name},
+
+            Votre compte a été créé avec succès. Voici vos informations de connexion :
+
+            Nom d'utilisateur : ${user_name}
+            Mot de passe : ${password}
+
+            Vous pouvez changer votre mot de passe en cliquant sur le lien suivant : ${resetLink}
+
+            Merci,
+            L'équipe
+        `;
+
+        // Send the email with the password and reset link
+        await sendEmail(email, subject, message);
+
         res.status(201).json(newUser);
     } catch (error) {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
         res.status(400).json({ error: error.message });
     }
 };
+
+
 
 const getAllUsers = async (req, res) => {
     try {

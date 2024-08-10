@@ -19,7 +19,7 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const Authenticate = React.lazy(() => import('./pages/admin/Authenticate/authenticate'))
 const Request_reset_password = React.lazy(() => import('./pages/admin/Authenticate/request_reset_password'))
 const Reset_password = React.lazy(() => import('./pages/admin/Authenticate/reset_password'))
-
+const Changer_mot_passe2= React.lazy(() => import('./pages/admin/Authenticate/new_password'))
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
@@ -56,7 +56,7 @@ const App = () => {
           <Route exact path="/authenticate" name="Login Page" element={<Authenticate />} />
           <Route exact path="/request_reset_password" name="" element={<Request_reset_password />} />
           <Route exact path="/reset_password/:token" name="" element={<Reset_password />} />
-
+          <Route exact  path= '/profil/changer_motpasse/:token' element= {<Changer_mot_passe2/> }/>
         </Routes>
       </Suspense>
     </HashRouter>

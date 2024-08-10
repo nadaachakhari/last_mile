@@ -4,8 +4,8 @@ const TypeTiers = require("../Models/TypeTiersModel");
 const City = require("../Models/CityModel");
 const RoleUser = require("../Models/RoleUserModel");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
+const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 const authenticate = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -134,6 +134,8 @@ const changePassword = async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 };
+//
+
 
 module.exports = {
   authenticate,
