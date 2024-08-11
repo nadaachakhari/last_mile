@@ -12,7 +12,7 @@ const User = require('../Models/UserModel.js')
 const RoleUser = require('../Models/RoleUserModel.js')
 const sequelize = require('../config/database')
 const Regulations = require('../Models/RegulationsModel');
-const { cibTencentWeibo } = require('@coreui/icons');
+const Bank = require('../Models/BankModel');
 
 
 const createOrder = async (req, res) => {
@@ -33,6 +33,7 @@ const createOrder = async (req, res) => {
     try {
         console.log('Transaction start');
 
+        
         // Vérifier si la méthode de paiement existe
         const paymentMethod = await PaymentMethod.findByPk(ID_payment_method);
         if (!paymentMethod) {
@@ -95,7 +96,7 @@ const createOrder = async (req, res) => {
             date: new Date(),
         }, { transaction });
 
-        console.log('OrderState created for orderID:', newOrder.id);
+        //console.log('OrderState created for orderID:', newOrder.id);
 
         // Ajouter les articles dans OrderLignes
         for (const article of articles) {
@@ -133,11 +134,24 @@ const createOrder = async (req, res) => {
                 
             };
 
-            if (paymentMethod.value === 'chèque') {
+            if (paymentMethod.value === 'chèque') {   
                 if (!bankID) {
                     await transaction.rollback();
                     return res.status(400).json({ error: 'Bank ID est requis pour le paiement par chèque.' });
                 }
+               //console.log("Received bankID:", bankID);
+               const bank = await Bank.findOne({
+                 where: { id: bankID, deleted: false },
+               });
+               //console.log("Fetched bank:", bank);
+                if (!bank || bank.deleted) {
+                    await transaction.rollback();
+                    return res.status(400).json({ error: 'Banque non trouvée ou supprimée.' });
+                }
+                //console.log('Bank found:', bank);
+                //console.log('Bank ID:', bankID);
+                
+                
                 regulationData.bankID = bankID;
             }
 

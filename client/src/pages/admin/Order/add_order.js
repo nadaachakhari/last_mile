@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -17,7 +17,7 @@ import {
   CModalBody,
   CModalFooter,
   CFormSelect,
-} from '@coreui/react';
+} from '@coreui/react'
 
 const AddOrder = () => {
   const [formData, setFormData] = useState({
@@ -26,183 +26,229 @@ const AddOrder = () => {
     customerID: '',
     observation: '',
     note: '',
+    bankID: '',
     ID_payment_method: '',
     destination: '',
     articles: [{ id: '', quantity: '' }],
-  });
-  const [grossAmount, setGrossAmount] = useState(0); // État pour grossAmount
-  const [customers, setCustomers] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState([]);
-  const [articles, setArticles] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [dateError, setDateError] = useState('');
-  const [codeError, setCodeError] = useState(''); // New state for code error
-  const navigate = useNavigate();
+  })
+  const [grossAmount, setGrossAmount] = useState(0)
+  const [customers, setCustomers] = useState([])
+  const [paymentMethods, setPaymentMethods] = useState([])
+  const [articles, setArticles] = useState([])
+  const [showModal, setShowModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [dateError, setDateError] = useState('')
+  const [codeError, setCodeError] = useState('')
+  const [bankError, setBankError] = useState('')
+  const [banks, setBanks] = useState([])
+  const [selectedBankID, setSelectedBankID] = useState('')
+  const [showBankDropdown, setShowBankDropdown] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/Tier/');
-        const allTiers = response.data;
+        const response = await axios.get('http://localhost:5001/Tier/')
+        const allTiers = response.data
         const filteredCustomers = allTiers.filter(
           (tier) => tier.TypeTier && tier.TypeTier.name === 'client'
-        );
-        setCustomers(filteredCustomers);
+        )
+        setCustomers(filteredCustomers)
       } catch (error) {
-        console.error('Erreur lors de la récupération des clients:', error);
+        console.error('Erreur lors de la récupération des clients:', error)
       }
-    };
+    }
 
     const fetchPaymentMethods = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/PaymentMethode/');
-        setPaymentMethods(response.data);
+        const response = await axios.get('http://localhost:5001/PaymentMethode/')
+        setPaymentMethods(response.data)
       } catch (error) {
-        console.error('Erreur lors de la récupération des méthodes de paiement:', error);
+        console.error('Erreur lors de la récupération des méthodes de paiement:', error)
       }
-    };
+    }
 
     const fetchArticles = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
       if (!token) {
-        console.error('Token non trouvé dans localStorage.');
-        return;
+        console.error('Token non trouvé dans localStorage.')
+        return
       }
       try {
         const response = await axios.get('http://localhost:5001/Article/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        setArticles(response.data);
+        })
+        setArticles(response.data)
       } catch (error) {
-        console.error('Erreur lors de la récupération des articles:', error);
+        console.error('Erreur lors de la récupération des articles:', error)
       }
-    };
+    }
 
-    fetchCustomers();
-    fetchPaymentMethods();
-    fetchArticles();
-  }, []);
+    const fetchBanks = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/Bank/')
+        setBanks(response.data)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des banques:', error)
+      }
+    }
+
+    fetchBanks()
+    fetchCustomers()
+    fetchPaymentMethods()
+    fetchArticles()
+  }, [])
 
   const checkOrderCodeExists = async (code) => {
     try {
-      const response = await axios.get(`http://localhost:5001/Order/check-code/${code}`);
-      return response.data.exists;
+      const response = await axios.get(`http://localhost:5001/Order/check-code/${code}`)
+      return response.data.exists
     } catch (error) {
-      console.error('Erreur lors de la vérification du code de commande:', error);
-      return false;
+      console.error('Erreur lors de la vérification du code de commande:', error)
+      return false
     }
-  };
+  }
 
   const handleChange = async (e) => {
-    const { id, value } = e.target;
+    const { id, value } = e.target
 
     if (id === 'date') {
-      const selectedDate = new Date(value);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set time to 00:00:00 to compare only date part
+      const selectedDate = new Date(value)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
 
       if (selectedDate < today) {
-        setDateError("La date ne peut pas être antérieure à aujourd'hui.");
-        return;
+        setDateError("La date ne peut pas être antérieure à aujourd'hui.")
+        return
       } else {
-        setDateError('');
+        setDateError('')
       }
     }
 
     if (id === 'code') {
-      const codeExists = await checkOrderCodeExists(value);
+      const codeExists = await checkOrderCodeExists(value)
       if (codeExists) {
-        setCodeError('Le code de commande existe déjà. Veuillez en choisir un autre.');
-        setModalMessage('Le code de commande existe déjà. Veuillez en choisir un autre.');
-        setShowModal(true);
-        return;
+        setCodeError('Le code de commande existe déjà. Veuillez en choisir un autre.')
+        setModalMessage('Le code de commande existe déjà. Veuillez en choisir un autre.')
+        setShowModal(true)
+        return
       } else {
-        setCodeError('');
+        setCodeError('')
       }
     }
 
-    setFormData({ ...formData, [id]: value });
-  };
+    if (id === 'ID_payment_method') {
+      setFormData({ ...formData, [id]: value })
+
+      const selectedPaymentMethod = paymentMethods.find((method) => method.id === parseInt(value))
+      if (selectedPaymentMethod && selectedPaymentMethod.value === 'chèque') {
+        setShowBankDropdown(true)
+      } else {
+        setShowBankDropdown(false)
+        setSelectedBankID('')
+      }
+      return
+    }
+
+    setFormData({ ...formData, [id]: value })
+  }
 
   const handleArticleChange = (e, index) => {
-    const { name, value } = e.target;
-    const updatedArticles = [...formData.articles];
-    updatedArticles[index] = { ...updatedArticles[index], [name]: value };
-    setFormData({ ...formData, articles: updatedArticles });
-    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article change
-  };
+    const { name, value } = e.target
+    const updatedArticles = [...formData.articles]
+    updatedArticles[index] = { ...updatedArticles[index], [name]: value }
+    setFormData({ ...formData, articles: updatedArticles })
+    calculateGrossAmount(updatedArticles)
+  }
+
+  const handleBankChange = (e) => {
+    console.log('Selected Bank ID:', e.target.value);
+    setSelectedBankID(e.target.value)
+  }
 
   const addArticle = () => {
     setFormData({
       ...formData,
       articles: [...formData.articles, { id: '', quantity: '' }],
-    });
-  };
+    })
+  }
 
   const removeArticle = (index) => {
-    const updatedArticles = [...formData.articles];
-    updatedArticles.splice(index, 1);
-    setFormData({ ...formData, articles: updatedArticles });
-    calculateGrossAmount(updatedArticles);  // Recalculate gross amount on article removal
-  };
+    const updatedArticles = [...formData.articles]
+    updatedArticles.splice(index, 1)
+    setFormData({ ...formData, articles: updatedArticles })
+    calculateGrossAmount(updatedArticles)
+  }
 
   const calculateGrossAmount = (updatedArticles) => {
-    let total = 0;
+    let total = 0
     updatedArticles.forEach((article) => {
-      const selectedArticle = articles.find((a) => a.id === parseInt(article.id));
+      const selectedArticle = articles.find((a) => a.id === parseInt(article.id))
       if (selectedArticle) {
-        total += selectedArticle.sale_ttc * article.quantity;
+        total += selectedArticle.sale_ttc * article.quantity
       }
-    });
-    setGrossAmount(total);
-  };
+    })
+    setGrossAmount(total)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
+    e.preventDefault()
+    const token = localStorage.getItem('token')
 
     if (!token) {
-      console.error('Token non trouvé dans localStorage.');
-      return;
+      console.error('Token non trouvé dans localStorage.')
+      return
     }
 
-    if (dateError || codeError) {
-      console.error('Formulaire invalide');
-      return;
+    if (dateError || codeError || bankError) {
+      console.error('Formulaire invalide')
+      return
+    }
+
+    if (showBankDropdown && !selectedBankID) {
+      setBankError('Veuillez sélectionner une banque pour le paiement par chèque.')
+      return
+    } else {
+      setBankError('')
     }
 
     const dataToSubmit = {
       ...formData,
-      gross_amount: grossAmount,  // Utilisez l'état grossAmount
-    };
+      gross_amount: grossAmount,
+    }
+
+    if (formData.ID_payment_method === 'chèque' && showBankDropdown) {
+      dataToSubmit.bankID = parseInt(selectedBankID)
+    }
+
+    console.log('Data to submit:', dataToSubmit)
 
     try {
       const response = await axios.post('http://localhost:5001/Order/', dataToSubmit, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
-      console.log('Réponse serveur:', response.data);
-      navigate('/admin/list_order');
+      console.log('Réponse serveur:', response.data)
+      navigate('/admin/list_order')
     } catch (error) {
       if (error.response) {
         if (error.response.status === 403) {
-          console.error('Accès refusé: Vérifiez les autorisations.');
+          console.error('Accès refusé: Vérifiez les autorisations.')
         } else if (error.response.status === 400 && error.response.data.error) {
-          setModalMessage(error.response.data.error);
-          setShowModal(true);
+          setModalMessage(error.response.data.error)
+          setShowModal(true)
         } else {
-          console.error('Erreur inattendue:', error.response.data);
+          console.error('Erreur inattendue:', error.response.data)
         }
       } else {
-        console.error('Erreur lors de la soumission du formulaire:', error.message);
+        console.error('Erreur lors de la soumission du formulaire:', error.message)
       }
     }
-  };
+  }
 
   return (
     <CRow>
@@ -215,12 +261,7 @@ const AddOrder = () => {
             <CForm className="row g-3" onSubmit={handleSubmit}>
               <CCol md={6}>
                 <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput
-                  id="code"
-                  value={formData.code}
-                  onChange={handleChange}
-                  required
-                />
+                <CFormInput id="code" value={formData.code} onChange={handleChange} required />
                 {codeError && <p className="text-danger">{codeError}</p>}
               </CCol>
               <CCol md={6}>
@@ -266,31 +307,37 @@ const AddOrder = () => {
                   ))}
                 </CFormSelect>
               </CCol>
+              {showBankDropdown && (
+                <CCol md={3}>
+                  <CFormLabel htmlFor="bankID">Sélectionner une Banque</CFormLabel>
+                  <CFormSelect id="bankID" value={selectedBankID} onChange={handleBankChange}>
+                    <option value="">Sélectionner une banque</option>
+                    {banks.map((bank) => (
+                      <option key={bank.id} value={bank.id}>
+                        {bank.value}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                  {bankError && <p className="text-danger">{bankError}</p>}
+                </CCol>
+              )}
               <CCol md={6}>
                 <CFormLabel htmlFor="observation">Observation</CFormLabel>
-                <CFormInput
-                  id="observation"
-                  value={formData.observation}
-                  onChange={handleChange}
-                />
+                <CFormInput id="observation" value={formData.observation} onChange={handleChange} />
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="note">Note</CFormLabel>
-                <CFormInput
-                  id="note"
-                  value={formData.note}
-                  onChange={handleChange}
-                />
+                <CFormInput id="note" value={formData.note} onChange={handleChange} />
               </CCol>
               <CCol md={6}>
-  <CFormLabel htmlFor="destination">Destination</CFormLabel>
-  <CFormInput
-    id="destination"
-    value={formData.destination}
-    onChange={handleChange}
-    required
-  />
-</CCol>
+                <CFormLabel htmlFor="destination">Destination</CFormLabel>
+                <CFormInput
+                  id="destination"
+                  value={formData.destination}
+                  onChange={handleChange}
+                  required
+                />
+              </CCol>
 
               <CCol xs={12}>
                 <CButton color="primary" onClick={addArticle}>
@@ -334,11 +381,7 @@ const AddOrder = () => {
               ))}
               <CCol xs={12} className="d-flex align-items-center">
                 <CFormLabel className="ms-3">Montant Total :</CFormLabel>
-                <CFormInput
-                  type="text"
-                  value={grossAmount.toFixed(3)}
-                  disabled
-                />
+                <CFormInput type="text" value={grossAmount.toFixed(3)} disabled />
               </CCol>
               <CCol xs={12}>
                 <CButton color="primary" type="submit">
@@ -361,7 +404,7 @@ const AddOrder = () => {
         </CModalFooter>
       </CModal>
     </CRow>
-  );
-};
+  )
+}
 
-export default AddOrder;
+export default AddOrder
