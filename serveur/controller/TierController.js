@@ -122,11 +122,8 @@ const deleteTier = async (req, res, next) => {
 
 
 
-// Générer un mot de passe aléatoire
 
-const generatePassword = (length) => {
-  return crypto.randomBytes(length).toString('HEX').slice(0, length);
-};
+
 
 const createClient = async (req, res) => {
   const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
@@ -177,7 +174,7 @@ const createClient = async (req, res) => {
 
     // Envoi d'un email au nouveau client avec ses informations de connexion
     const emailSubject = 'Bienvenue sur notre plateforme !';
-    const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.email}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+    const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     // Envoi de l'email (à décommenter si la fonction sendEmail est implémentée)
     await sendEmail(newClient.email, emailSubject, emailText);
@@ -289,8 +286,17 @@ const getClientById = async (req, res) => {
 //Supplier
 
 
+const generatePassword = () => {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let password = '';
+  for (let i = 0; i < 10; i++) {
+      password += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return password;
+};
+
 const createSupplier = async (req, res) => {
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID ,tax_identification_number} = req.body;
+  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID, tax_identification_number } = req.body;
   const createdBy = null; // Assigner createdBy à null pour les livreurs
 
   try {
@@ -313,7 +319,7 @@ const createSupplier = async (req, res) => {
     }
 
     // Génération et hashage du mot de passe
-    const generatedPassword = generatePassword(12);
+    const generatedPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     // Création du nouveau fournisseur
@@ -338,16 +344,18 @@ const createSupplier = async (req, res) => {
 
     // Envoi d'un email au nouveau fournisseur avec ses informations de connexion
     const emailSubject = 'Bienvenue sur notre plateforme !';
-    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.email}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     // Envoi de l'email
     await sendEmail(newSupplier.email, emailSubject, emailText);
 
     res.status(201).json({ newSupplier, generatedPassword });
   } catch (error) {
+    console.error('Erreur lors de la création du fournisseur:', error);
     res.status(400).json({ error: error.message });
   }
 };
+
 const uploadSupplier = async (req, res) => {
   const { id } = req.params;
   const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID,tax_identification_number } = req.body;
