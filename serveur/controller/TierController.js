@@ -282,6 +282,50 @@ const getClientById = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const getAllClientsForSupplier = async (req, res) => {
+  const user = req.user; // Supposons que l'information utilisateur est disponible dans req.user
+
+  try {
+    // Déterminer si l'utilisateur est un fournisseur
+    const isSupplier = user && user.role === 'fournisseur';
+    const supplierID = isSupplier ? user.id : null;
+
+    if (!supplierID) {
+      return res.status(400).json({ error: 'Fournisseur non trouvé' });
+    }
+
+    // Récupérer le type "client"
+    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    if (!typeClient) {
+      return res.status(400).json({ error: 'Type "client" non trouvé' });
+    }
+
+    // Récupérer les clients associés au fournisseur
+    const clients = await Tiers.findAll({
+      where: {
+        type_tiersID: typeClient.id, // Filtrer par type "client"
+        createdBy: supplierID, // Filtrer les clients créés par le fournisseur
+        deleted: false // Ne pas inclure les clients supprimés
+      },
+      include: [
+        {
+          model: TypeTiers,
+          attributes: ['name']
+        },
+        {
+          model: City,
+          attributes: ['value']
+        }
+      ]
+    });
+
+    res.status(200).json(clients);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
 
 //Supplier
 
@@ -476,7 +520,7 @@ module.exports = {
   updateClient,
   getAllClients,
   getClientById,
-
+  getAllClientsForSupplier,
 
   //crud fournisseur
   createSupplier,

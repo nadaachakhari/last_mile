@@ -10,6 +10,7 @@ const {
   updateClient,
   getAllClients,
   getClientById,
+  getAllClientsForSupplier,
   createSupplier,
   uploadSupplier,
   getSupplierById ,
@@ -28,7 +29,7 @@ router.get('/', getAllTiers);
 //client
 router.post('/create-client', authenticateToken, createClient);
 router.get('/clients', getAllClients);
-
+router.get('/clientbysupplier', authenticateToken, getAllClientsForSupplier);
 //Supplier
 router.post('/create-supplier', createSupplier);
 router.get('/supplier', getAllSuppliers);

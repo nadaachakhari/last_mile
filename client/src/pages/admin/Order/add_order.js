@@ -46,14 +46,18 @@ const AddOrder = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const fetchCustomers = async () => {const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
-        const response = await axios.get('http://localhost:5001/Tier/')
+        const response = await axios.get('http://localhost:5001/Tier/clientbysupplier', {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
         const allTiers = response.data
-        const filteredCustomers = allTiers.filter(
-          (tier) => tier.TypeTier && tier.TypeTier.name === 'client'
-        )
-        setCustomers(filteredCustomers)
+      
+        setCustomers(allTiers)
       } catch (error) {
         console.error('Erreur lors de la récupération des clients:', error)
       }

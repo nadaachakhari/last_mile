@@ -13,25 +13,26 @@ import {
     CTableHeaderCell,
     CTableBody,
     CTableDataCell,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CModalFooter,
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 
 const ClientList = () => {
     const [clients, setClients] = useState([]);
-   
 
     useEffect(() => {
         const fetchClients = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              console.error('Token non trouvé dans localStorage.');
+              return;
+            }
             try {
-                const response = await axios.get('http://localhost:5001/Tier/clients');
-                setClients(response.data);
+                const response = await axios.get('http://localhost:5001/Tier/clientbysupplier', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                setClients(response.data); // Cette ligne était mal placée
             } catch (error) {
                 console.error('Erreur lors de la récupération des clients:', error);
             }
@@ -44,7 +45,6 @@ const ClientList = () => {
         console.log(`Modifier client avec id: ${id}`);
         // Ajouter ici la logique pour la redirection ou l'ouverture de la page de modification
     };
-
 
     return (
         <CRow>
@@ -93,7 +93,6 @@ const ClientList = () => {
                                                     <FaEdit className="icon-white icon-lg me-1" />
                                                 </CButton>
                                             </Link>
-                                            
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}
