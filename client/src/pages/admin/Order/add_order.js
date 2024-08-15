@@ -42,21 +42,23 @@ const AddOrder = () => {
   const [bankError, setBankError] = useState('')
   const [banks, setBanks] = useState([])
   const [selectedBankID, setSelectedBankID] = useState('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
   const [showBankDropdown, setShowBankDropdown] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const fetchCustomers = async () => {const token = localStorage.getItem('token');
+    const fetchCustomers = async () => {
+      const token = localStorage.getItem('token')
       if (!token) {
-        console.error('Token non trouvé dans localStorage.');
-        return;
+        console.error('Token non trouvé dans localStorage.')
+        return
       }
       try {
         const response = await axios.get('http://localhost:5001/Tier/clientbysupplier', {
-          headers: { 'Authorization': `Bearer ${token}` }
-      });
+          headers: { Authorization: `Bearer ${token}` },
+        })
         const allTiers = response.data
-      
+
         setCustomers(allTiers)
       } catch (error) {
         console.error('Erreur lors de la récupération des clients:', error)
@@ -148,6 +150,7 @@ const AddOrder = () => {
 
       const selectedPaymentMethod = paymentMethods.find((method) => method.id === parseInt(value))
       if (selectedPaymentMethod && selectedPaymentMethod.value === 'chèque') {
+        setSelectedPaymentMethod(selectedPaymentMethod.value)
         setShowBankDropdown(true)
       } else {
         setShowBankDropdown(false)
@@ -168,7 +171,7 @@ const AddOrder = () => {
   }
 
   const handleBankChange = (e) => {
-    console.log('Selected Bank ID:', e.target.value);
+    console.log('Selected Bank ID:', e.target.value)
     setSelectedBankID(e.target.value)
   }
 
@@ -223,7 +226,7 @@ const AddOrder = () => {
       gross_amount: grossAmount,
     }
 
-    if (formData.ID_payment_method === 'chèque' && showBankDropdown) {
+    if (selectedPaymentMethod === 'chèque' && showBankDropdown) {
       dataToSubmit.bankID = parseInt(selectedBankID)
     }
 
