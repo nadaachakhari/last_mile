@@ -3,14 +3,15 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const {
-    createUser,
-    getAllUsers,
-    getUserById,
-    updateUser,
-    deleteUser,
-    getOrdersByDeliveryPerson,
-    changeOrderState
-} = require('../controller/UsersController');
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getOrdersByDeliveryPerson,
+  changeOrderState,
+  checkUserName,
+} = require("../controller/UsersController");
 const { authenticateToken } = require('../controller/AuthController')
 
 // Configuration de multer pour le stockage des images
@@ -32,6 +33,7 @@ router.put('/change-state/:orderId', authenticateToken, changeOrderState);
 router.get('/:id', getUserById);
 router.put('/:id', upload.single('photo'), updateUser);
 router.put('/update_deleted/:id', deleteUser);
+router.get("/checkUserName/:userName", checkUserName);
 
 
 module.exports = router;

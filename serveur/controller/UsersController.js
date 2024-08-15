@@ -8,6 +8,7 @@ const OrderState = require('../Models/OrderStateModel')
 const sequelize = require('../config/database')
 const {sendEmail} = require('../config/emailConfig');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const generatePassword = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -18,33 +19,57 @@ const generatePassword = () => {
     return password;
 };
 
+const generateUserName = async (name, email) => {
+  const cleanString = (str) => str.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  const namePart = cleanString(name);
+  const emailPart = cleanString(email.split("@")[0]);
+  let baseUserName = `${namePart}.${emailPart}`;
+  let userName = baseUserName;
+
+  // Check if the username already exists
+  let userExists = await axios.get(
+    `http://localhost:5001/Users/checkUserName/${userName}`
+  );
+
+  // If username exists, append a number to make it unique
+  let counter = 1;
+  while (userExists.data.exists) {
+    userName = `${baseUserName}${counter}`;
+    userExists = await axios.get(
+      `http://localhost:5001/Users/checkUserName/${userName}`
+    );
+    counter++;
+  }
+
+  return userName;
+};
 const createUser = async (req, res) => {
-    const { name, user_name, email, registration_number, cin, role_usersID } = req.body;
+     const { name, email, registration_number, cin, role_usersID } = req.body;
     const photo = req.file ? req.file.filename : '';
 
     try {
-        // Check if the RoleUser ID is valid
         const roleUser = await RoleUser.findByPk(role_usersID);
         if (!roleUser) {
             return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
 
-        // Generate and hash the password
+         const user_name = await generateUserName(name, email);
+
         const password = generatePassword();
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create the new user
         const newUser = await User.create({
-            name,
-            user_name,
-            password: hashedPassword,
-            email,
-            photo,
-            registration_number,
-            cin,
-            role_usersID,
-            deleted: false
+          name,
+          user_name,
+          password: hashedPassword,
+          email,
+          photo,
+          registration_number,
+          cin,
+          role_usersID,
+          deleted: false,
         });
+
 
         // Generate a JWT token for password reset
         const token = jwt.sign({ id: newUser.id }, 'HEX', { expiresIn: '30m' });
@@ -78,6 +103,21 @@ const createUser = async (req, res) => {
     }
 };
 
+
+// In your UsersController or equivalent
+const checkUserName = async (req, res) => {
+  const { userName } = req.params;
+  try {
+    const user = await User.findOne({ where: { user_name: userName } });
+    if (user) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Erreur lors de la vérification du nom d'utilisateur." });
+  }
+};
 
 
 const getAllUsers = async (req, res) => {
@@ -363,5 +403,6 @@ module.exports = {
     updateUser,
     deleteUser,
     getOrdersByDeliveryPerson,
-    changeOrderState
+    changeOrderState,
+    checkUserName
 };
