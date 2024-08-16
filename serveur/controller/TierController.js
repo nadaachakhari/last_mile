@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 const Order = require('../Models/OrderModel');
 const State = require('../Models/StateModel');
 const PaymentMethod = require('../Models/PaymentMethodModel');
-
+const User = require('../Models/UserModel');
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
@@ -506,6 +506,63 @@ const deleteSupplier = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const updateUserAndTiers = async (userId, tiersData, userData) => {
+  try {
+    // Start a transaction
+    const transaction = await sequelize.transaction();
+
+    // Find the user by ID
+    const user = await User.findByPk(userId, { transaction });
+    if (!user) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    // Update the user data
+    await user.update(userData, { transaction });
+
+    // Find the associated tiers
+    const tiers = await Tiers.findOne({ where: { id: user.tiersID }, transaction });
+    if (!tiers) {
+      throw new Error('Tiers non trouvé');
+    }
+
+    // Update the tiers data
+    await tiers.update(tiersData, { transaction });
+
+    // Commit the transaction
+    await transaction.commit();
+
+    return { success: true, message: 'Mise à jour réussie' };
+  } catch (error) {
+    // Rollback the transaction in case of error
+    if (transaction) await transaction.rollback();
+    return { success: false, message: error.message };
+  }
+};
+const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      include: [
+        {
+          model: Tiers,
+          as: 'tiers',
+          include: [
+            { model: TypeTiers, attributes: ['name'] },
+            { model: City, attributes: ['value'] }
+          ]
+        }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 
 module.exports = {
@@ -528,5 +585,7 @@ module.exports = {
   getAllSuppliers,
   getSupplierById,
   deleteSupplier,
-
+//updateUserAndTiers
+updateUserAndTiers,
+getUserProfile
 };

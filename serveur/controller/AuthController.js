@@ -62,7 +62,7 @@ const authenticate = async (req, res) => {
       "HEX",
       { expiresIn: "24h" }
     );
-
+    
     res
       .status(200)
       .json({

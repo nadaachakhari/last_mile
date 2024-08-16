@@ -5,6 +5,8 @@ const Order = require('../Models/OrderModel')
 const Tiers = require('../Models/TiersModel')
 const State = require('../Models/StateModel')
 const OrderState = require('../Models/OrderStateModel')
+const TypeTiers= require('../Models/TypeTiersModel')
+const City= require('../Models/CityModel')
 const sequelize = require('../config/database')
 const {sendEmail} = require('../config/emailConfig');
 const jwt = require('jsonwebtoken');
@@ -353,7 +355,96 @@ const changeOrderState = async (req, res) => {
     }
 };
 
+// get user connect
+const getUserProfile = async (req, res) => {
+    try {
+        console.log('Decoded User:', req.user); // Log complet de l'utilisateur décodé
+        console.log('User ID:', req.user.id);
 
+        const user = await User.findByPk(req.user.id, {
+        
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Fonction pour récupérer les informations de l'utilisateur ou du tiers connecté
+const getConnectedUserOrTiers = async (req, res) => {
+    try {
+      const { id: userId, role } = req.user; // Ensure correct extraction
+      console.log('userId:', userId); // Debugging
+      console.log('role:', role); // Debugging
+  
+      // Add detailed error logging
+      if (!userId) {
+        throw new Error('userId is undefined');
+      }
+  
+      // Fetch data based on userId and role
+      let user;
+      if (role === "Administrateur") {
+        user = await User.findOne({ where: { id: userId } });
+      } else if (role === "client" || role === "fournisseur") {
+        user = await Tiers.findOne({ where: { id: userId } });
+      } else {
+        throw new Error('Unknown role');
+      }
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.json(user);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des informations:', error.message);
+      res.status(500).json({ message: 'Erreur serveur.', error: error.message });
+    }
+  };
+  
+// Fonction pour mettre à jour les informations de l'utilisateur ou du tiers connecté
+const updateConnectedUserOrTiers = async (req, res) => {
+    try {
+      const { id: userId, role } = req.user;
+      const { name, email, phone, address, ...otherFields } = req.body;
+  
+      // Remove `createdBy` if it exists in `otherFields`
+      delete otherFields.createdBy;
+  
+      let updatedUser;
+      if (role === "Administrateur"|| role ==="livreur") {
+        updatedUser = await User.update(
+          { name, email, ...otherFields },
+          { where: { id: userId }, returning: true, plain: true }
+        );
+      } else if (role === "client" || role === "fournisseur") {
+        updatedUser = await Tiers.update(
+          { name, email, phone, address, ...otherFields },
+          { where: { id: userId }, returning: true, plain: true }
+        );
+      } else {
+        throw new Error('Unknown role');
+      }
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found or update failed' });
+      }
+  
+      res.json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des informations:', error.message);
+      res.status(500).json({ message: 'Erreur serveur.', error: error.message });
+    }
+  };
+  
+  
 
 
 module.exports = {
@@ -363,5 +454,8 @@ module.exports = {
     updateUser,
     deleteUser,
     getOrdersByDeliveryPerson,
-    changeOrderState
+    changeOrderState,
+    getUserProfile,
+    getConnectedUserOrTiers,
+    updateConnectedUserOrTiers,
 };

@@ -9,7 +9,10 @@ const {
     updateUser,
     deleteUser,
     getOrdersByDeliveryPerson,
-    changeOrderState
+    changeOrderState,
+    getUserProfile,
+    getConnectedUserOrTiers,
+    updateConnectedUserOrTiers
 } = require('../controller/UsersController');
 const { authenticateToken } = require('../controller/AuthController')
 
@@ -27,10 +30,13 @@ const upload = multer({ storage: storage });
 
 router.post('/', upload.single('photo'), createUser);
 router.get('/', getAllUsers);
+router.get('/profile', authenticateToken, getConnectedUserOrTiers);
 router.get('/orders/delivery-person', authenticateToken, getOrdersByDeliveryPerson);
+router.put('/updateusertier', authenticateToken, upload.single('photo'),updateConnectedUserOrTiers);
 router.put('/change-state/:orderId', authenticateToken, changeOrderState);
 router.get('/:id', getUserById);
 router.put('/:id', upload.single('photo'), updateUser);
+
 router.put('/update_deleted/:id', deleteUser);
 
 

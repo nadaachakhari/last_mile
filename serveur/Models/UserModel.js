@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const RoleUser = require('./RoleUserModel');
 
+const Tiers = require('./TiersModel');
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,

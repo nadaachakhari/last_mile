@@ -121,7 +121,7 @@ const edit_fournisseur = React.lazy(() => import('./pages/admin/Tiers/edit_suppl
 
 //profile 
 const changer_mot_passe= React.lazy(() => import('./pages/profile/change_password'))
-
+const profile= React.lazy(() => import('./pages/profile/edit_profile'))
 //BonDeLivraison
 const BonDeLivraison= React.lazy(() => import('./pages/admin/Order/delivery_sell'))
 const display_delivery_exist = React.lazy(() => import('./pages/admin/Order/display_delivery_exist'))
@@ -297,6 +297,7 @@ const routes = [
 { path: '/admin/edit_fournisseur/:id', name: 'modifer fournisseur', element: edit_fournisseur },
 //profile 
 { path: '/profil/changer_mot_passe', element: changer_mot_passe },
+{ path: '/profile', element: profile },
 
   //DeliverySell
   { path: '/admin/bon_de_livraison/:orderID', element: BonDeLivraison },
