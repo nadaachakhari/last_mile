@@ -164,7 +164,7 @@ const deleteTier = async (req, res, next) => {
   }
 };
 
-const generateClientUserName = async (name, email) => {
+const generateUserName = async (name, email) => {
   const cleanString = (str) => str.replace(/[^a-zA-Z]/g, "").toLowerCase();
   const namePart = cleanString(name);
   const emailPart = cleanString(email.split("@")[0]);
@@ -224,7 +224,7 @@ const createClient = async (req, res) => {
       return res.status(400).json({ error: "Email already exists" });
     }
 
-const user_name = await generateClientUserName(name, email);
+const user_name = await generateUserName(name, email);
     const generatedPassword = generatePassword(12);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
@@ -467,7 +467,7 @@ const createSupplier = async (req, res) => {
   try {
     // Vérifiez si le type "fournisseur" existe
     const typeSupplier = await TypeTiers.findOne({
-      where: { name: "fournisseur" },
+      where: { name: "fournisseur", deleted: false },
     });
     if (!typeSupplier) {
       return res
@@ -487,6 +487,9 @@ const createSupplier = async (req, res) => {
       return res.status(400).json({ error: "Email already exists" });
     }
 
+    // Generate unique username for supplier
+    const user_name = await generateUserName(name, email);
+
     // Génération et hashage du mot de passe
     const generatedPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
@@ -494,6 +497,7 @@ const createSupplier = async (req, res) => {
     // Création du nouveau fournisseur
     const newSupplier = await Tiers.create({
       name,
+      user_name,
       type_tiersID: typeSupplier.id,
       code,
       address,
