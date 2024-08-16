@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Importez correctement jwtDecode
+import { jwtDecode } from 'jwt-decode'; 
 import {
   CButton,
   CCard,
@@ -38,6 +38,8 @@ const EditUserProfile = () => {
     user_name: '',
     cin: '',
     registration_number: '',
+    oldPassword: '', // Ajout pour le changement de mot de passe
+    newPassword: '', // Ajout pour le changement de mot de passe
   });
   const [imageFile, setImageFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -94,37 +96,47 @@ const EditUserProfile = () => {
       const token = localStorage.getItem('token');
       const data = new FormData();
       Object.keys(formData).forEach((key) => {
-        data.append(key, formData[key]);
+        if (key !== 'oldPassword' && key !== 'newPassword') {
+          data.append(key, formData[key]);
+        }
       });
       if (imageFile) {
         data.append('photo', imageFile);
       }
-  
+
       const response = await axios.put('http://localhost:5001/Users/updateusertier', data, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
-      // Inspecter la réponse pour vérifier la structure
-      console.log(response.data);
-  
+
+      if (formData.oldPassword && formData.newPassword) {
+        await axios.put('http://localhost:5001/Authenticate/change-password', {
+          oldPassword: formData.oldPassword,
+          newPassword: formData.newPassword
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
       const { token: newToken, role: newRole, nameTiers, nameusers } = response.data;
-  
+
       if (newToken) {
         localStorage.setItem('token', newToken);
       }
-  
+
       if (newRole) {
         localStorage.setItem('role', newRole);
       }
-  
+
       const name = nameTiers || nameusers;
       if (name) {
         localStorage.setItem('name', name);
       }
-  
+
       setModalMessage('Profil mis à jour avec succès');
       setShowModal(true);
       navigate('/dashboard');
@@ -134,7 +146,6 @@ const EditUserProfile = () => {
       setShowModal(true);
     }
   };
-  
 
   return (
     <CRow>
@@ -239,32 +250,29 @@ const EditUserProfile = () => {
                 </>
               )}
 
-              {role === 'livreur' && (
-                <>
-                  <CCol md={6}>
-                    <CFormLabel htmlFor="registration_number">Numéro d'enregistrement</CFormLabel>
-                    <CFormInput
-                      id="registration_number"
-                      value={formData.registration_number}
-                      onChange={handleChange}
-                    />
-                  </CCol>
+              {/* Section de changement de mot de passe */}
+              <CCol md={6}>
+                <CFormLabel htmlFor="oldPassword">Ancien mot de passe</CFormLabel>
+                <CFormInput
+                  type="password"
+                  id="oldPassword"
+                  value={formData.oldPassword}
+                  onChange={handleChange}
+                />
+              </CCol>
 
-                  <CCol md={6}>
-                    <CFormLabel htmlFor="cin">CIN</CFormLabel>
-                    <CFormInput
-                      id="cin"
-                      value={formData.cin}
-                      onChange={handleChange}
-                    />
-                  </CCol>
-                </>
-              )}
+              <CCol md={6}>
+                <CFormLabel htmlFor="newPassword">Nouveau mot de passe</CFormLabel>
+                <CFormInput
+                  type="password"
+                  id="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                />
+              </CCol>
 
               <CCol xs={12}>
-                <CButton color="primary" type="submit">
-                  Mettre à jour
-                </CButton>
+                <CButton type="submit">Enregistrer</CButton>
               </CCol>
             </CForm>
           </CCardBody>
@@ -272,22 +280,14 @@ const EditUserProfile = () => {
       </CCol>
 
       <CModal visible={showModal} onClose={() => setShowModal(false)}>
-        <CModalHeader onClose={() => setShowModal(false)}>
-          <CModalTitle>{modalMessage.includes('Erreur') ? 'Erreur' : 'Succès'}</CModalTitle>
+        <CModalHeader>
+          <CModalTitle>Notification</CModalTitle>
         </CModalHeader>
         <CModalBody>{modalMessage}</CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setShowModal(false)}>
             Fermer
           </CButton>
-          {!modalMessage.includes('Erreur') && (
-            <CButton
-              color="primary"
-              onClick={() => navigate('/profile')}
-            >
-              OK
-            </CButton>
-          )}
         </CModalFooter>
       </CModal>
     </CRow>
