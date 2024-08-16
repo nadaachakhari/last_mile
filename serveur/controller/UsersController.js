@@ -429,7 +429,7 @@ const getConnectedUserOrTiers = async (req, res) => {
   
       // Fetch data based on userId and role
       let user;
-      if (role === "Administrateur") {
+      if (role === "Administrateur" || role==="livreur") {
         user = await User.findOne({ where: { id: userId } });
       } else if (role === "client" || role === "fournisseur") {
         user = await Tiers.findOne({ where: { id: userId } });

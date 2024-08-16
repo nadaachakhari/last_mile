@@ -223,7 +223,7 @@ const EditUserProfile = () => {
                 </CCol>
               )}
 
-              {role.toLowerCase() === 'administrateur' && (
+              {role.toLowerCase() === 'administrateur'|| role ==='livreur' && (
                 <>
                   <CCol md={6}>
                     <CFormLabel htmlFor="user_name">Nom d'utilisateur</CFormLabel>
