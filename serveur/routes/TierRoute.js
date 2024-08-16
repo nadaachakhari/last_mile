@@ -17,7 +17,8 @@ const {
   getAllSuppliers,
   deleteSupplier,
   updateUserAndTiers,
-  getUserProfile
+  getUserProfile,
+  checkUserName
   //getOrdersByCustomer
  
 } = require('../controller/TierController');
@@ -53,5 +54,8 @@ router.put('/update_deleted/:id', deleteTier);
 
 router.put('/users/:userId', authenticateToken, updateUserAndTiers);
 router.get('/me', authenticateToken, getUserProfile);
+
+router.get("/checkUserName/:userName", checkUserName);
+
 
 module.exports = router;

@@ -12,7 +12,8 @@ const {
     changeOrderState,
     getUserProfile,
     getConnectedUserOrTiers,
-    updateConnectedUserOrTiers
+    updateConnectedUserOrTiers,
+    checkUserName
 } = require('../controller/UsersController');
 const { authenticateToken } = require('../controller/AuthController')
 
@@ -38,6 +39,7 @@ router.get('/:id', getUserById);
 router.put('/:id', upload.single('photo'), updateUser);
 
 router.put('/update_deleted/:id', deleteUser);
+router.get("/checkUserName/:userName", checkUserName);
 
 
 module.exports = router;

@@ -1,22 +1,49 @@
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
 const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const City = require('../Models/CityModel');
 const { sendEmail } = require('../config/emailConfig')
 const { Op } = require('sequelize');
-const Order = require('../Models/OrderModel');
-const State = require('../Models/StateModel');
-const PaymentMethod = require('../Models/PaymentMethodModel');
 const User = require('../Models/UserModel');
+const axios = require("axios");
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
-  const { name, type_tiersID, code, address, postal_code, country, phone, mobile, fax, email, cityID, block, deleted, password } = req.body;
+  const {
+    name,
+    type_tiersID,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+    block,
+    deleted,
+    password,
+  } = req.body;
   try {
     // Hachage du mot de passe avant de créer le Tier
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newTier = await Tiers.create({ name, type_tiersID, code, address, postal_code, country, phone, mobile, fax, email, cityID, block, deleted: false, password: hashedPassword });
+    const newTier = await Tiers.create({
+      name,
+      type_tiersID,
+      code,
+      address,
+      postal_code,
+      country,
+      phone,
+      mobile,
+      fax,
+      email,
+      cityID,
+      block,
+      deleted: false,
+      password: hashedPassword,
+    });
     res.status(201).json(newTier);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -28,12 +55,12 @@ const getAllTiers = async (req, res) => {
   try {
     const tiers = await Tiers.findAll({
       where: {
-        deleted: false
+        deleted: false,
       },
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
     res.status(200).json(tiers);
   } catch (error) {
@@ -48,12 +75,12 @@ const getTierById = async (req, res) => {
     const tier = await Tiers.findOne({
       where: { id },
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
     if (!tier) {
-      return res.status(404).json({ error: 'Tier not found' });
+      return res.status(404).json({ error: "Tier not found" });
     }
     res.status(200).json(tier);
   } catch (error) {
@@ -64,11 +91,26 @@ const getTierById = async (req, res) => {
 // Mettre à jour un Tier
 const updateTier = async (req, res) => {
   const { id } = req.params;
-  const { name, type_tiersID, code, address, postal_code, country, phone, mobile, fax, email, cityID, block, deleted, password } = req.body;
+  const {
+    name,
+    type_tiersID,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+    block,
+    deleted,
+    password,
+  } = req.body;
   try {
     const tier = await Tiers.findByPk(id);
     if (!tier) {
-      return res.status(404).json({ error: 'Tier not found' });
+      return res.status(404).json({ error: "Tier not found" });
     }
 
     // Hachage du mot de passe si présent
@@ -91,7 +133,7 @@ const updateTier = async (req, res) => {
       cityID,
       block,
       deleted,
-      password: hashedPassword || tier.password  // Si pas de nouveau mot de passe, conserver l'ancien
+      password: hashedPassword || tier.password, // Si pas de nouveau mot de passe, conserver l'ancien
     });
     res.status(200).json(tier);
   } catch (error) {
@@ -105,7 +147,9 @@ const deleteTier = async (req, res, next) => {
   try {
     const tier = await Tiers.findByPk(id);
     if (!tier) {
-      return res.status(404).json({ message: `Tier avec l'ID ${id} non trouvé.` });
+      return res
+        .status(404)
+        .json({ message: `Tier avec l'ID ${id} non trouvé.` });
     }
 
     // Mettre à jour la colonne 'deleted' à 0 (Suppression logique)
@@ -117,45 +161,78 @@ const deleteTier = async (req, res, next) => {
   }
 };
 
+const generateUserName = async (name, email) => {
+  const cleanString = (str) => str.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  const namePart = cleanString(name);
+  const emailPart = cleanString(email.split("@")[0]);
+  let baseUserName = `${namePart}.${emailPart}`;
+  let userName = baseUserName;
 
+  // Check if the username already exists
+  let userExists = await axios.get(
+    `http://localhost:5001/Tier/checkUserName/${userName}`
+  );
 
+  // If username exists, append a number to make it unique
+  let counter = 1;
+  while (userExists.data.exists) {
+    userName = `${baseUserName}${counter}`;
+    userExists = await axios.get(
+      `http://localhost:5001/Tier/checkUserName/${userName}`
+    );
+    counter++;
+  }
 
-
-
-
-
-
+  return userName;
+};
 const createClient = async (req, res) => {
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const {
+    name,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+  } = req.body;
+  console.log(req.body);
+  
   const createdBy = req.user.id;
-  console.log(createdBy); 
+  console.log(createdBy);
 
   try {
-    // Vérifiez si le type "client" existe
-    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    const typeClient = await TypeTiers.findOne({
+      where: { name: "client", deleted: false },
+    });
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" does not exist' });
     }
 
-    // Vérifiez si l'email existe déjà
     const existingClient = await Tiers.findOne({ where: { email } });
     if (existingClient) {
-      const emailSubject = 'Bienvenue chez nous !';
+      const emailSubject = "Bienvenue chez nous !";
       const emailText = `Bonjour ${existingClient.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
 
-      // Envoi d'un email au client existant
-       await sendEmail(existingClient.email, emailSubject, emailText);
+      await sendEmail(existingClient.email, emailSubject, emailText);
 
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
-    // Génération et hashage du mot de passe
+const user_name = await generateUserName(name, email);
     const generatedPassword = generatePassword(12);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
-    // Création du nouveau client
+    console.log("user_name: " + user_name);
+
+    
+
+    // Création du nouveau clie
     const newClient = await Tiers.create({
       name,
+      user_name,
       type_tiersID: typeClient.id,
       code,
       address,
@@ -169,14 +246,12 @@ const createClient = async (req, res) => {
       block: false,
       password: hashedPassword,
       deleted: false,
-      createdBy // Assigner le fournisseur créateur
+      createdBy,
     });
 
-    // Envoi d'un email au nouveau client avec ses informations de connexion
-    const emailSubject = 'Bienvenue sur notre plateforme !';
+    const emailSubject = "Bienvenue sur notre plateforme !";
     const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
-    // Envoi de l'email (à décommenter si la fonction sendEmail est implémentée)
     await sendEmail(newClient.email, emailSubject, emailText);
 
     res.status(201).json({ newClient, generatedPassword });
@@ -184,10 +259,26 @@ const createClient = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-const getAllClients = async (req, res) => {
 
+const checkUserName = async (req, res) => {
+  const { userName } = req.params;
   try {
-    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    const user = await Tiers.findOne({ where: { user_name: userName } });
+    if (user) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Erreur lors de la vérification du nom d'utilisateur." });
+  }
+};
+
+const getAllClients = async (req, res) => {
+  try {
+    const typeClient = await TypeTiers.findOne({ where: { name: "client" } });
     console.log(typeClient);
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" does not exist' });
@@ -195,9 +286,9 @@ const getAllClients = async (req, res) => {
     const clients = await Tiers.findAll({
       where: { type_tiersID: typeClient.id, deleted: false },
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
 
     res.status(200).json(clients);
@@ -208,7 +299,7 @@ const getAllClients = async (req, res) => {
 
 // Fonction pour détecter les changements et créer un message
 const getChangesMessage = (original, updated) => {
-  let changes = '';
+  let changes = "";
   for (let key in updated) {
     if (updated[key] && updated[key] !== original[key]) {
       changes += `${key}: ${original[key]} -> ${updated[key]}\n`;
@@ -219,18 +310,33 @@ const getChangesMessage = (original, updated) => {
 
 const updateClient = async (req, res) => {
   const { id } = req.params;
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID } = req.body;
+  const {
+    name,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+  } = req.body;
 
   try {
     const client = await Tiers.findByPk(id);
     if (!client) {
-      return res.status(404).json({ error: 'Client not found' });
+      return res.status(404).json({ error: "Client not found" });
     }
 
     if (email && email !== client.email) {
-      const existingClient = await Tiers.findOne({ where: { email, id: { [Op.ne]: id } } });
+      const existingClient = await Tiers.findOne({
+        where: { email, id: { [Op.ne]: id } },
+      });
       if (existingClient) {
-        return res.status(400).json({ error: 'Email already exists for another client' });
+        return res
+          .status(400)
+          .json({ error: "Email already exists for another client" });
       }
     }
 
@@ -244,7 +350,7 @@ const updateClient = async (req, res) => {
       mobile: mobile || client.mobile,
       fax: fax || client.fax,
       email: email || client.email,
-      cityID: cityID || client.cityID
+      cityID: cityID || client.cityID,
     };
 
     const changesMessage = getChangesMessage(client, updatedClient);
@@ -252,9 +358,9 @@ const updateClient = async (req, res) => {
     await client.update(updatedClient);
 
     // Envoyer un email au client avec les détails des modifications
-    const emailSubject = 'Mise à jour de vos informations';
+    const emailSubject = "Mise à jour de vos informations";
     const emailText = `Bonjour ${client.name},\n\nNous avons mis à jour vos informations. Voici les changements effectués :\n\n${changesMessage}\n\nCordialement,\nVotre équipe`;
-    console.log('client mail: ' + client.email);
+    console.log("client mail: " + client.email);
     await sendEmail(client.email, emailSubject, emailText);
 
     res.status(200).json(client);
@@ -268,13 +374,13 @@ const getClientById = async (req, res) => {
   try {
     const client = await Tiers.findByPk(id, {
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
 
     if (!client) {
-      return res.status(404).json({ error: 'Client not found' });
+      return res.status(404).json({ error: "Client not found" });
     }
 
     res.status(200).json(client);
@@ -287,15 +393,17 @@ const getAllClientsForSupplier = async (req, res) => {
 
   try {
     // Déterminer si l'utilisateur est un fournisseur
-    const isSupplier = user && user.role === 'fournisseur';
+    const isSupplier = user && user.role === "fournisseur";
     const supplierID = isSupplier ? user.id : null;
 
     if (!supplierID) {
-      return res.status(400).json({ error: 'Fournisseur non trouvé' });
+      return res.status(400).json({ error: "Fournisseur non trouvé" });
     }
 
     // Récupérer le type "client"
-    const typeClient = await TypeTiers.findOne({ where: { name: 'client' } });
+    const typeClient = await TypeTiers.findOne({
+      where: { name: "client", deleted: false },
+    });
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" non trouvé' });
     }
@@ -305,18 +413,18 @@ const getAllClientsForSupplier = async (req, res) => {
       where: {
         type_tiersID: typeClient.id, // Filtrer par type "client"
         createdBy: supplierID, // Filtrer les clients créés par le fournisseur
-        deleted: false // Ne pas inclure les clients supprimés
+        deleted: false, // Ne pas inclure les clients supprimés
       },
       include: [
         {
           model: TypeTiers,
-          attributes: ['name']
+          attributes: ["name"],
         },
         {
           model: City,
-          attributes: ['value']
-        }
-      ]
+          attributes: ["value"],
+        },
+      ],
     });
 
     res.status(200).json(clients);
@@ -325,42 +433,59 @@ const getAllClientsForSupplier = async (req, res) => {
   }
 };
 
-
-
 //Supplier
 
-
 const generatePassword = () => {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let password = '';
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let password = "";
   for (let i = 0; i < 10; i++) {
-      password += chars[Math.floor(Math.random() * chars.length)];
+    password += chars[Math.floor(Math.random() * chars.length)];
   }
   return password;
 };
 
 const createSupplier = async (req, res) => {
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID, tax_identification_number } = req.body;
+  const {
+    name,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+    tax_identification_number,
+  } = req.body;
   const createdBy = null; // Assigner createdBy à null pour les livreurs
 
   try {
     // Vérifiez si le type "fournisseur" existe
-    const typeSupplier = await TypeTiers.findOne({ where: { name: 'fournisseur' } });
+    const typeSupplier = await TypeTiers.findOne({
+      where: { name: "fournisseur", deleted: false },
+    });
     if (!typeSupplier) {
-      return res.status(400).json({ error: 'Type "fournisseur" does not exist' });
+      return res
+        .status(400)
+        .json({ error: 'Type "fournisseur" does not exist' });
     }
 
     // Vérifiez si l'email existe déjà
     const existingSupplier = await Tiers.findOne({ where: { email } });
     if (existingSupplier) {
-      const emailSubject = 'Bienvenue chez nous !';
+      const emailSubject = "Bienvenue chez nous !";
       const emailText = `Bonjour ${existingSupplier.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
 
       // Envoi d'un email au fournisseur existant
       await sendEmail(existingSupplier.email, emailSubject, emailText);
 
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
+
+    // Generate unique username for supplier
+    const user_name = await generateUserName(name, email);
 
     // Génération et hashage du mot de passe
     const generatedPassword = generatePassword();
@@ -369,6 +494,7 @@ const createSupplier = async (req, res) => {
     // Création du nouveau fournisseur
     const newSupplier = await Tiers.create({
       name,
+      user_name,
       type_tiersID: typeSupplier.id,
       code,
       address,
@@ -383,11 +509,11 @@ const createSupplier = async (req, res) => {
       block: false,
       password: hashedPassword,
       deleted: false,
-      createdBy // Assigner createdBy à null
+      createdBy, // Assigner createdBy à null
     });
 
     // Envoi d'un email au nouveau fournisseur avec ses informations de connexion
-    const emailSubject = 'Bienvenue sur notre plateforme !';
+    const emailSubject = "Bienvenue sur notre plateforme !";
     const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     // Envoi de l'email
@@ -395,25 +521,41 @@ const createSupplier = async (req, res) => {
 
     res.status(201).json({ newSupplier, generatedPassword });
   } catch (error) {
-    console.error('Erreur lors de la création du fournisseur:', error);
+    console.error("Erreur lors de la création du fournisseur:", error);
     res.status(400).json({ error: error.message });
   }
 };
 
 const uploadSupplier = async (req, res) => {
   const { id } = req.params;
-  const { name, code, address, postal_code, country, phone, mobile, fax, email, cityID,tax_identification_number } = req.body;
+  const {
+    name,
+    code,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+    tax_identification_number,
+  } = req.body;
 
   try {
     const supplier = await Tiers.findByPk(id);
     if (!supplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
+      return res.status(404).json({ error: "Supplier not found" });
     }
 
     if (email && email !== supplier.email) {
-      const existingSupplier = await Tiers.findOne({ where: { email, id: { [Op.ne]: id } } });
+      const existingSupplier = await Tiers.findOne({
+        where: { email, id: { [Op.ne]: id } },
+      });
       if (existingSupplier) {
-        return res.status(400).json({ error: 'Email already exists for another supplier' });
+        return res
+          .status(400)
+          .json({ error: "Email already exists for another supplier" });
       }
     }
 
@@ -425,10 +567,11 @@ const uploadSupplier = async (req, res) => {
       country: country || supplier.country,
       phone: phone || supplier.phone,
       mobile: mobile || supplier.mobile,
-      tax_identification_number: tax_identification_number || supplier.tax_identification_number,
+      tax_identification_number:
+        tax_identification_number || supplier.tax_identification_number,
       fax: fax || supplier.fax,
       email: email || supplier.email,
-      cityID: cityID || supplier.cityID
+      cityID: cityID || supplier.cityID,
     };
 
     const changesMessage = getChangesMessage(supplier, updatedSupplier);
@@ -436,7 +579,7 @@ const uploadSupplier = async (req, res) => {
     await supplier.update(updatedSupplier);
 
     // Envoyer un email au fournisseur avec les détails des modifications
-    const emailSubject = 'Mise à jour de vos informations';
+    const emailSubject = "Mise à jour de vos informations";
     const emailText = `Bonjour ${supplier.name},\n\nNous avons mis à jour vos informations. Voici les changements effectués :\n\n${changesMessage}\n\nCordialement,\nVotre équipe`;
 
     await sendEmail(supplier.email, emailSubject, emailText);
@@ -446,21 +589,19 @@ const uploadSupplier = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-;
-
 const getSupplierById = async (req, res) => {
   const { id } = req.params;
 
   try {
     const supplier = await Tiers.findByPk(id, {
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
 
     if (!supplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
+      return res.status(404).json({ error: "Supplier not found" });
     }
 
     res.status(200).json(supplier);
@@ -471,18 +612,22 @@ const getSupplierById = async (req, res) => {
 const getAllSuppliers = async (req, res) => {
   try {
     // Vérifiez si le type "fournisseur" existe
-    const typeSupplier = await TypeTiers.findOne({ where: { name: 'fournisseur' } });
+    const typeSupplier = await TypeTiers.findOne({
+      where: { name: "fournisseur" },
+    });
     if (!typeSupplier) {
-      return res.status(400).json({ error: 'Type "fournisseur" does not exist' });
+      return res
+        .status(400)
+        .json({ error: 'Type "fournisseur" does not exist' });
     }
 
     // Récupérez tous les fournisseurs qui ne sont pas supprimés
     const suppliers = await Tiers.findAll({
       where: { type_tiersID: typeSupplier.id, deleted: false },
       include: [
-        { model: TypeTiers, attributes: ['name'] },
-        { model: City, attributes: ['value'] }
-      ]
+        { model: TypeTiers, attributes: ["name"] },
+        { model: City, attributes: ["value"] },
+      ],
     });
 
     res.status(200).json(suppliers);
@@ -497,11 +642,11 @@ const deleteSupplier = async (req, res) => {
   try {
     const supplier = await Tiers.findByPk(id);
     if (!supplier) {
-      return res.status(404).json({ error: 'Supplier not found' });
+      return res.status(404).json({ error: "Supplier not found" });
     }
 
     await supplier.update({ deleted: true });
-    res.status(200).json({ message: 'supplier deleted successfully' });
+    res.status(200).json({ message: "supplier deleted successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -564,7 +709,6 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createTier,
   getAllTiers,
@@ -572,7 +716,7 @@ module.exports = {
   updateTier,
   deleteTier,
 
-  //crud client 
+  //crud client
   createClient,
   updateClient,
   getAllClients,
@@ -587,5 +731,7 @@ module.exports = {
   deleteSupplier,
 //updateUserAndTiers
 updateUserAndTiers,
-getUserProfile
+getUserProfile,
+
+  checkUserName,
 };
