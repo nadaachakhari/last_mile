@@ -104,7 +104,6 @@ const createUser = async (req, res) => {
 };
 
 
-// In your UsersController or equivalent
 const checkUserName = async (req, res) => {
   const { userName } = req.params;
   try {

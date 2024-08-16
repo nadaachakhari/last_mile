@@ -8,6 +8,7 @@ const { Op } = require("sequelize");
 const Order = require("../Models/OrderModel");
 const State = require("../Models/StateModel");
 const PaymentMethod = require("../Models/PaymentMethodModel");
+const axios = require("axios");
 
 // Créer un nouveau Tier
 const createTier = async (req, res) => {
@@ -163,6 +164,30 @@ const deleteTier = async (req, res, next) => {
   }
 };
 
+const generateClientUserName = async (name, email) => {
+  const cleanString = (str) => str.replace(/[^a-zA-Z]/g, "").toLowerCase();
+  const namePart = cleanString(name);
+  const emailPart = cleanString(email.split("@")[0]);
+  let baseUserName = `${namePart}.${emailPart}`;
+  let userName = baseUserName;
+
+  // Check if the username already exists
+  let userExists = await axios.get(
+    `http://localhost:5001/Tier/checkUserName/${userName}`
+  );
+
+  // If username exists, append a number to make it unique
+  let counter = 1;
+  while (userExists.data.exists) {
+    userName = `${baseUserName}${counter}`;
+    userExists = await axios.get(
+      `http://localhost:5001/Tier/checkUserName/${userName}`
+    );
+    counter++;
+  }
+
+  return userName;
+};
 const createClient = async (req, res) => {
   const {
     name,
@@ -176,35 +201,41 @@ const createClient = async (req, res) => {
     email,
     cityID,
   } = req.body;
+  console.log(req.body);
+  
   const createdBy = req.user.id;
   console.log(createdBy);
 
   try {
-    // Vérifiez si le type "client" existe
-    const typeClient = await TypeTiers.findOne({ where: { name: "client" } });
+    const typeClient = await TypeTiers.findOne({
+      where: { name: "client", deleted: false },
+    });
     if (!typeClient) {
       return res.status(400).json({ error: 'Type "client" does not exist' });
     }
 
-    // Vérifiez si l'email existe déjà
     const existingClient = await Tiers.findOne({ where: { email } });
     if (existingClient) {
       const emailSubject = "Bienvenue chez nous !";
       const emailText = `Bonjour ${existingClient.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
 
-      // Envoi d'un email au client existant
       await sendEmail(existingClient.email, emailSubject, emailText);
 
       return res.status(400).json({ error: "Email already exists" });
     }
 
-    // Génération et hashage du mot de passe
+const user_name = await generateClientUserName(name, email);
     const generatedPassword = generatePassword(12);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
-    // Création du nouveau client
+    console.log("user_name: " + user_name);
+
+    
+
+    // Création du nouveau clie
     const newClient = await Tiers.create({
       name,
+      user_name,
       type_tiersID: typeClient.id,
       code,
       address,
@@ -218,14 +249,12 @@ const createClient = async (req, res) => {
       block: false,
       password: hashedPassword,
       deleted: false,
-      createdBy, // Assigner le fournisseur créateur
+      createdBy,
     });
 
-    // Envoi d'un email au nouveau client avec ses informations de connexion
     const emailSubject = "Bienvenue sur notre plateforme !";
     const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
-    // Envoi de l'email (à décommenter si la fonction sendEmail est implémentée)
     await sendEmail(newClient.email, emailSubject, emailText);
 
     res.status(201).json({ newClient, generatedPassword });
@@ -233,6 +262,23 @@ const createClient = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+const checkUserName = async (req, res) => {
+  const { userName } = req.params;
+  try {
+    const user = await Tiers.findOne({ where: { user_name: userName } });
+    if (user) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Erreur lors de la vérification du nom d'utilisateur." });
+  }
+};
+
 const getAllClients = async (req, res) => {
   try {
     const typeClient = await TypeTiers.findOne({ where: { name: "client" } });
@@ -625,4 +671,6 @@ module.exports = {
   getAllSuppliers,
   getSupplierById,
   deleteSupplier,
+
+  checkUserName,
 };
