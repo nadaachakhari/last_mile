@@ -17,14 +17,7 @@ import {
 } from '@coreui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import { IoEyeSharp } from 'react-icons/io5'
-import {
-  FaEdit,
-  FaFileInvoice,
-  FaTruck,
-  FaTimes,
-  FaExchangeAlt,
-  FaExclamationTriangle,
-} from 'react-icons/fa'
+import { FaEdit, FaFileInvoice, FaTimes, FaExclamationTriangle, FaTruck } from 'react-icons/fa'
 
 const OrderList = () => {
   const [orders, setOrders] = useState([])
@@ -70,32 +63,6 @@ const OrderList = () => {
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString))
   }
 
-  const handleDeliveryClick = async (orderID) => {
-    try {
-      const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`)
-      if (response.status === 201) {
-        navigate(`/admin/bon_de_livraison/${orderID}`)
-      } else if (response.status === 200) {
-        navigate(`/admin/display_delivery_exist/${orderID}`)
-      }
-    } catch (error) {
-      console.error('Error creating or fetching delivery:', error)
-    }
-  }
-
-  const handleInvoiceClick = async (orderID) => {
-    try {
-      const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`)
-      if (response.status === 201) {
-        navigate(`/admin/afficher_facture/${orderID}`)
-      } else if (response.status === 200) {
-        navigate(`/admin/display_invoice_exist/${orderID}`)
-      }
-    } catch (error) {
-      console.error('Error creating or fetching invoice:', error)
-    }
-  }
-
   const handleCancelOrderClick = async (orderID) => {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -125,49 +92,34 @@ const OrderList = () => {
     }
   }
 
-  const handleChangeStateClick = (orderID) => {
-    navigate(`/admin/change_order_state/${orderID}`)
+  const handleInvoiceClick = async (orderID) => {
+    try {
+      const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`)
+      if (response.status === 201) {
+        navigate(`/admin/afficher_facture/${orderID}`)
+      } else if (response.status === 200) {
+        navigate(`/admin/display_invoice_exist/${orderID}`)
+      }
+    } catch (error) {
+      console.error('Error creating or fetching invoice:', error)
+    }
+  }
+
+  const handleDeliveryClick = async (orderID) => {
+    try {
+      const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`)
+      if (response.status === 201) {
+        navigate(`/admin/bon_de_livraison/${orderID}`)
+      } else if (response.status === 200) {
+        navigate(`/admin/display_delivery_exist/${orderID}`)
+      }
+    } catch (error) {
+      console.error('Error creating or fetching delivery:', error)
+    }
   }
 
   const getRowStyle = (orderState) => {
     return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000', color: '#fff' } : {}
-  }
-
-  const handleInvoiceButtonClick = (order) => {
-    if (order.state.value === 'En attente de livraison') {
-      setAlertMessage('Vous devez affecter un livreur avant de générer une facture.')
-      setShowAlert(true)
-    } else {
-      handleInvoiceClick(order.id)
-    }
-  }
-
-  const handleDeliveryButtonClick = (order) => {
-    if (order.state.value === 'En attente de livraison') {
-      setAlertMessage('Vous devez affecter un livreur avant de générer un bon de livraison.')
-      setShowAlert(true)
-    } else {
-      handleDeliveryClick(order.id)
-    }
-  }
-
-  const handleClaimClick = async (orderID) => {
-    try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:5001/Claim/', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      const claimExists = response.data.some((claim) => claim.orderID === orderID)
-
-      if (claimExists) {
-        navigate(`/admin/display_claim/${orderID}`)
-      } else {
-        navigate(`/admin/add_claim/${orderID}`)
-      }
-    } catch (error) {
-      console.error('Error checking for existing claim:', error)
-    }
   }
 
   return (
@@ -216,17 +168,6 @@ const OrderList = () => {
                         </CButton>
                       </Link>
 
-                      {userRole === 'livreur' && (
-                        <CButton
-                          size="md"
-                          color="primary"
-                          className="me-2"
-                          onClick={() => handleChangeStateClick(order.id)}
-                          title="Changer état de commande"
-                        >
-                          <FaExchangeAlt className="icon-white icon-lg me-1" />
-                        </CButton>
-                      )}
                       {userRole === 'Administrateur' && (
                         <>
                           <Link to={`/admin/edit_order/${order.id}`}>
@@ -255,7 +196,7 @@ const OrderList = () => {
                             size="md"
                             color="primary"
                             className="me-2"
-                            onClick={() => handleDeliveryButtonClick(order)}
+                            onClick={() => handleDeliveryClick(order.id)}
                           >
                             <FaTruck className="icon-white icon-lg me-1" />
                           </CButton>
@@ -271,19 +212,45 @@ const OrderList = () => {
                             size="md"
                             color="secondary"
                             className="me-2"
-                            onClick={() => handleInvoiceButtonClick(order)}
+                            onClick={() => handleInvoiceClick(order.id)}
                           >
                             <FaFileInvoice className="icon-white icon-lg me-1" />
                           </CButton>
                         </>
                       )}
+
+                      {userRole === 'fournisseur' && (
+                        <>
+                          <CButton
+                            size="md"
+                            color="danger"
+                            className="me-2"
+                            disabled={order.state.value !== 'En attente de livraison'}
+                            onClick={() => {
+                              if (order.state.value === 'En attente de livraison') {
+                                handleCancelOrderClick(order.id)
+                              }
+                            }}
+                          >
+                            <FaTimes className="icon-white icon-lg me-1" />
+                          </CButton>
+                          <CButton
+                            size="md"
+                            color="secondary"
+                            className="me-2"
+                            onClick={() => handleInvoiceClick(order.id)}
+                          >
+                            <FaFileInvoice className="icon-white icon-lg me-1" />
+                          </CButton>
+                        </>
+                      )}
+
                       {userRole === 'client' && (
                         <CButton
                           size="md"
                           color="danger"
                           className="me-2"
-                          onClick={() => handleClaimClick(order.id)}
-                          title="Réclamation"
+                          onClick={() => navigate(`/admin/add_claim/${order.id}`)}
                         >
                           <FaExclamationTriangle className="icon-white icon-lg me-1" />
                         </CButton>
