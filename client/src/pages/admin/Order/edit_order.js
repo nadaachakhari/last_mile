@@ -237,12 +237,7 @@ const EditOrder = () => {
                   onChange={handleChange}
                   required
                 />
-                 {userRole === 'Administrateur' && (
-                    <CTableHeaderCell>Fournisseur</CTableHeaderCell>
-                  )}
-                {userRole === 'Administrateur' && (
-                      <CTableDataCell>{order.supplier.name}</CTableDataCell>
-                    )}
+               
                 {dateError && <p className="text-danger">{dateError}</p>}
               </CCol>
               <CCol md={3}>
