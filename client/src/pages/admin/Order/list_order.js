@@ -148,6 +148,9 @@ const OrderList = () => {
                   <CTableHeaderCell>ID</CTableHeaderCell>
                   <CTableHeaderCell>Code</CTableHeaderCell>
                   <CTableHeaderCell>Date</CTableHeaderCell>
+                  {userRole === 'Administrateur' && (
+                    <CTableHeaderCell>Fournisseur</CTableHeaderCell>
+                  )}
                   <CTableHeaderCell>Client</CTableHeaderCell>
                   <CTableHeaderCell>État</CTableHeaderCell>
                   <CTableHeaderCell>Actions</CTableHeaderCell>
@@ -158,7 +161,11 @@ const OrderList = () => {
                   <CTableRow key={order.id} style={getRowStyle(order.state.value)}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{order.code}</CTableDataCell>
+                    
                     <CTableDataCell>{formatDate(order.date)}</CTableDataCell>
+                    {userRole === 'Administrateur' && (
+                      <CTableDataCell>{order.supplier.name}</CTableDataCell>
+                    )}
                     <CTableDataCell>{order.customer.name}</CTableDataCell>
                     <CTableDataCell>{order.state.value}</CTableDataCell>
                     <CTableDataCell>
