@@ -189,12 +189,74 @@ const createInvoiceFromOrder = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+const getAllInvoices = async (req, res) => {
+    try {
+        const invoices = await Invoice.findAll({
+            include: [
+                { model: Tiers, as: 'customer' },
+            
+                { model: PaymentMethod, as: 'paymentMethod' },
+                { model: Order, as: 'order' }
+            ],
+            order: [['date', 'DESC']]
+        });
 
+        res.status(200).json(invoices);
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
-
+const getInvoiceByID = async (req, res) => {
+    const invoiceID = req.params.invoiceID;
+  
+    try {
+        const invoice = await Invoice.findOne({
+            where: { id: invoiceID },
+            include: [
+                {
+                    model: Order, as: 'order',
+                    include: [
+                        { model: Tiers, as: 'customer' },
+                        { model: Tiers, as: 'supplier' },
+                        { model: PaymentMethod, as: 'PaymentMethod' },
+                        { model: State, as: 'state' },
+                        { model: User, as: 'delivery' },
+                    ]
+                }
+            ]
+        });
+  
+        if (!invoice) {
+            return res.status(404).json({ message: 'Invoice not found' });
+        }
+  
+        const invoiceLignes = await InvoiceLignes.findAll({
+            where: { parentID: invoice.id, deleted: false },
+            include: [
+                { model: Article, as: 'article' },
+                { model: Vat, as: 'vat' }
+            ]
+        });
+  
+        const detailedInvoice = {
+            ...invoice.toJSON(),
+            invoiceLignes: invoiceLignes
+        };
+  
+        res.status(200).json(detailedInvoice);
+    } catch (error) {
+        console.error('Error fetching invoice:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
+  
 
 
 module.exports = {
     createInvoiceFromOrder,
-    getInvoiceByOrderID
+    getInvoiceByOrderID,
+    getAllInvoices,
+    getInvoiceByID
 };

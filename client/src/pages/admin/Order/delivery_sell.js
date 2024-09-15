@@ -222,12 +222,7 @@ const AfficherLivraison = () => {
                     border-top: 2px solid black;
                     padding-top: 20px;
                   }
-                  .print-footer::after {
-                    content: "AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000";
-                    display: block;
-                    text-align: center;
-                    margin-top: 20px;
-                  }
+                  
                   @page {
                     margin: 20mm;
                   }

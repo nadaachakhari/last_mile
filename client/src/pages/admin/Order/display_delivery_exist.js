@@ -210,7 +210,25 @@ const DisplayDeliverySellExists = () => {
                   </CCol>
                 </CRow>
               </div>
+              <CTableRow>
+                  <CTableDataCell colSpan="2" className="text-center">
+                    <p>AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000</p>
+                  </CTableDataCell>
+                </CTableRow>
             </CCardBody>
+            <style>
+              {`
+                @media print {
+                  .no-print {
+                    display: none;
+                  }
+                  .print-footer {
+                    display: flex;
+                  }
+                }
+              `}
+            </style>
+           
           </CCard>
 
           <div className="d-flex justify-content-between mt-4 no-print">

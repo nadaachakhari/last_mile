@@ -154,6 +154,12 @@ const OrderList = () => {
                   <CTableHeaderCell>Client</CTableHeaderCell>
                   <CTableHeaderCell>État</CTableHeaderCell>
                   <CTableHeaderCell>Actions</CTableHeaderCell>
+                  {userRole === 'Administrateur' && (
+                    <>
+                      <CTableHeaderCell>BL</CTableHeaderCell>
+                      <CTableHeaderCell>Facteur</CTableHeaderCell>
+                    </>
+                  )}
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -199,30 +205,7 @@ const OrderList = () => {
                           >
                             Affecter Livreur
                           </CButton>
-                          <CButton
-                            size="md"
-                            color="primary"
-                            className="me-2"
-                            onClick={() => handleDeliveryClick(order.id)}
-                          >
-                            <FaTruck className="icon-white icon-lg me-1" />
-                          </CButton>
-                          <CButton
-                            size="md"
-                            color="danger"
-                            className="me-2"
-                            onClick={() => handleCancelOrderClick(order.id)}
-                          >
-                            <FaTimes className="icon-white icon-lg me-1" />
-                          </CButton>
-                          <CButton
-                            size="md"
-                            color="secondary"
-                            className="me-2"
-                            onClick={() => handleInvoiceClick(order.id)}
-                          >
-                            <FaFileInvoice className="icon-white icon-lg me-1" />
-                          </CButton>
+                          
                         </>
                       )}
 
@@ -263,6 +246,30 @@ const OrderList = () => {
                         </CButton>
                       )}
                     </CTableDataCell>
+                    {userRole === 'Administrateur' && (
+                      <>
+                        <CTableDataCell>
+                          <CButton size="md" color="primary" className="me-2" onClick={() => handleDeliveryClick(order.id)}>
+                            <FaTruck className="icon-white icon-lg me-1" />
+                          </CButton>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <CButton size="md" color="primary" className="me-2" onClick={() => handleInvoiceClick(order.id)}>
+                            <FaFileInvoice className="icon-white icon-lg me-1" />
+                          </CButton>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                        <CButton
+                            size="md"
+                            color="danger"
+                            className="me-2"
+                            onClick={() => handleCancelOrderClick(order.id)}
+                          >
+                            <FaTimes className="icon-white icon-lg me-1" />
+                          </CButton>
+                          </CTableDataCell>
+                      </>
+                    )}
                   </CTableRow>
                 ))}
               </CTableBody>

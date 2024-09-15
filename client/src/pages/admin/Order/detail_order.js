@@ -19,10 +19,13 @@ import {
 const OrderDetail = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
-
+    const [userRole, setUserRole] = useState('')
     useEffect(() => {
         const fetchOrderDetails = async () => {
             const token = localStorage.getItem('token');
+           
+            const role = localStorage.getItem('role')
+            setUserRole(role)
             if (!token) {
                 console.error('Token non trouvé dans localStorage.');
                 return;
@@ -65,6 +68,9 @@ const OrderDetail = () => {
                         <p><strong>Date:</strong> {formatDate(order.order.date)}</p>
                         <p><strong>Client:</strong> {order.order.customer.name}</p>
                         {/* <p><strong>Fournisseur:</strong> {order.order.supplier.name}</p> */}
+                        {userRole === 'Administrateur' && (
+                    <p><strong>Fournisseur:</strong>{order.order.supplier.name}</p>
+                  )}
                         <p><strong>Destination:</strong> {order.order.destination}</p>
                         <p><strong>Méthode de paiement:</strong> {order.order.PaymentMethod.name}</p>
                         <p><strong>État:</strong> {order.order.state.value}</p>
