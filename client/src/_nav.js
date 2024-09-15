@@ -369,15 +369,15 @@ const _nav = [
   },
   {
     component: CNavGroup,
-    name: 'liste des facteurs',
+    name: 'liste des factures',
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
-    items: [{ component: CNavItem, name: 'liste des facteurs', to: '/admin/list_invoice' }],
+    items: [{ component: CNavItem, name: 'liste des factures', to: '/admin/list_invoice' }],
   },
   {
     component: CNavGroup,
     name: 'liste de bon de livraison',
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
-    items: [{ component: CNavItem, name: 'liste bon de livraison', to: '/admin/list_order' }],
+    items: [{ component: CNavItem, name: 'liste bon de livraison', to: '/admin/list_deliverynote' }],
   },
 ]
 
