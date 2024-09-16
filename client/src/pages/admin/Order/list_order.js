@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import chroma from 'chroma-js'
 import {
   CButton,
   CCard,
@@ -18,15 +19,18 @@ import {
 import { Link, useNavigate } from 'react-router-dom'
 import { IoEyeSharp } from 'react-icons/io5'
 import { FaEdit, FaFileInvoice, FaTimes, FaExclamationTriangle, FaTruck } from 'react-icons/fa'
-
+import Select from 'react-select'
 const OrderList = () => {
   const [orders, setOrders] = useState([])
   const [userRole, setUserRole] = useState('')
+  const [suppliers, setSuppliers] = useState([])
+  const [customers, setCustomers] = useState([])
   const [updateKey, setUpdateKey] = useState(0)
   const [alertMessage, setAlertMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
   const navigate = useNavigate()
-
+  const [selectedSupplier, setSelectedSupplier] = useState(null)
+  const [selectedCustomer, setSelectedCustomer] = useState(null)
   useEffect(() => {
     const fetchOrders = async () => {
       const token = localStorage.getItem('token')
@@ -54,7 +58,42 @@ const OrderList = () => {
         console.error('Erreur lors de la récupération des commandes:', error)
       }
     }
+    const fetchSuppliers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/Tier/supplier')
+        const supplierOptions = response.data.map((supplier) => ({
+          value: supplier.id,
+          label: supplier.name,
+          color: chroma.random().hex(),
+        }))
+        setSuppliers(supplierOptions)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des fournisseurs:', error)
+      }
+    }
+    const fetchCustomers = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.')
+        return
+      }
 
+      try {
+        const response = await axios.get('http://localhost:5001/Tier/clients', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const customerOptions = response.data.map((customer) => ({
+          value: customer.id,
+          label: customer.name,
+          color: chroma.random().hex(),
+        }))
+        setCustomers(customerOptions)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des clients:', error)
+      }
+    }
+    fetchCustomers()
+    fetchSuppliers()
     fetchOrders()
   }, [updateKey])
 
@@ -121,7 +160,39 @@ const OrderList = () => {
   const getRowStyle = (orderState) => {
     return orderState === 'Commande annulée' ? { backgroundColor: '#ff0000', color: '#fff' } : {}
   }
+  const handleCustomerChange = (selectedOption) => {
+    setSelectedCustomer(selectedOption)
+  }
+  const handleSupplierChange = (selectedOption) => {
+    setSelectedSupplier(selectedOption)
+  }
+  const filteredOrders = (orders || [])
+  .filter((order) => !selectedSupplier || order.supplier.id === selectedSupplier.value)
+  .filter((order) => !selectedCustomer || order.customer.id === selectedCustomer.value)
 
+const colourStyles = {
+  control: (styles) => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isFocused, isSelected }) => {
+    const color = chroma(data.color)
+    return {
+      ...styles,
+      backgroundColor: isSelected
+        ? data.color
+        : isFocused
+        ? color.alpha(0.1).css()
+        : undefined,
+      color: isSelected
+        ? chroma.contrast(color, 'white') > 2
+          ? 'white'
+          : 'black'
+        : data.color,
+    }
+  },
+  singleValue: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+  }),
+}
   return (
     <CRow>
       <CCol xs={12}>
@@ -141,9 +212,27 @@ const OrderList = () => {
                   Ajouter Commande
                 </CButton>
               </Link>
+              
             )}
+           <div style={{ display: 'flex', gap: '1rem' }}>
+  <Select
+    options={suppliers}
+    styles={colourStyles}
+    onChange={handleSupplierChange}
+    placeholder="Rechercher par fournisseur"
+  />
+  
+  <Select
+    options={customers}
+    styles={colourStyles}
+    onChange={handleCustomerChange}
+    placeholder="Rechercher par client"
+  />
+</div>
+
             <CTable hover responsive>
               <CTableHead>
+             
                 <CTableRow>
                   <CTableHeaderCell>ID</CTableHeaderCell>
                   <CTableHeaderCell>Code</CTableHeaderCell>
@@ -163,7 +252,7 @@ const OrderList = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {orders.map((order, index) => (
+              {filteredOrders.map((order, index) => (
                   <CTableRow key={order.id} style={getRowStyle(order.state.value)}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{order.code}</CTableDataCell>

@@ -149,6 +149,7 @@ const list_invoice = React.lazy(() => import('./pages/admin/Invoice/list_invoice
 const detail_invoice = React.lazy(() => import('./pages/admin/Invoice/detail_invoice'))
 const list_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/list_deliverynote'))
 const detail_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/detail_deliverynote'))
+const display_invoice = React.lazy(() => import('./pages/admin/Invoice/display_invoice'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -339,6 +340,11 @@ const routes = [
   { path: '/admin/detail_invoice/:id', element: detail_invoice },
   { path: '/admin/list_deliverynote', element: list_deliverynote },
 { path: '/admin/detail_deliverynote/:id', element: detail_deliverynote },
+//invoice
+{ path: '/admin/list_invoice', element: list_invoice },
+{ path: '/admin/detail_invoice/:id', element: detail_invoice },
+{ path: '/admin/display_invoice/:orderID', element: display_invoice },
+
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
   { path: '/icons', exact: true, name: 'Icons', element: CoreUIIcons },
