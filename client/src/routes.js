@@ -147,6 +147,7 @@ const edit_bank = React.lazy(() => import('./pages/admin/Bank/edit_bank'))
 //invoice
 const list_invoice = React.lazy(() => import('./pages/admin/Invoice/list_invoice'))
 const detail_invoice = React.lazy(() => import('./pages/admin/Invoice/detail_invoice'))
+const display_invoice = React.lazy(() => import('./pages/admin/Invoice/display_invoice'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -326,7 +327,7 @@ const routes = [
 //invoice
 { path: '/admin/list_invoice', element: list_invoice },
 { path: '/admin/detail_invoice/:id', element: detail_invoice },
-
+{ path: '/admin/display_invoice/:orderID', element: display_invoice },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },

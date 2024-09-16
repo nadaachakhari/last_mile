@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
   const [alertMessage, setAlertMessage] = useState('');
+
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
 
@@ -55,10 +56,12 @@ const InvoiceList = () => {
     navigate(`/admin/detail_invoice/${invoiceID}`);
   };
 
-  const handlePrint = (orderID) => {
-    navigate(`/admin/display_invoice_exist/${orderID}`)
+  const handlePrint = (id) => {
+    navigate(`/admin/display_invoice/${id}`)
   };
-
+  const handleCustomerChange = (selectedOption) => {
+    setSelectedCustomer(selectedOption)
+  }
 
   return (
     <CRow>
@@ -72,6 +75,7 @@ const InvoiceList = () => {
           <CCardHeader>
             <strong>Liste</strong> <small>des Factures</small>
           </CCardHeader>
+
           <CCardBody>
             <CTable hover responsive>
               <CTableHead>
