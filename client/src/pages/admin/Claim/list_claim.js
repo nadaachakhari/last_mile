@@ -85,7 +85,7 @@ const ListClaims = () => {
                                     <CTableRow key={claim.id}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{claim.Client.name}</CTableDataCell>
-                                        <CTableDataCell>{claim.Order.code}</CTableDataCell>
+                                        {/* <CTableDataCell>{claim.Order.code}</CTableDataCell> */}
                                         <CTableDataCell>{claim.description}</CTableDataCell>
                                         <CTableDataCell>{formatDate(claim.dateClaim)}</CTableDataCell>
                                         <CTableDataCell>{claim.StatutClaim.value}</CTableDataCell>
@@ -93,11 +93,11 @@ const ListClaims = () => {
                                             {claim.answer ? claim.answer : 'Pas de réponse'}
                                         </CTableDataCell>
                                         <CTableDataCell>
-                                            <Link to={`/admin/display_claim/${claim.Order.id}`}>
+                                            {/* <Link to={`/admin/display_claim/${claim.Order.id}`}>
                                                 <CButton size="md" color="info" className="me-2">
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
-                                            </Link>
+                                            </Link> */}
                                             {userRole === 'Administrateur' && (
                                                 <Link to={`/admin/edit_claim/${claim.id}`}>
                                                     <CButton size="md" color="warning">

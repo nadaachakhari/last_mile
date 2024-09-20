@@ -185,10 +185,34 @@ const generateUserName = async (name, email) => {
 
   return userName;
 };
+// Fonction pour générer automatiquement un code client
+async function generateClientCode() {
+  // Récupérer le dernier client avec un code commençant par 'client'
+  const lastClient = await Tiers.findOne({
+    where: {
+      code: { [Op.like]: 'client%' }
+    },
+    order: [['id', 'DESC']]
+  });
+
+  let newClientNumber = 1;
+
+  if (lastClient) {
+    // Extraire le numéro du dernier client
+    const lastClientNumber = parseInt(lastClient.code.replace('client', ''), 10);
+    if (!isNaN(lastClientNumber)) {
+      newClientNumber = lastClientNumber + 1;
+    }
+  }
+
+  // Générer le nouveau code avec le numéro formaté sur 3 chiffres
+  const formattedNumber = newClientNumber.toString().padStart(3, '0');
+  return `client${formattedNumber}`;
+}
+
 const createClient = async (req, res) => {
   const {
     name,
-    code,
     address,
     postal_code,
     country,
@@ -226,9 +250,8 @@ const user_name = await generateUserName(name, email);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     console.log("user_name: " + user_name);
-
-    
-
+    // Génération automatique du code client
+    const code = await generateClientCode();
     // Création du nouveau clie
     const newClient = await Tiers.create({
       name,
@@ -250,7 +273,7 @@ const user_name = await generateUserName(name, email);
     });
 
     const emailSubject = "Bienvenue sur notre plateforme !";
-    const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+    const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.user_name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     await sendEmail(newClient.email, emailSubject, emailText);
 
@@ -444,11 +467,34 @@ const generatePassword = () => {
   }
   return password;
 };
+// Fonction pour générer automatiquement un code fournisseur
+async function generateSupplierCode() {
+  // Récupérer le dernier fournisseur avec un code commençant par 'fournisseur'
+  const lastSupplier = await Tiers.findOne({
+    where: {
+      code: { [Op.like]: 'fournisseur%' }
+    },
+    order: [['id', 'DESC']]
+  });
 
+  let newSupplierNumber = 1;
+
+  if (lastSupplier) {
+    // Extraire le numéro du dernier fournisseur
+    const lastSupplierNumber = parseInt(lastSupplier.code.replace('fournisseur', ''), 10);
+    if (!isNaN(lastSupplierNumber)) {
+      newSupplierNumber = lastSupplierNumber + 1;
+    }
+  }
+
+  // Générer le nouveau code avec le numéro formaté sur 3 chiffres
+  const formattedNumber = newSupplierNumber.toString().padStart(3, '0');
+  return `fournisseur${formattedNumber}`;
+}
 const createSupplier = async (req, res) => {
   const {
     name,
-    code,
+   
     address,
     postal_code,
     country,
@@ -486,7 +532,7 @@ const createSupplier = async (req, res) => {
 
     // Generate unique username for supplier
     const user_name = await generateUserName(name, email);
-
+    const code = await generateSupplierCode();
     // Génération et hashage du mot de passe
     const generatedPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
@@ -514,7 +560,7 @@ const createSupplier = async (req, res) => {
 
     // Envoi d'un email au nouveau fournisseur avec ses informations de connexion
     const emailSubject = "Bienvenue sur notre plateforme !";
-    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.user_name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     // Envoi de l'email
     await sendEmail(newSupplier.email, emailSubject, emailText);

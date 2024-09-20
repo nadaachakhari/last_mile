@@ -92,18 +92,18 @@ const ListeTypeTiers = () => {
             <strong>Liste des</strong> <small>Types de Tiers</small>
           </CCardHeader>
           <CCardBody>
-          <Link to={`/admin/add_type_tiers`}>
+          {/* <Link to={`/admin/add_type_tiers`}>
             <CButton color="primary" onClick={handleAddTypeTiers} className="mb-3">
               Ajouter Type de Tiers
             </CButton>
-            </Link>
+            </Link> */}
             <CTable striped>
               <CTableCaption>Liste des types de tiers actifs</CTableCaption>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">#</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Nom</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
+                  {/* <CTableHeaderCell scope="col">Actions</CTableHeaderCell> */}
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -111,7 +111,7 @@ const ListeTypeTiers = () => {
                   <CTableRow key={type.id}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{type.name}</CTableDataCell>
-                    <CTableDataCell>
+                    {/* <CTableDataCell>
                       <Link to={`/admin/detail_type_tiers/${type.id}`}>
                         <CButton size="md" color="info" className="me-2 ">
                     
@@ -129,7 +129,7 @@ const ListeTypeTiers = () => {
                       <FaTrash className="icon-white icon-lg me-7" />
                       
                       </CButton>
-                    </CTableDataCell>
+                    </CTableDataCell> */}
                   </CTableRow>
                 ))}
               </CTableBody>

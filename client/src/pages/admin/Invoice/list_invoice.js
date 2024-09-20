@@ -84,7 +84,7 @@ const InvoiceList = () => {
                   <CTableHeaderCell>Numéro de Facture</CTableHeaderCell>
                   <CTableHeaderCell>Date</CTableHeaderCell>
                   <CTableHeaderCell>Client</CTableHeaderCell>
-                  <CTableHeaderCell>Total TTC (€)</CTableHeaderCell>
+                  <CTableHeaderCell>Total TTC (DT)</CTableHeaderCell>
                   <CTableHeaderCell>Actions</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>

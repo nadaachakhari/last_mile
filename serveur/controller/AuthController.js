@@ -15,12 +15,15 @@ const authenticate = async (req, res) => {
       include: [{ model: RoleUser, attributes: ["name"] }],
     });
     const tiers = await Tiers.findOne({
-      where: { name: username },
+      where: { user_name: username },
       include: [
         { model: TypeTiers, attributes: ["name"] },
         { model: City, attributes: ["value"] },
       ],
     });
+console.log("user", user);
+console.log("tiers",tiers);
+
 
     if (!user && !tiers) {
       return res.status(401).json({ error: "Utilisateur non trouvé" });
@@ -41,11 +44,11 @@ const authenticate = async (req, res) => {
     let nameusers;
     if (user) {
       role = user.RoleUser.name === "Administrateur" ? "Administrateur" : "livreur";
-      redirectTo = role === "Administrateur" ? "/dashboard" : "/dashboard";
+      redirectTo = role === "Administrateur" ? "/dashboard" : "/admin/list_order";
       nameusers = user.name;
     } else if (tiers) {
       role = tiers.TypeTier.name === "client" ? "client" : "fournisseur";
-      redirectTo = role === "client" ? "/dashboard" : "/dashboard";
+      redirectTo = role === "client" ? "/admin/list_order" : "/dashboard";
       nameTiers = tiers.name;
     }
 

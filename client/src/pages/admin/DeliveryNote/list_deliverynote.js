@@ -55,9 +55,9 @@ const DeliveryList = () => {
     navigate(`/admin/detail_deliverynote/${deliveryID}`)
   }
 
-  const handlePrint = (orderID) => {
-    navigate(`/admin/display_delivery_exist/${orderID}`)
-  }
+  const handlePrint = (id) => {
+    navigate(`/admin/display_deliverynote/${id}`)
+  };
 
   return (
     <CRow>
@@ -79,7 +79,7 @@ const DeliveryList = () => {
                   <CTableHeaderCell>Numéro de Bon de Livraison</CTableHeaderCell>
                   <CTableHeaderCell>Date</CTableHeaderCell>
                   <CTableHeaderCell>Client</CTableHeaderCell>
-                  <CTableHeaderCell>Total TTC (€)</CTableHeaderCell>
+                  <CTableHeaderCell>Total TTC (DT)</CTableHeaderCell>
                   <CTableHeaderCell>Actions</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -104,7 +104,7 @@ const DeliveryList = () => {
                         size="sm"
                         color="primary"
                         className="me-2"
-                        onClick={() => handlePrint(delivery.orderID)}
+                        onClick={() => handlePrint(delivery.id)}
                       >
                         <IoPrintSharp className="icon-white icon-lg me-1" />
                       </CButton>

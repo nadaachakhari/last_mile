@@ -53,10 +53,10 @@ const Authenticate = () => {
           navigate('/dashboard');
           break;
         case 'livreur':
-          navigate('/dashboard');
+          navigate('/admin/list_order');
           break;
         case 'client':
-          navigate('/dashboard');
+          navigate('/admin/list_order');
           break;
         case 'fournisseur':
           navigate('/dashboard');

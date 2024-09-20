@@ -100,16 +100,16 @@ const ListeRoleUsers = () => {
             <strong>Liste des</strong> <small>Rôles Utilisateurs</small>
           </CCardHeader>
           <CCardBody>
-            <CButton color="primary" onClick={handleAddRoleUser} className="mb-3">
+            {/* <CButton color="primary" onClick={handleAddRoleUser} className="mb-3">
               Ajouter Rôle Utilisateur
-            </CButton>
+            </CButton> */}
             <CTable striped>
               <CTableCaption>Liste des rôles utilisateurs actifs</CTableCaption>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">#</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Nom</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
+                  {/* <CTableHeaderCell scope="col">Actions</CTableHeaderCell> */}
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -117,7 +117,7 @@ const ListeRoleUsers = () => {
                   <CTableRow key={role.id}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                     <CTableDataCell>{role.name}</CTableDataCell>
-                    <CTableDataCell>
+                    {/* <CTableDataCell>
                       <Link to={`/admin/detail_role_users/${role.id}`}>
                         <CButton size="md" color="info" className="me-2 ">
                           <IoEyeSharp className="icon-white icon-lg me-7" />
@@ -141,7 +141,7 @@ const ListeRoleUsers = () => {
                       >
                         <FaTrash className="icon-white icon-lg me-7" />
                       </CButton>
-                    </CTableDataCell>
+                    </CTableDataCell> */}
                   </CTableRow>
                 ))}
               </CTableBody>

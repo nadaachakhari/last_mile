@@ -149,6 +149,7 @@ const list_invoice = React.lazy(() => import('./pages/admin/Invoice/list_invoice
 const detail_invoice = React.lazy(() => import('./pages/admin/Invoice/detail_invoice'))
 const list_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/list_deliverynote'))
 const detail_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/detail_deliverynote'))
+const display_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/display_deliverynote.js'))
 const display_invoice = React.lazy(() => import('./pages/admin/Invoice/display_invoice'))
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
@@ -163,7 +164,6 @@ const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
-
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
@@ -317,6 +317,9 @@ const routes = [
   //DeliverySell
   { path: '/admin/bon_de_livraison/:orderID', element: BonDeLivraison },
   { path: '/admin/display_delivery_exist/:orderID', element: display_delivery_exist },
+  { path: '/admin/list_deliverynote', element: list_deliverynote },
+  { path: '/admin/detail_deliverynote/:id', element: detail_deliverynote },
+  { path: '/admin/display_deliverynote/:orderID', element: display_deliverynote },
   //taxstamp de facture
   { path: '/admin/afficher_facture/:orderID', element: afficher_facture },
   { path: '/admin/display_invoice_exist/:orderID', element: display_invoice_exist },
@@ -335,11 +338,8 @@ const routes = [
   { path: '/admin/list_bank', element: list_bank },
   { path: '/admin/detail_bank/:ref', element: detail_bank },
   { path: '/admin/edit_bank/:ref', name: 'modifer bank', element: edit_bank },
-  //invoice
-  { path: '/admin/list_invoice', element: list_invoice },
-  { path: '/admin/detail_invoice/:id', element: detail_invoice },
-  { path: '/admin/list_deliverynote', element: list_deliverynote },
-{ path: '/admin/detail_deliverynote/:id', element: detail_deliverynote },
+
+
 //invoice
 { path: '/admin/list_invoice', element: list_invoice },
 { path: '/admin/detail_invoice/:id', element: detail_invoice },

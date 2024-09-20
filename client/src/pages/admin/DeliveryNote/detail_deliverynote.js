@@ -74,7 +74,7 @@ const DeliveryNoteDetail = () => {
               <strong>Client:</strong> {deliveryNote.order?.customer?.name || 'N/A'}
             </p>
             <p>
-              <strong>Total TTC:</strong> {deliveryNote.total_ttc.toFixed(2)} €
+              <strong>Total TTC:</strong> {deliveryNote.total_ttc.toFixed(2)} DT
             </p>
             <p>
               <strong>Destination:</strong> {deliveryNote.destination}
@@ -105,9 +105,9 @@ const DeliveryNoteDetail = () => {
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{line.article?.name || 'N/A'}</CTableDataCell>
                       <CTableDataCell>{line.quantity}</CTableDataCell>
-                      <CTableDataCell>{line.sale_ht.toFixed(2)} €</CTableDataCell>
-                      <CTableDataCell>{(line.sale_ht * line.quantity).toFixed(2)} €</CTableDataCell>
-                      <CTableDataCell>{line.sale_ttc.toFixed(2)} €</CTableDataCell>
+                      <CTableDataCell>{line.sale_ht.toFixed(2)} DT</CTableDataCell>
+                      <CTableDataCell>{(line.sale_ht * line.quantity).toFixed(2)} DT</CTableDataCell>
+                      <CTableDataCell>{line.sale_ttc.toFixed(2)} DT</CTableDataCell>
                     </CTableRow>
                   ))}
                 </CTableBody>

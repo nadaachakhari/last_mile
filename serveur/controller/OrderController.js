@@ -13,10 +13,30 @@ const RoleUser = require("../Models/RoleUserModel.js");
 const sequelize = require("../config/database");
 const Regulations = require("../Models/RegulationsModel");
 const Bank = require("../Models/BankModel");
+const generateOrderCode = async () => {
+  const currentYear = new Date().getFullYear();
+
+  // Find the last order created in the current year
+  const lastOrder = await Order.findOne({
+    where: sequelize.where(sequelize.fn('YEAR', sequelize.col('date')), currentYear),
+    order: [['code', 'DESC']]  // Order by descending to get the latest order
+  });
+
+  let newNumber;
+  if (lastOrder) {
+    const lastNumber = parseInt(lastOrder.code.split('-')[2], 10);
+    newNumber = lastNumber + 1;  // Increment the last number
+  } else {
+    newNumber = 1;  // If no order exists, start from 1
+  }
+
+  // Format the code as COM-YYYY-000001
+  const orderCode = `CMD-${currentYear}-${newNumber.toString().padStart(6, '0')}`;
+  return orderCode;
+};
 
 const createOrder = async (req, res) => {
   const {
-    code,
     date,
     customerID,
     observation,
@@ -36,17 +56,18 @@ const createOrder = async (req, res) => {
 
   const user = req.user;
   if (!user || user.role !== "fournisseur") {
-    return res
-      .status(403)
-      .json({
-        error: "Accès interdit : Utilisateur non authentifié ou non autorisé",
-      });
+    return res.status(403).json({
+      error: "Accès interdit : Utilisateur non authentifié ou non autorisé",
+    });
   }
 
   const transaction = await sequelize.transaction();
 
   try {
     console.log("Transaction start");
+
+    // Generate auto-incremented order code
+    const code = await generateOrderCode();
 
     // Vérifier si la méthode de paiement existe
     const paymentMethod = await PaymentMethod.findByPk(ID_payment_method);
@@ -94,7 +115,7 @@ const createOrder = async (req, res) => {
 
     const newOrder = await Order.create(
       {
-        code,
+        code,  // Use the generated order code
         date,
         customerID,
         supplierID,
@@ -119,8 +140,6 @@ const createOrder = async (req, res) => {
       },
       { transaction }
     );
-
-    //console.log('OrderState created for orderID:', newOrder.id);
 
     // Ajouter les articles dans OrderLignes
     for (const article of articles) {
@@ -153,6 +172,7 @@ const createOrder = async (req, res) => {
 
     // Mettre à jour le total_amount dans la commande
     await newOrder.update({ total_amount: totalAmount }, { transaction });
+
     if (
       paymentMethod.value === "espèce" ||
       paymentMethod.value === "chèque" ||
@@ -173,19 +193,15 @@ const createOrder = async (req, res) => {
             .status(400)
             .json({ error: "Bank ID est requis pour le paiement par chèque." });
         }
-        //console.log("Received bankID:", bankID);
         const bank = await Bank.findOne({
           where: { id: bankID, deleted: false },
         });
-        //console.log("Fetched bank:", bank);
         if (!bank || bank.deleted) {
           await transaction.rollback();
           return res
             .status(400)
             .json({ error: "Banque non trouvée ou supprimée." });
         }
-        //console.log('Bank found:', bank);
-        //console.log('Bank ID:', bankID);
 
         regulationData.bankID = bankID;
       }
@@ -209,6 +225,7 @@ const createOrder = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const getAllOrders = async (req, res) => {
   const user = req.user;
@@ -349,7 +366,7 @@ const updateOrder = async (req, res) => {
   }
 
   const user = req.user;
-  if (!user || user.role !== "fournisseur") {
+  if (!user ||user.role !== "Administrateur" &&  user.role !== "fournisseur" ) {
     return res
       .status(403)
       .json({

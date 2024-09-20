@@ -23,7 +23,6 @@ import {
 const AddClient = () => {
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
     address: '',
     postal_code: '',
     country: '',
@@ -162,10 +161,7 @@ const AddClient = () => {
                   required
                 />
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} required />
-              </CCol>
+           
               <CCol md={6}>
                 <CFormLabel htmlFor="cityID">Ville</CFormLabel>
                 <CFormSelect id="cityID" value={formData.cityID} onChange={handleChange} required>

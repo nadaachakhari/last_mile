@@ -31,6 +31,7 @@ console.log(orderID);
             console.error('Token non trouvé dans localStorage.');
             return;
         }
+console.log("token", token);
 
         try {
             const response = await axios.post(`http://localhost:5001/Claim/${orderID}`,

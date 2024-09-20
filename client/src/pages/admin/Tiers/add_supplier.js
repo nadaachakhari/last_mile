@@ -23,7 +23,6 @@ import {
 const AddSupplier = () => {
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
     address: '',
     postal_code: '',
     country: '',
@@ -167,10 +166,6 @@ const AddSupplier = () => {
                   onChange={handleChange}
                   required
                 />
-              </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} required />
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="cityID">Ville</CFormLabel>

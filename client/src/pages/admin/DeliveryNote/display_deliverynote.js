@@ -69,27 +69,37 @@ const numberToWordsWithDecimals = (number) => {
   return decimalWords ? `${integerWords} dinars et ${decimalWords} millimes` : `${integerWords} dinars`;
 };
 
-const DisplayDeliverySellExists = () => {
+const DisplayDeliveryNote = () => {
   const { orderID } = useParams();
-  const [invoice, setInvoice] = useState(null);
+  const [deliveries, setDeliveries] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const componentRef = useRef();
 
   useEffect(() => {
-    const fetchInvoice = async () => {
-      try {
-        const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
-        setInvoice(response.data);
-      } catch (error) {
-        setError('Erreur lors de la récupération de la facture.');
-      } finally {
-        setLoading(false);
-      }
+    const fetchDeliveries = async () => {
+        const token = localStorage.getItem('token')
+
+        if (!token) {
+          console.error('Token non trouvé dans localStorage.')
+          return
+        }
+        try {
+            const response = await axios.get(`http://localhost:5001/DeliverySell/delivery/${orderID}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            setDeliveries(response.data)
+            console.log(orderID)
+          } catch (error) {
+            console.error('Erreur lors de la récupération des bons de livraison:', error)
+          } finally {
+            setLoading(false);
+          }
+         
     };
 
-    fetchInvoice();
+    fetchDeliveries();
   }, [orderID]);
 
   const handlePrint = useReactToPrint({
@@ -98,7 +108,7 @@ const DisplayDeliverySellExists = () => {
 
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>{error}</div>;
-  if (!invoice) return <div>Aucune facture trouvée.</div>;
+  if (!deliveries) return <div>Aucune bon delivraison trouvée.</div>;
 
   const {
     code,
@@ -109,7 +119,7 @@ const DisplayDeliverySellExists = () => {
     total_ht,
     order = {},
     deliveryLines = []
-  } = invoice;
+  } = deliveries;
   const suppliertax_identification_number = order.supplier?.tax_identification_number || 'Non défini';
   const customerName = order.customer?.name || 'Non défini';
   const customerTele = order.customer?.name || 'Non défini';
@@ -123,6 +133,7 @@ const DisplayDeliverySellExists = () => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
   };
+         
 
   return (
     <>
@@ -148,7 +159,7 @@ const DisplayDeliverySellExists = () => {
             <CCardHeader className="d-flex justify-content-between align-items-center" style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid black' }}>
               <img src={avatar} alt="Logo" style={{ height: '80px' }} />
               <div>
-                <strong>Facture</strong><br />
+                <strong>bon de livraison</strong><br />
                 <strong>Réf:</strong> <small>{code}</small>
                 <p><strong>Date:</strong> {formatDate(date)}</p>
               </div>
@@ -233,13 +244,12 @@ const DisplayDeliverySellExists = () => {
 
           <div className="d-flex justify-content-between mt-4 no-print">
             <CButton color="primary" onClick={handlePrint}><CIcon icon={cilPrint}style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" />Imprimer</CButton>
-            <CButton color="secondary" onClick={() => navigate('/admin/list_order')}>Retour</CButton>
+            <CButton color="secondary" onClick={() => navigate('/admin/list_deliverynote')}>Retour</CButton>
           </div>
         </CCol>
       </CRow>
     </>
   );
-  
 };
 
-export default DisplayDeliverySellExists;
+export default DisplayDeliveryNote;

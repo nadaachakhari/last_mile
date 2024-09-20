@@ -21,7 +21,7 @@ import {
 
 const AddOrder = () => {
   const [formData, setFormData] = useState({
-    code: '',
+    
     date: '',
     customerID: '',
     observation: '',
@@ -266,11 +266,7 @@ const AddOrder = () => {
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} required />
-                {codeError && <p className="text-danger">{codeError}</p>}
-              </CCol>
+             
               <CCol md={6}>
                 <CFormLabel htmlFor="date">Date</CFormLabel>
                 <CFormInput

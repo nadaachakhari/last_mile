@@ -288,8 +288,8 @@ return (
               <CButton color="primary" onClick={handlePrint} className="mt-3"><CIcon icon={cilPrint}style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" />
                 Imprimer Facture
               </CButton>
-              <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
-                Retourner à la Liste des Commandes
+              <CButton color="secondary" onClick={() => navigate('/admin/list_invoice')} className="mt-3 ms-2">
+              Retour
               </CButton>
             </div>
           </CCardBody>

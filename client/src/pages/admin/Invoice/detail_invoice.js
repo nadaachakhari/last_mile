@@ -65,7 +65,7 @@ const InvoiceDetail = () => {
             <p><strong>Numéro de Facture:</strong> {invoice.code}</p>
             <p><strong>Date:</strong> {formatDate(invoice.date)}</p>
             <p><strong>Client:</strong> {invoice.order?.customer?.name || 'N/A'}</p>
-            <p><strong>Total TTC:</strong> {invoice.total_ttc.toFixed(2)} €</p>
+            <p><strong>Total TTC:</strong> {invoice.total_ttc.toFixed(2)} DT</p>
 
             <h5>Lignes de Facture</h5>
             {invoice.invoiceLignes && invoice.invoiceLignes.length > 0 ? (
@@ -85,8 +85,8 @@ const InvoiceDetail = () => {
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{line.article?.name || 'N/A'}</CTableDataCell>
                       <CTableDataCell>{line.quantity}</CTableDataCell>
-                      <CTableDataCell>{line.sale_ht.toFixed(2)} €</CTableDataCell>
-                      <CTableDataCell>{(line.sale_ht * line.quantity).toFixed(2)} €</CTableDataCell>
+                      <CTableDataCell>{line.sale_ht.toFixed(2)} DT</CTableDataCell>
+                      <CTableDataCell>{(line.sale_ht * line.quantity).toFixed(2)} DT</CTableDataCell>
                     </CTableRow>
                   ))}
                 </CTableBody>
