@@ -53,7 +53,7 @@ const DetailState = () => {
                     </CCardHeader>
                     <CCardBody>
                         <p><strong>Nom:</strong> {state.value}</p>
-                        <p><strong>État:</strong> {state.deleted ? 'Inactive' : 'Active'}</p>
+                  
                         <Link to="/admin/list_state">
                             <CButton color="primary">Retour à la liste</CButton>
                         </Link>

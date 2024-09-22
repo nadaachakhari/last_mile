@@ -52,7 +52,7 @@ const DetailPaymentMethod = () => {
                     </CCardHeader>
                     <CCardBody>
                         <p><strong>Nom:</strong> {paymentMethod.value}</p>
-                        <p><strong>État:</strong> {paymentMethod.deleted ? 'Inactive' : 'Active'}</p>
+                     
                         <Link to="/admin/list_payment_methode">
                             <CButton color="primary">Retour à la liste</CButton>
                         </Link>

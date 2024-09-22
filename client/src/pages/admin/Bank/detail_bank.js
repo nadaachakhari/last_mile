@@ -55,7 +55,7 @@ const DetailBank = () => {
                     <CCardBody>
                         <p><strong>Référence:</strong> {bank.ref}</p>
                         <p><strong>Valeur:</strong> {bank.value}</p>
-                        <p><strong>État:</strong> {bank.deleted ? 'Supprimée' : 'Active'}</p>
+                
                         <Link to="/admin/list_bank">
                             <CButton color="primary">Retour à la liste</CButton>
                         </Link>

@@ -34,13 +34,23 @@ const AddVat = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token'); // Assurez-vous que le token est stocké
     try {
-      const response = await axios.post('http://localhost:5001/vat', {
-        value: formData.value,
-        deleted: formData.deleted,
-      });
+      const response = await axios.post(
+        'http://localhost:5001/vat', // URL de l'API
+        { // Corps de la requête contenant les données à envoyer
+          value: formData.value,
+          deleted: formData.deleted,
+        },
+        { // Options de la requête, y compris les en-têtes
+          headers: {
+            Authorization: `Bearer ${token}`, // Ajouter le token dans les en-têtes
+            'Content-Type': 'application/json', // S'assurer que le type de contenu est JSON
+          },
+        }
+      );
       console.log('Réponse serveur:', response.data);
-      // Redirect the user to the list of VATs or show a success message
+      // Rediriger l'utilisateur vers la liste des TVA ou afficher un message de succès
       navigate('/admin/list_vat');
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
@@ -51,6 +61,7 @@ const AddVat = () => {
       }
     }
   };
+  
 
   return (
     <CRow>

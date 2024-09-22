@@ -54,7 +54,7 @@ const DetailTypeTiers = () => {
           <CCardBody>
             
             <p><strong>Nom:</strong> {typeTiers.name}</p>
-            <p><strong>État:</strong> {typeTiers.deleted ? 'Active' : 'Inactive'}</p>
+     
             <Link to="/admin/list_type_tiers">
               <CButton color="primary">Retour à la liste</CButton>
             </Link>

@@ -33,8 +33,17 @@ const ListVat = () => {
 
   useEffect(() => {
     const fetchVats = async () => {
+        const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
-        const response = await axios.get('http://localhost:5001/vat');
+        const response = await axios.get('http://localhost:5001/vat', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         setVats(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des TVA:', error);

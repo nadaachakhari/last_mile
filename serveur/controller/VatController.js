@@ -2,8 +2,9 @@ const Vat = require('../Models/VatModel');
 
 const getAllVats = async (req, res) => {
   try {
+    const id_supplier = req.user.id;
     const vats = await Vat.findAll({
-      where: { deleted: false },
+      where: { id_supplier, deleted: false },
     });
     res.json(vats);
   } catch (error) {
@@ -27,15 +28,22 @@ const getVatById = async (req, res) => {
 };
 
 const createVat = async (req, res) => {
-  const { value } = req.body;
   try {
-    const newVat = await Vat.create({ value, deleted: false });
+    // Vérifier si l'utilisateur est authentifié
+    const id_supplier = req.user.id; // Assumer que l'utilisateur connecté est un fournisseur
+
+    const { value } = req.body;
+
+    // Créer une nouvelle TVA associée à l'utilisateur connecté
+    const newVat = await Vat.create({ value, id_supplier, deleted: false });
+
     res.status(201).json(newVat);
   } catch (error) {
     console.error('Erreur lors de la création de la TVA:', error);
     res.status(500).json({ message: 'Erreur lors de la création de la TVA.' });
   }
 };
+
 
 const updateVat = async (req, res) => {
   const { id } = req.params;
@@ -62,7 +70,7 @@ const deleteVat = async (req, res) => {
     if (!vat) {
       return res.status(404).json({ message: 'TVA non trouvée.' });
     }
-    await vat.update({ deleted: 0 });
+    await vat.update({ deleted: true });
     res.json({ message: `TVA avec l'ID ${id} marquée comme supprimée.` });
   } catch (error) {
     console.error(`Erreur lors de la suppression de la TVA avec l'ID ${id}:`, error);

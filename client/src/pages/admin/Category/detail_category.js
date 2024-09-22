@@ -51,7 +51,7 @@ const DetailCategory = () => {
             {category ? (
               <div>
                 <p><strong>Nom:</strong> {category.name}</p>
-                <p><strong>État:</strong> {category.deleted ? 'Active' : 'Inactive'}</p>
+               
               </div>
             ) : (
               <p>Chargement des détails...</p>

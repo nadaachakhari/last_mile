@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-
+const Tiers = require('./TiersModel'); 
 const Vat = sequelize.define('Vat', {
   id: {
     type: DataTypes.INTEGER,
@@ -16,6 +16,14 @@ const Vat = sequelize.define('Vat', {
       },
     },
   },
+  id_supplier: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Tiers,
+      key: 'id',
+    },
+  },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
@@ -25,5 +33,5 @@ const Vat = sequelize.define('Vat', {
   tableName: 'vat',
   timestamps: false,
 });
-
+Vat.belongsTo(Tiers, {  as: 'supplier',foreignKey: 'id_supplier' });
 module.exports = Vat;
