@@ -377,6 +377,16 @@ const useNavigation = () => {
       icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
       items: [{ component: CNavItem, name: 'Liste des commandes', to: '/admin/list_order' }],
     },
+    ...(role === 'client'
+      ? [
+        {
+          component: CNavGroup,
+          name: 'Les réclamations',
+          icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
+          items: [{ component: CNavItem, name: 'Liste des réclamations', to: '/admin/list_claim' }],
+        },
+      ]
+      : []),
     ...(role === 'Administrateur'
       ? [
     {

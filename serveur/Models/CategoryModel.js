@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-
+const Tiers = require('./TiersModel'); 
 const Category = sequelize.define('Category', {
   id: {
     type: DataTypes.INTEGER,
@@ -14,6 +14,14 @@ const Category = sequelize.define('Category', {
       notEmpty: true, 
     }
   },
+  id_supplier: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Tiers,
+      key: 'id',
+    },
+  },
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
@@ -23,5 +31,5 @@ const Category = sequelize.define('Category', {
   tableName: 'category',
   timestamps: false,
 });
-
+Category.belongsTo(Tiers, {  as: 'supplier',foreignKey: 'id_supplier' });
 module.exports = Category;

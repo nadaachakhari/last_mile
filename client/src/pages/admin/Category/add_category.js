@@ -33,9 +33,23 @@ const AddCategory = () => {
   };
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.error('Token non trouvé dans localStorage.');
+      return;
+    }
     try {
-      const response = await axios.post('http://localhost:5001/category', formData);
+      const response = await axios.post('http://localhost:5001/category', formData,{
+         headers: {
+         
+        Authorization: `Bearer ${token}`,
+      
+    
+    },
+  });
       console.log('Réponse serveur:', response.data);
       navigate('/admin/list_category');
     } catch (error) {

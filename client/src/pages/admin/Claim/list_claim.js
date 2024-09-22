@@ -53,7 +53,17 @@ const ListClaims = () => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Intl.DateTimeFormat('fr-FR', options).format(new Date(dateString));
     };
-
+    const getBackgroundColor = (statut) => {
+        switch (statut) {
+          case 'réclamation ouvert':
+            return 'red'; // Rouge pour réclamation ouverte
+          case 'réclamation résolu':
+            return 'green'; // Vert pour réclamation résolu
+          case 'réclamation en cours':
+            return 'orange'; // Orange pour réclamation en cours
+          default:
+            return 'transparent'; // Aucune couleur par défaut
+        }}
     return (
         <CRow>
             <CCol xs={12}>
@@ -85,19 +95,21 @@ const ListClaims = () => {
                                     <CTableRow key={claim.id}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{claim.Client.name}</CTableDataCell>
-                                        {/* <CTableDataCell>{claim.Order.code}</CTableDataCell> */}
+                                        <CTableDataCell>{claim.Order.code}</CTableDataCell>
                                         <CTableDataCell>{claim.description}</CTableDataCell>
                                         <CTableDataCell>{formatDate(claim.dateClaim)}</CTableDataCell>
-                                        <CTableDataCell>{claim.StatutClaim.value}</CTableDataCell>
+                                        <CTableDataCell style={{ backgroundColor: getBackgroundColor(claim.StatutClaim.value) }}>
+      {claim.StatutClaim.value}
+    </CTableDataCell>
                                         <CTableDataCell>
                                             {claim.answer ? claim.answer : 'Pas de réponse'}
                                         </CTableDataCell>
                                         <CTableDataCell>
-                                            {/* <Link to={`/admin/display_claim/${claim.Order.id}`}>
+                                            <Link to={`/admin/display_claim/${claim.Order.id}`}>
                                                 <CButton size="md" color="info" className="me-2">
                                                     <IoEyeSharp className="icon-white icon-lg me-1" />
                                                 </CButton>
-                                            </Link> */}
+                                            </Link>
                                             {userRole === 'Administrateur' && (
                                                 <Link to={`/admin/edit_claim/${claim.id}`}>
                                                     <CButton size="md" color="warning">

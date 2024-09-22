@@ -7,15 +7,15 @@ const {
   updateCategory,
   deleteCategory,
 } = require('../controller/CategoryController');
-
+const { authenticateToken } = require('../controller/AuthController')
 // Route pour créer une nouvelle catégorie
-router.post('/', createCategory);
+router.post('/', authenticateToken, createCategory);
 
 // Route pour obtenir toutes les catégories
-router.get('/', getCategories);
+router.get('/',authenticateToken,  getCategories);
 
 // Route pour obtenir une catégorie par ID
-router.get('/:id', getCategoryById);
+router.get('/:id',  getCategoryById);
 
 // Route pour mettre à jour une catégorie
 router.put('/:id', updateCategory);

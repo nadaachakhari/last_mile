@@ -41,10 +41,20 @@ const AddArticle = () => {
 
   useEffect(() => {
     const fetchVatsAndCategories = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
         const [vatsResponse, categoriesResponse] = await Promise.all([
           axios.get('http://localhost:5001/Vat'),
-          axios.get('http://localhost:5001/Category'),
+          axios.get('http://localhost:5001/Category', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
         ]);
         setVats(vatsResponse.data);
         setCategories(categoriesResponse.data);

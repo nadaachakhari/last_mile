@@ -32,8 +32,17 @@ const ListeCategory = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
-        const response = await axios.get('http://localhost:5001/Category');
+        const response = await axios.get('http://localhost:5001/Category', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         setCategories(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des catégories:', error);

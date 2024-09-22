@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Vat = require('./VatModel');
 const Category = require('./CategoryModel');
-const Tiers = require('./TiersModel'); // Import the Tiers model
+const Tiers = require('./TiersModel'); 
 
 const Article = sequelize.define('Article', {
   id: {
