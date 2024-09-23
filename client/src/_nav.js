@@ -255,10 +255,9 @@ import {
   cilPencil,
   cilPuzzle,
   cilSpeedometer,
-  cilStar,
   cilPeople,
   cilUser,
-  cilLocationPin,
+  cilCreditCard,
   cilCart,
   cilSpeech,
   cilGlobeAlt,
@@ -290,16 +289,16 @@ const useNavigation = () => {
             icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
             items: [{ component: CNavItem, name: 'Liste des clients', to: '/admin/list_client' }],
           },
-          {
-            component: CNavGroup,
-            name: 'Ville',
-            icon: <CIcon icon={cilGlobeAlt} customClassName="nav-icon" />,
-            items: [{ component: CNavItem, name: 'Liste des villes', to: '/admin/list_city' }],
-          },
+          // {
+          //   component: CNavGroup,
+          //   name: 'Ville',
+          //   icon: <CIcon icon={cilGlobeAlt} customClassName="nav-icon" />,
+          //   items: [{ component: CNavItem, name: 'Liste des villes', to: '/admin/list_city' }],
+          // },
           {
             component: CNavGroup,
             name: 'Méthode de paiement',
-            icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+            icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
             items: [
               {
                 component: CNavItem,

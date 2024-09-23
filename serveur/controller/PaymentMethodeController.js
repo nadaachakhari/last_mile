@@ -5,9 +5,12 @@ const PaymentMethod = require('../Models/PaymentMethodModel');
 
 
 const getAllPaymentMethods = async (req, res) => {
+    const id_supplier = req.user.id; // Récupérer l'id du fournisseur connecté
+
     try {
         const paymentMethods = await PaymentMethod.findAll({
-            where: { deleted: false },
+            where: { id_supplier,
+                deleted: false },
         });
         res.json(paymentMethods);
     } catch (error) {
@@ -32,8 +35,10 @@ const getPaymentMethodById = async (req, res) => {
 
 const createPaymentMethod = async (req, res) => {
     const { value } = req.body;
+    const id_supplier = req.user.id;
+
     try {
-        const newPaymentMethod = await PaymentMethod.create({ value, deleted: false });
+        const newPaymentMethod = await PaymentMethod.create({ value, id_supplier , deleted: false });
         res.status(201).json(newPaymentMethod);
     } catch (error) {
         console.error('Erreur lors de la création de la méthode de paiement:', error);

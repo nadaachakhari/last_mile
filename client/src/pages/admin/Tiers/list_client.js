@@ -63,9 +63,10 @@ const ClientList = () => {
                             <CTableHead>
                                 <CTableRow>
                                     <CTableHeaderCell>ID</CTableHeaderCell>
-                                    <CTableHeaderCell>Nom</CTableHeaderCell>
-                                    <CTableHeaderCell>Type</CTableHeaderCell>
                                     <CTableHeaderCell>Code</CTableHeaderCell>
+                                    <CTableHeaderCell>Nom</CTableHeaderCell>
+                                    {/* <CTableHeaderCell>Type</CTableHeaderCell> */}
+                                    
                                     <CTableHeaderCell>Adresse</CTableHeaderCell>
                                     <CTableHeaderCell>Email</CTableHeaderCell>
                                     <CTableHeaderCell>Téléphone</CTableHeaderCell>
@@ -76,9 +77,10 @@ const ClientList = () => {
                                 {clients.map((client, index) => (
                                     <CTableRow key={client.id}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                        <CTableDataCell>{client.name}</CTableDataCell>
-                                        <CTableDataCell>{client.TypeTier?.name}</CTableDataCell>
                                         <CTableDataCell>{client.code}</CTableDataCell>
+                                        <CTableDataCell>{client.name}</CTableDataCell>
+                                        {/* <CTableDataCell>{client.TypeTier?.name}</CTableDataCell> */}
+                                      
                                         <CTableDataCell>{client.address}</CTableDataCell>
                                         <CTableDataCell>{client.email}</CTableDataCell>
                                         <CTableDataCell>{client.phone}</CTableDataCell>

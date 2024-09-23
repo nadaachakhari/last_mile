@@ -34,11 +34,21 @@ const AddPaymentMethod = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+          console.error('Token non trouvé dans localStorage.');
+          return;
+        }
         try {
-            const response = await axios.post('http://localhost:5001/PaymentMethode/', {
-                value: formData.value,
-                deleted: formData.deleted,
-            });
+            const response = await axios.post('http://localhost:5001/PaymentMethode/', formData,{
+                headers: {
+                
+               Authorization: `Bearer ${token}`,
+             
+           
+           },
+         });
             console.log('Réponse serveur:', response.data);
             navigate('/admin/list_payment_methode');
         } catch (error) {
