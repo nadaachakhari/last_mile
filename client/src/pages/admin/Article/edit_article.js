@@ -18,11 +18,12 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react';
+import { Link } from 'react-router-dom';
 
 const EditArticle = () => {
   const { id } = useParams(); // Récupérer l'ID de l'article à partir de l'URL
   const [formData, setFormData] = useState({
-    code: '',
+
     name: '',
     vatID: '',
     sale_ht: '',
@@ -61,10 +62,24 @@ const EditArticle = () => {
     };
 
     const fetchVatsAndCategories = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.');
+        return;
+      }
       try {
         const [vatsResponse, categoriesResponse] = await Promise.all([
-          axios.get('http://localhost:5001/Vat'),
-          axios.get('http://localhost:5001/Category'),
+          axios.get('http://localhost:5001/Vat', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }),
+          axios.get('http://localhost:5001/Category', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }),
         ]);
         setVats(vatsResponse.data);
         setCategories(categoriesResponse.data);
@@ -153,10 +168,7 @@ const EditArticle = () => {
           </CCardHeader>
           <CCardBody>
             <CForm className="row g-3" onSubmit={handleSubmit}>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} required />
-              </CCol>
+             
               <CCol md={6}>
                 <CFormLabel htmlFor="name">Nom</CFormLabel>
                 <CFormInput id="name" value={formData.name} onChange={handleChange} required />
@@ -172,15 +184,22 @@ const EditArticle = () => {
                   ))}
                 </CFormSelect>
               </CCol>
-              <CCol md={4}>
+              <CCol md={2} className="align-self-end" >
+              <Link to={`/admin/add_category`}>
+                  <CButton color="primary">
+                    Ajouter TVA
+                  </CButton>
+                </Link>
+                </CCol>
+              <CCol md={6}>
                 <CFormLabel htmlFor="sale_ht">Prix HT</CFormLabel>
                 <CFormInput type="number" step="0.01" id="sale_ht" value={formData.sale_ht} onChange={handleSaleHtChange} required />
               </CCol>
-              <CCol md={4}>
+              <CCol md={6}>
                 <CFormLabel htmlFor="sale_ttc">Prix TTC</CFormLabel>
                 <CFormInput type="number" step="0.01" id="sale_ttc" value={formData.sale_ttc} readOnly />
               </CCol>
-              <CCol md={6}>
+              <CCol md={4}>
                 <CFormLabel htmlFor="categoryID">Catégorie</CFormLabel>
                 <CFormSelect id="categoryID" value={formData.categoryID} onChange={handleChange} required>
                   <option value="">Choisir...</option>
@@ -191,6 +210,17 @@ const EditArticle = () => {
                   ))}
                 </CFormSelect>
               </CCol>
+              <CCol md={3} className="align-self-end">
+                <Link to={`/admin/add_category`}>
+                  <CButton color="primary">
+                    Ajouter Catégorie
+                  </CButton>
+                </Link>
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="bar_code">Code Barre</CFormLabel>
+                <CFormInput id="bar_code" value={formData.bar_code} onChange={handleChange} />
+              </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="photo">Photo</CFormLabel>
                 <CFormInput type="file" id="photo" onChange={handleImageChange} />
@@ -200,10 +230,7 @@ const EditArticle = () => {
                   </div>
                 )}
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="bar_code">Code Barre</CFormLabel>
-                <CFormInput id="bar_code" value={formData.bar_code} onChange={handleChange} />
-              </CCol>
+              
               <CCol xs={12}>
                 <CButton color="primary" type="submit">
                   Modifier

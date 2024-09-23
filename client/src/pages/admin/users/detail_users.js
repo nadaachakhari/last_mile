@@ -56,7 +56,7 @@ const DetailUser = () => {
                 <p><strong>Numéro d'enregistrement:</strong> {user.registration_number}</p>
                 <p><strong>CIN:</strong> {user.cin}</p>
                 <p><strong>Rôle:</strong> {user.RoleUser ? user.RoleUser.name : 'N/A'}</p>
-                <p><strong>Supprimé:</strong> {user.deleted ? 'Oui' : 'Non'}</p>
+               
                 {user.photo && (
                   <div>
                     <strong>Photo:</strong>

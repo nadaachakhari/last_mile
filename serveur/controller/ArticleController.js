@@ -5,17 +5,17 @@ const Tiers = require('../Models/TiersModel');
 
 
 const createArticle = async (req, res) => {
-  const { code, name, vatID, sale_ht, categoryID, bar_code, deleted } = req.body;
+  const { name, vatID, sale_ht, categoryID, bar_code, deleted } = req.body;
   const photo = req.file ? req.file.filename : '';
   const supplierID = req.user.id;
 
   if (!supplierID) {
-      return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
+    return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié' });
   }
 
   const user = req.user;
   if (!user || user.role !== 'fournisseur') {
-      return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
+    return res.status(403).json({ error: 'Accès interdit : Utilisateur non authentifié ou non autorisé' });
   }
 
   try {
@@ -28,9 +28,17 @@ const createArticle = async (req, res) => {
     // Calculate sale_ttc
     const sale_ttc = sale_ht * (1 + vat.value / 100);
 
-    // Create a new article with the calculated sale_ttc and supplier ID
+    // Find the highest article code and generate a new one
+    const lastArticle = await Article.findOne({
+      order: [['id', 'DESC']] // Get the latest article by ID
+    });
+
+    const articleNumber = lastArticle ? parseInt(lastArticle.code.split(' ')[1]) + 1 : 1;
+    const newCode = `Article ${articleNumber}`;
+
+    // Create a new article with the generated code and supplier ID
     const newArticle = await Article.create({
-      code,
+      code: newCode, // Generated code
       name,
       vatID,
       sale_ht,
@@ -47,6 +55,7 @@ const createArticle = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 
 

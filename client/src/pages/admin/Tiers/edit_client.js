@@ -24,7 +24,7 @@ const EditClient = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
-    code: '',
+    
     address: '',
     postal_code: '',
     country: '',
@@ -100,10 +100,7 @@ const EditClient = () => {
                 <CFormLabel htmlFor="name">Nom</CFormLabel>
                 <CFormInput id="name" value={formData.name} onChange={handleChange} />
               </CCol>
-              <CCol md={6}>
-                <CFormLabel htmlFor="code">Code</CFormLabel>
-                <CFormInput id="code" value={formData.code} onChange={handleChange} />
-              </CCol>
+            
               <CCol md={6}>
                 <CFormLabel htmlFor="address">Adresse</CFormLabel>
                 <CFormInput id="address" value={formData.address} onChange={handleChange} />

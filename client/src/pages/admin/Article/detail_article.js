@@ -57,7 +57,7 @@ const DetailArticle = () => {
                 <p><strong>Prix TTC:</strong> {article.sale_ttc}</p>
                 <p><strong>Catégorie:</strong> {article.Category.name}</p>
                 <p><strong>Code Barre:</strong> {article.bar_code}</p>
-                <p><strong>Supprimé:</strong> {article.deleted ? 'Oui' : 'Non'}</p>
+           
                 {article.photo && (
                   <div>
                     <strong>Photo:</strong>

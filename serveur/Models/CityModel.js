@@ -14,6 +14,7 @@ const City = sequelize.define('City', {
       notEmpty: true,
     }
   },
+
   deleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
@@ -23,5 +24,6 @@ const City = sequelize.define('City', {
   tableName: 'city',
   timestamps: false,
 });
+
 
 module.exports = City;

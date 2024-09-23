@@ -70,9 +70,6 @@ updateCategory = async (req, res) => {
   }
 };
 
-
-
-// Supprimer une catégorie
 // Supprimer une catégorie
 deleteCategory = async (req, res) => {
   const { id } = req.params;
