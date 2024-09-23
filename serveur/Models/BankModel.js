@@ -26,6 +26,7 @@ const Bank = sequelize.define(
         notEmpty: true,
       },
     },
+
     deleted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
