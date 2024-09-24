@@ -151,6 +151,9 @@ const list_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/li
 const detail_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/detail_deliverynote'))
 const display_deliverynote = React.lazy(() => import('./pages/admin/DeliveryNote/display_deliverynote.js'))
 const display_invoice = React.lazy(() => import('./pages/admin/Invoice/display_invoice'))
+//unauthorized
+const unauthorized = React.lazy(() => import('./pages/Unauthorized.js'))
+
 //
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
@@ -344,6 +347,8 @@ const routes = [
 { path: '/admin/list_invoice', element: list_invoice },
 { path: '/admin/detail_invoice/:id', element: detail_invoice },
 { path: '/admin/display_invoice/:orderID', element: display_invoice },
+//unauthorized
+{ path: '/unauthorized', name: 'Unauthorized', element: unauthorized },
 
   //
   { path: '/forms/validation', name: 'Validation', element: Validation },
