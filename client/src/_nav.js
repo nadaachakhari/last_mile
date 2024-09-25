@@ -159,7 +159,7 @@
 //       {
 //         component: CNavItem,
 //         name: 'Liste des articles',
-//         to: '/fournisseur/list_article',
+//         to: '/list_article',
 //       },
 //       {
 //         component: CNavItem,
@@ -312,7 +312,7 @@ const useNavigation = () => {
             name: 'Les articles',
             icon: <CIcon icon={cilAirplay} customClassName="nav-icon" />,
             items: [
-              { component: CNavItem, name: 'Liste des articles', to: '/fournisseur/list_article' },
+              { component: CNavItem, name: 'Liste des articles', to: '/list_article' },
               { component: CNavItem, name: 'Liste des catégories', to: '/admin/list_category' },
               { component: CNavItem, name: 'Liste de TVA', to: '/admin/list_vat' },
             ],
@@ -327,6 +327,15 @@ const useNavigation = () => {
       : []),
     ...(role === 'Administrateur'
       ? [
+        {
+          component: CNavGroup,
+          name: 'Les articles',
+          icon: <CIcon icon={cilAirplay} customClassName="nav-icon" />,
+          items: [
+            { component: CNavItem, name: 'Liste des articles', to: '/list_article' },
+
+          ],
+        },
           {
             component: CNavGroup,
             name: 'Fournisseurs',

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 import {
   CButton,
   CCard,
@@ -21,8 +22,17 @@ const DetailArticle = () => {
   const [article, setArticle] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchArticle = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Article/${id}`);
@@ -34,14 +44,15 @@ const DetailArticle = () => {
       }
     };
     fetchArticle();
-  }, [id]);
+  }, [id,role, navigate]);
 
   const handleReturn = () => {
-    navigate('/fournisseur/list_article'); // Navigate back to list
+    navigate('/list_article'); // Navigate back to list
   };
 
   return (
     <CRow>
+         {role === 'fournisseur' && ( 
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -74,6 +85,7 @@ const DetailArticle = () => {
           </CCardBody>
         </CCard>
       </CCol>
+    )}
       <CModal visible={showModal} onClose={() => setShowModal(false)}>
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>

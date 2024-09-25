@@ -287,10 +287,10 @@ const routes = [
   { path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
 
   //article
-  { path: '/fournisseur/add_article', element: add_article },
-  { path: '/fournisseur/list_article', element: list_article },
-  { path: '/fournisseur/detail_article/:id', element: detail_article },
-  { path: '/fournisseur/edit_article/:id', name: 'Modifer article', element: edit_article },
+  { path: '/add_article', element: add_article },
+  { path: '/list_article', element: list_article },
+  { path: '/detail_article/:id', element: detail_article },
+  { path: '/edit_article/:id', name: 'Modifer article', element: edit_article },
 
   //client
   { path: '/admin/add_client', element: add_client },

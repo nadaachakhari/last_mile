@@ -20,16 +20,26 @@ import {
   CModalFooter,
   CImage
 } from '@coreui/react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate} from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 const ArticleList = () => {
   const [articles, setArticles] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedArticleId, setSelectedArticleId] = useState(null);
-
+  const navigate = useNavigate();
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur' &&  role !=='Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchArticles = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -49,7 +59,7 @@ const ArticleList = () => {
     };
 
     fetchArticles();
-  }, []);
+  }, [role,navigator]);
 
   const handleSupprimer = (articleId) => {
     setSelectedArticleId(articleId);
@@ -73,13 +83,14 @@ const ArticleList = () => {
 
   return (
     <CRow>
+     
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
             <strong>Liste</strong> <small>des Articles</small>
           </CCardHeader>
           <CCardBody>
-            <Link to={`/fournisseur/add_article`}>
+            <Link to={`/add_article`}>
               <CButton color="primary" className="mb-3">
                 Ajouter Article
               </CButton>
@@ -114,12 +125,12 @@ const ArticleList = () => {
                       )}
                     </CTableDataCell>
                     <CTableDataCell>
-                      <Link to={`/fournisseur/detail_article/${article.id}`}>
+                      <Link to={`/detail_article/${article.id}`}>
                         <CButton size="md" color="info" className="me-2">
                           <IoEyeSharp className="icon-white icon-lg me-7" />
                         </CButton>
                       </Link>
-                      <Link to={`/fournisseur/edit_article/${article.id}`}>
+                      <Link to={`/edit_article/${article.id}`}>
                         <CButton size="md" color="warning" className="me-2">
                           <FaEdit className="icon-white icon-lg me-7" />
                         </CButton>
@@ -140,7 +151,7 @@ const ArticleList = () => {
           </CCardBody>
         </CCard>
       </CCol>
-
+      
       {/* Modal de confirmation de suppression */}
       <CModal visible={showConfirmation} onClose={cancelDelete}>
         <CModalHeader closeButton>

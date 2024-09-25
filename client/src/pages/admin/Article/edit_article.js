@@ -19,7 +19,7 @@ import {
   CFormSelect,
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
-
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 const EditArticle = () => {
   const { id } = useParams(); // Récupérer l'ID de l'article à partir de l'URL
   const [formData, setFormData] = useState({
@@ -39,8 +39,17 @@ const EditArticle = () => {
   const [vats, setVats] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchArticle = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Article/${id}`);
@@ -90,7 +99,7 @@ const EditArticle = () => {
 
     fetchArticle();
     fetchVatsAndCategories();
-  }, [id]);
+  }, [id,role,navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -148,7 +157,7 @@ const EditArticle = () => {
         },
       });
       console.log('Réponse serveur:', response.data);
-      navigate('/fournisseur/list_article');
+      navigate('/list_article');
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
@@ -161,6 +170,7 @@ const EditArticle = () => {
 
   return (
     <CRow>
+               {role === 'fournisseur' && ( 
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -240,6 +250,7 @@ const EditArticle = () => {
           </CCardBody>
         </CCard>
       </CCol>
+               )}
       <CModal visible={showModal} onClose={() => setShowModal(false)}>
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>
