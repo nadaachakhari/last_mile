@@ -1,6 +1,5 @@
-import { element } from 'prop-types'
-import React from 'react'
 
+import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -53,10 +52,10 @@ const list_tiers = React.lazy(() => import('./pages/admin/Tiers/list_tiers'))
 const detail_tiers = React.lazy(() => import('./pages/admin/Tiers/detail_tiers'))
 const edit_tiers = React.lazy(() => import('./pages/admin/Tiers/edit_tiers'))
 //role_users
-const add_role_users = React.lazy(() => import('./pages/admin/users/add_role_users'))
+// const add_role_users = React.lazy(() => import('./pages/admin/users/add_role_users'))
 const liset_role_users = React.lazy(() => import('./pages/admin/users/liset_role_users'))
-const detail_role_users = React.lazy(() => import('./pages/admin/users/detail_role_users'))
-const edit_role_users = React.lazy(() => import('./pages/admin/users/edit_role_users'))
+// const detail_role_users = React.lazy(() => import('./pages/admin/users/detail_role_users'))
+// const edit_role_users = React.lazy(() => import('./pages/admin/users/edit_role_users'))
 //vat
 const add_vat = React.lazy(() => import('./pages/admin/Vat/add_vat'))
 const list_vat = React.lazy(() => import('./pages/admin/Vat/list_vat'))
@@ -212,14 +211,14 @@ const routes = [
   { path: '/admin/edit_type_tiers/:id', name: 'edit_type_tiers', element: edit_type_tiers },
 
   //role users
-  { path: '/admin/add_role_users', name: 'Ajouter Role utilisateur', element: add_role_users },
+  // { path: '/admin/add_role_users', name: 'Ajouter Role utilisateur', element: add_role_users },
   { path: '/admin/list_role_users', name: 'Liste Role utilisateur', element: liset_role_users },
-  {
-    path: '/admin/detail_role_users/:id',
-    name: 'Détail Role utilisateur',
-    element: detail_role_users,
-  },
-  { path: '/admin/edit_role_users/:id', name: 'Edit Role utilisateur', element: edit_role_users },
+  // {
+  //   path: '/admin/detail_role_users/:id',
+  //   name: 'Détail Role utilisateur',
+  //   element: detail_role_users,
+  // },
+  // { path: '/admin/edit_role_users/:id', name: 'Edit Role utilisateur', element: edit_role_users },
 
   //les routes de city
   { path: '/admin/add_city', name: 'Ajouter Ville', element: add_city },
@@ -288,10 +287,10 @@ const routes = [
   { path: '/admin/edit_category/:id', name: 'modifer category', element: edit_category },
 
   //article
-  { path: '/admin/add_article', element: add_article },
-  { path: '/admin/list_article', element: list_article },
-  { path: '/admin/detail_article/:id', element: detail_article },
-  { path: '/admin/edit_article/:id', name: 'modifer article', element: edit_article },
+  { path: '/fournisseur/add_article', element: add_article },
+  { path: '/fournisseur/list_article', element: list_article },
+  { path: '/fournisseur/detail_article/:id', element: detail_article },
+  { path: '/fournisseur/edit_article/:id', name: 'Modifer article', element: edit_article },
 
   //client
   { path: '/admin/add_client', element: add_client },

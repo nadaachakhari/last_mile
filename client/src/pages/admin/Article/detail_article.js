@@ -37,7 +37,7 @@ const DetailArticle = () => {
   }, [id]);
 
   const handleReturn = () => {
-    navigate('/admin/list_article'); // Navigate back to list
+    navigate('/fournisseur/list_article'); // Navigate back to list
   };
 
   return (

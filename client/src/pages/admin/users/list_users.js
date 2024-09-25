@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 import {
     CButton,
     CCard,
@@ -23,13 +24,23 @@ import {
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 const UserList = () => {
     const [users, setUsers] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [idToDelete, setIdToDelete] = useState(null);
-
+    const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+    const navigate = useNavigate()
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchUsers = async () => {
             try {
                 const response = await axios.get('http://localhost:5001/Users/');
@@ -40,7 +51,7 @@ const UserList = () => {
         };
 
         fetchUsers();
-    }, []);
+    },  [role, navigate]);
 
 
     const handleModifier = (id) => {
@@ -73,6 +84,7 @@ const UserList = () => {
 
     return (
         <CRow>
+             {role === 'Administrateur' && ( 
             <CCol xs={12}>
                 <CCard className="mb-4">
                     <CCardHeader>
@@ -135,7 +147,7 @@ const UserList = () => {
                     </CCardBody>
                 </CCard>
             </CCol>
-
+             )}
             {/* Modal de confirmation de suppression */}
             <CModal visible={showConfirmation} onClose={cancelDelete}>
                 <CModalHeader closeButton>

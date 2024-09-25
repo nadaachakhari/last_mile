@@ -46,7 +46,7 @@ const generateUserName = async (name, email) => {
   return userName;
 };
 const createUser = async (req, res) => {
-     const { name, email, registration_number, cin, role_usersID } = req.body;
+    const { name, email, registration_number, cin, role_usersID } = req.body;
     const photo = req.file ? req.file.filename : '';
 
     try {
@@ -55,31 +55,30 @@ const createUser = async (req, res) => {
             return res.status(400).json({ error: 'Invalid RoleUser ID' });
         }
 
-         const user_name = await generateUserName(name, email);
+        // Generate unique user_name
+        const user_name = await generateUserName(name, email);
 
+        // Generate password and hash it
         const password = generatePassword();
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
-          name,
-          user_name,
-          password: hashedPassword,
-          email,
-          photo,
-          registration_number,
-          cin,
-          role_usersID,
-          deleted: false,
+            name,
+            user_name,
+            password: hashedPassword,
+            email,
+            photo,
+            registration_number,
+            cin,
+            role_usersID,
+            deleted: false,
         });
 
-
-        // Generate a JWT token for password reset
+        // Generate JWT token for password reset
         const token = jwt.sign({ id: newUser.id }, 'HEX', { expiresIn: '30m' });
-
-        // Create a reset link
         const resetLink = `http://localhost:3000/#/profil/changer_motpasse/${token}`;
 
-        // Email content
+        // Send the email
         const subject = 'Votre compte a été créé';
         const message = `
             Bonjour ${name},
@@ -94,8 +93,6 @@ const createUser = async (req, res) => {
             Merci,
             L'équipe
         `;
-
-        // Send the email with the password and reset link
         await sendEmail(email, subject, message);
 
         res.status(201).json(newUser);
@@ -104,6 +101,7 @@ const createUser = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 const checkUserName = async (req, res) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
@@ -19,8 +20,17 @@ const EditUser = () => {
     const [roles, setRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState('');
     const navigate = useNavigate();
-
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchRoles = async () => {
             try {
                 const rolesResponse = await axios.get('http://localhost:5001/roleUsers/');
@@ -31,7 +41,7 @@ const EditUser = () => {
         };
 
         fetchRoles();
-    }, []);
+    }, [role, navigate]);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -41,7 +51,7 @@ const EditUser = () => {
                 setFormData({
                     name: user.name,
                     user_name: user.user_name,
-                    password: '', // Do not pre-fill password
+                    password: '', 
                     email: user.email,
                     registration_number: user.registration_number || '',
                     cin: user.cin || '',
@@ -117,6 +127,7 @@ const EditUser = () => {
 
     return (
         <CRow>
+                    {role === 'Administrateur' && ( 
             <CCol xs={12}>
                 <CCard className="mb-4">
                     <CCardHeader>
@@ -136,7 +147,7 @@ const EditUser = () => {
                                 <CFormLabel htmlFor="email">Email</CFormLabel>
                                 <CFormInput type="email" id="email" value={formData.email} onChange={handleChange} required />
                             </CCol>
-                            <CCol md={4}>
+                            <CCol md={6}>
                                 <CFormLabel htmlFor="role_usersID">Rôle</CFormLabel>
                                 <CFormSelect id="role_usersID" value={formData.role_usersID} onChange={handleChange} required>
                                     <option value="">Choisir...</option>
@@ -147,11 +158,7 @@ const EditUser = () => {
                                     ))}
                                 </CFormSelect>
                             </CCol>
-                            <CCol md={2} className="align-self-end">
-                                <Link to={`/admin/add_role_users`}>
-                                    <CButton color="primary">Ajouter Role</CButton>
-                                </Link>
-                            </CCol>
+                          
                             {showFieldsForRole && (
                                 <>
                                     <CCol md={6}>
@@ -184,6 +191,7 @@ const EditUser = () => {
                     </CCardBody>
                 </CCard>
             </CCol>
+                    )}
             <CModal visible={showModal} onClose={() => setShowModal(false)}>
                 <CModalHeader>
                     <CModalTitle>Erreur</CModalTitle>

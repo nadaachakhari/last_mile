@@ -14,15 +14,25 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const DetailUser = () => {
   const { id } = useParams(); // Get ID from URL parameters
   const navigate = useNavigate(); // For navigation
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchUser = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Users/${id}`);
@@ -34,7 +44,7 @@ const DetailUser = () => {
       }
     };
     fetchUser();
-  }, [id]);
+  }, [id,role, navigate]);
 
   const handleReturn = () => {
     navigate('/admin/list_user'); // Navigate back to list
@@ -42,6 +52,7 @@ const DetailUser = () => {
 
   return (
     <CRow>
+          {role === 'Administrateur' && ( 
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -73,6 +84,7 @@ const DetailUser = () => {
           </CCardBody>
         </CCard>
       </CCol>
+          )}
       <CModal visible={showModal} onClose={() => setShowModal(false)}>
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>

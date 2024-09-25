@@ -19,7 +19,7 @@ import {
   CFormSelect,
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
-
+import { useAuth } from '../../../Middleware/Use_Auth'; 
 const AddArticle = () => {
   const [formData, setFormData] = useState({
 
@@ -38,8 +38,17 @@ const AddArticle = () => {
   const [vats, setVats] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchVatsAndCategories = async () => {
       const token = localStorage.getItem('token');
 
@@ -69,7 +78,7 @@ const AddArticle = () => {
     };
 
     fetchVatsAndCategories();
-  }, []);
+  }, [role, navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -135,7 +144,7 @@ const AddArticle = () => {
         },
       });
       console.log('Réponse serveur:', response.data);
-      navigate('/admin/list_article');
+      navigate('/fournisseur/list_article');
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
@@ -148,6 +157,7 @@ const AddArticle = () => {
 
   return (
     <CRow>
+         {role === 'fournisseur' && ( 
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -223,6 +233,7 @@ const AddArticle = () => {
           </CCardBody>
         </CCard>
       </CCol>
+         )}
       <CModal visible={showModal} onClose={() => setShowModal(false)}>
         <CModalHeader>
           <CModalTitle>Erreur</CModalTitle>

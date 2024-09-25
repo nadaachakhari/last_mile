@@ -79,7 +79,7 @@ const ArticleList = () => {
             <strong>Liste</strong> <small>des Articles</small>
           </CCardHeader>
           <CCardBody>
-            <Link to={`/admin/add_article`}>
+            <Link to={`/fournisseur/add_article`}>
               <CButton color="primary" className="mb-3">
                 Ajouter Article
               </CButton>
@@ -114,12 +114,12 @@ const ArticleList = () => {
                       )}
                     </CTableDataCell>
                     <CTableDataCell>
-                      <Link to={`/admin/detail_article/${article.id}`}>
+                      <Link to={`/fournisseur/detail_article/${article.id}`}>
                         <CButton size="md" color="info" className="me-2">
                           <IoEyeSharp className="icon-white icon-lg me-7" />
                         </CButton>
                       </Link>
-                      <Link to={`/admin/edit_article/${article.id}`}>
+                      <Link to={`/fournisseur/edit_article/${article.id}`}>
                         <CButton size="md" color="warning" className="me-2">
                           <FaEdit className="icon-white icon-lg me-7" />
                         </CButton>

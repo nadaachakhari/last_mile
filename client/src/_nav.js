@@ -159,7 +159,7 @@
 //       {
 //         component: CNavItem,
 //         name: 'Liste des articles',
-//         to: '/admin/list_article',
+//         to: '/fournisseur/list_article',
 //       },
 //       {
 //         component: CNavItem,
@@ -312,7 +312,7 @@ const useNavigation = () => {
             name: 'Les articles',
             icon: <CIcon icon={cilAirplay} customClassName="nav-icon" />,
             items: [
-              { component: CNavItem, name: 'Liste des articles', to: '/admin/list_article' },
+              { component: CNavItem, name: 'Liste des articles', to: '/fournisseur/list_article' },
               { component: CNavItem, name: 'Liste des catégories', to: '/admin/list_category' },
               { component: CNavItem, name: 'Liste de TVA', to: '/admin/list_vat' },
             ],
