@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
-
+import { useParams, Link,useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../Middleware/Use_Auth';
 import {
     CButton,
     CCard,
@@ -12,21 +12,31 @@ import {
 } from '@coreui/react';
 
 const DetailBank = () => {
-    const { ref } = useParams(); 
+    const { id } = useParams(); 
     const [bank, setBank] = useState(null); 
-
+    const navigate = useNavigate();
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur') {
+            navigate('/unauthorized');
+          }
         const fetchBank = async () => {
             try {
-                const response = await axios.get(`http://localhost:5001/Bank/${ref}`);
+                const response = await axios.get(`http://localhost:5001/Bank/${id}`);
                 setBank(response.data);
             } catch (error) {
-                console.error(`Erreur lors de la récupération des détails de la banque avec la référence ${ref}:`, error);
+                console.error(`Erreur lors de la récupération des détails de la banque avec la référence ${id}:`, error);
             }
         };
 
         fetchBank();
-    }, [ref]);
+    }, [role,navigate,id]);
 
     if (!bank) {
         return (
@@ -56,7 +66,7 @@ const DetailBank = () => {
                         <p><strong>Référence:</strong> {bank.ref}</p>
                         <p><strong>Valeur:</strong> {bank.value}</p>
                 
-                        <Link to="/admin/list_bank">
+                        <Link to="/list_bank">
                             <CButton color="primary">Retour à la liste</CButton>
                         </Link>
                     </CCardBody>

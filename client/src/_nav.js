@@ -233,7 +233,7 @@
 //       {
 //         component: CNavItem,
 //         name: 'Liste des banques',
-//         to: '/admin/list_bank',
+//         to: '//list_bank',
 //       },
 //     ],
 //   },
@@ -321,7 +321,7 @@ const useNavigation = () => {
             component: CNavGroup,
             name: 'Banque',
             icon: <CIcon icon={cilBank} customClassName="nav-icon" />,
-            items: [{ component: CNavItem, name: 'Liste des banques', to: '/admin/list_bank' }],
+            items: [{ component: CNavItem, name: 'Liste des banques', to: '/list_bank' }],
           },
         ]
       : []),

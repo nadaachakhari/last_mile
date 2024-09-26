@@ -336,10 +336,10 @@ const routes = [
   { path: '/admin/edit_claim/:claimID', element: edit_claim },
 
   //bank
-  { path: 'admin/add_bank', element: add_bank },
-  { path: '/admin/list_bank', element: list_bank },
-  { path: '/admin/detail_bank/:ref', element: detail_bank },
-  { path: '/admin/edit_bank/:ref', name: 'modifer bank', element: edit_bank },
+  { path: '/add_bank', element: add_bank },
+  { path: '/list_bank', element: list_bank },
+  { path: '/detail_bank/:id', element: detail_bank },
+  { path: '/edit_bank/:id', name: 'modifer bank', element: edit_bank },
 
 
 //invoice

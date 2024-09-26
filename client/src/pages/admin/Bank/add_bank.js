@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,7 +17,7 @@ import {
     CModalBody,
     CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AddBank = () => {
     const [formData, setFormData] = useState({
         ref: '',
@@ -26,7 +26,18 @@ const AddBank = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const navigate = useNavigate();
-
+    const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+    useEffect(() => {
+        if (!role) {
+          return; // N'exécutez rien tant que le rôle n'est pas récupéré
+        }
+    
+        console.log('User role:', role);
+    
+        if (role !== 'fournisseur') {
+          navigate('/unauthorized');
+        }  
+    },  [role, navigate])
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
@@ -41,7 +52,7 @@ const AddBank = () => {
             });
             console.log('Réponse serveur:', response.data);
             // Afficher un message de succès ou rediriger l'utilisateur
-            navigate('/admin/list_bank');
+            navigate('/list_bank');
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.message) {
                 setModalMessage(error.response.data.message);

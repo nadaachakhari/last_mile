@@ -17,30 +17,40 @@ import {
     CModalBody,
     CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditBank = () => {
-    const { ref } = useParams(); // Get reference from URL parameters for editing
+    const { id } = useParams(); // Get reference from URL parameters for editing
     const navigate = useNavigate(); // For navigation
     const [formData, setFormData] = useState({
         value: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-
+ 
+    const { role } = useAuth();
     useEffect(() => {
-        if (ref) {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur') {
+            navigate('/unauthorized');
+          }
+        if (id) {
             // If there's a reference, fetch the existing bank details
             const fetchBank = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5001/Bank/${ref}`);
+                    const response = await axios.get(`http://localhost:5001/Bank/${id}`);
                     setFormData(response.data);
                 } catch (error) {
-                    console.error(`Erreur lors de la récupération des détails de la banque avec la référence ${ref}:`, error);
+                    console.error(`Erreur lors de la récupération des détails de la banque avec la référence ${id}:`, error);
                 }
             };
             fetchBank();
         }
-    }, [ref]);
+    }, [id,role,navigate]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -51,8 +61,8 @@ const EditBank = () => {
         e.preventDefault();
         try {
             // Update the existing bank
-            await axios.put(`http://localhost:5001/Bank/${ref}`, formData);
-            navigate('/admin/list_bank'); // Navigate back to list after successful submission
+            await axios.put(`http://localhost:5001/Bank/${id}`, formData);
+            navigate('/list_bank'); // Navigate back to list after successful submission
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.message) {
                 setModalMessage(error.response.data.message);

@@ -15,16 +15,16 @@ const getAllBanks = async (req, res) => {
 };
 
 const getBankById = async (req, res) => {
-  const { ref } = req.params;
+  const { id } = req.params;
   try {
-    const bank = await Bank.findByPk(ref);
+    const bank = await Bank.findByPk(id);
     if (!bank) {
       return res.status(404).json({ message: "Banque non trouvée." });
     }
     res.json(bank);
   } catch (error) {
     console.error(
-      `Erreur lors de la récupération de la banque avec la référence ${ref}:`,
+      `Erreur lors de la récupération de la banque avec la référence ${id}:`,
       error
     );
     res
@@ -52,10 +52,10 @@ const createBank = async (req, res) => {
 };
 
 const updateBank = async (req, res) => {
-  const { ref } = req.params;
+  const { id } = req.params;
   const { value } = req.body;
   try {
-    let bank = await Bank.findByPk(ref);
+    let bank = await Bank.findByPk(id);
     if (!bank) {
       return res.status(404).json({ message: "Banque non trouvée." });
     }
@@ -64,7 +64,7 @@ const updateBank = async (req, res) => {
     res.json(bank);
   } catch (error) {
     console.error(
-      `Erreur lors de la mise à jour de la banque avec la référence ${ref}:`,
+      `Erreur lors de la mise à jour de la banque avec la référence ${id}:`,
       error
     );
     res
@@ -74,19 +74,19 @@ const updateBank = async (req, res) => {
 };
 
 const deleteBank = async (req, res) => {
-  const { ref } = req.params;
+  const { id } = req.params;
   try {
-    let bank = await Bank.findByPk(ref);
+    let bank = await Bank.findByPk(id);
     if (!bank) {
       return res.status(404).json({ message: "Banque non trouvée." });
     }
     await bank.update({ deleted: true });
     res.json({
-      message: `Banque avec la référence ${ref} marquée comme supprimée.`,
+      message: `Banque avec la référence ${id} marquée comme supprimée.`,
     });
   } catch (error) {
     console.error(
-      `Erreur lors de la suppression de la banque avec la référence ${ref}:`,
+      `Erreur lors de la suppression de la banque avec la référence ${id}:`,
       error
     );
     res

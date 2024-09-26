@@ -23,14 +23,24 @@ import {
     CModalFooter,
 } from '@coreui/react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const ListeBank = () => {
     const [banks, setBanks] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [idToDelete, setIdToDelete] = useState(null);
+    const [id, setIdToDelete] = useState(null);
     const navigate = useNavigate();
+    const { role } = useAuth(); 
 
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur') {
+            navigate('/unauthorized');
+          }
         const fetchBanks = async () => {
             try {
                 const response = await axios.get('http://localhost:5001/Bank');
@@ -41,26 +51,26 @@ const ListeBank = () => {
         };
 
         fetchBanks();
-    }, []);
+    }, [role,navigate]);
 
-    const handleModifier = (ref) => {
-        navigate(`/admin/edit_bank/${ref}`); // Navigate to edit page
+    const handleModifier = (id) => {
+        navigate(`/edit_bank/${id}`); // Navigate to edit page
     };
 
-    const handleSupprimer = (ref) => {
-        setIdToDelete(ref); // Stocke la référence de la banque à supprimer
+    const handleSupprimer = (id) => {
+        setIdToDelete(id); // Stocke la référence de la banque à supprimer
         setShowConfirmation(true); // Affiche la popup de confirmation
     };
 
     const confirmDelete = async () => {
         try {
-            await axios.put(`http://localhost:5001/Bank/update_deleted/${idToDelete}`);
+            await axios.put(`http://localhost:5001/Bank/update_deleted/${id}`);
             // Mettre à jour localement en filtrant les éléments supprimés
-            const updatedList = banks.filter((bank) => bank.ref !== idToDelete);
+            const updatedList = banks.filter((bank) => bank.id !== id);
             setBanks(updatedList);
-            console.log(`Banque avec la référence ${idToDelete} marquée comme supprimée.`);
+            console.log(`Banque avec la référence ${id} marquée comme supprimée.`);
         } catch (error) {
-            console.error(`Erreur lors de la suppression de la banque avec la référence ${idToDelete}:`, error);
+            console.error(`Erreur lors de la suppression de la banque avec la référence ${id}:`, error);
         } finally {
             setShowConfirmation(false); // Ferme la popup de confirmation après suppression
         }
@@ -71,7 +81,7 @@ const ListeBank = () => {
     };
 
     const handleAddBank = () => {
-        navigate('/admin/add_bank'); // Navigate to the add page
+        navigate('/add_bank'); // Navigate to the add page
     };
 
     return (
@@ -82,7 +92,7 @@ const ListeBank = () => {
                         <strong>Liste des</strong> <small>banques</small>
                     </CCardHeader>
                     <CCardBody>
-                        <Link to={`/admin/add_bank`}>
+                        <Link to={`/add_bank`}>
                             <CButton color="primary" onClick={handleAddBank} className="mb-3">
                                 Ajouter banque
                             </CButton>
@@ -102,17 +112,17 @@ const ListeBank = () => {
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{bank.value}</CTableDataCell>
                                         <CTableDataCell>
-                                            <Link to={`/admin/detail_bank/${bank.ref}`}>
+                                            <Link to={`/detail_bank/${bank.id}`}>
                                                 <CButton size="md" color="info" className="me-2">
                                                     <IoEyeSharp className="icon-white icon-lg me-7" />
                                                 </CButton>
                                             </Link>
-                                            <Link to={`/admin/edit_bank/${bank.ref}`}>
-                                                <CButton size="md" color="warning" onClick={() => handleModifier(bank.ref)} className="me-2">
+                                            <Link to={`/edit_bank/${bank.id}`}>
+                                                <CButton size="md" color="warning" onClick={() => handleModifier(bank.id)} className="me-2">
                                                     <FaEdit className="icon-white icon-lg me-7" />
                                                 </CButton>
                                             </Link>
-                                            <CButton size="md" color="danger" onClick={() => handleSupprimer(bank.ref)} className="me-2">
+                                            <CButton size="md" color="danger" onClick={() => handleSupprimer(bank.id)} className="me-2">
                                                 <FaTrash className="icon-white icon-lg me-7" />
                                             </CButton>
                                         </CTableDataCell>
