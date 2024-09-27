@@ -18,7 +18,7 @@ const DisplayClaim = () => {
       
           console.log('User role:', role);
       
-          if (role !== 'client') {
+          if (role !== 'client' &&  role !== 'Administrateur') {
             navigate('/unauthorized');
           }  
         const fetchClaimAndOrder = async () => {
