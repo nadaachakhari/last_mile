@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import CIcon from '@coreui/icons-react'
-import {
-  cilUser
-} from '@coreui/icons'
+
 import {
   CCard,
   CCardBody,
@@ -25,12 +23,8 @@ import avatar from '../../../assets/images/logo/logo_last.png';
 import {
   cilPrint,
 } from '@coreui/icons'
+import { useAuth } from '../../../Middleware/Use_Auth';
 
-
-
-const numberToWordsWithDecimals = (number) => {
-  // (Your numberToWordsWithDecimals function implementation here)
-};
 
 const AfficherFacture = () => {
   const { orderID } = useParams();
@@ -39,8 +33,17 @@ const AfficherFacture = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const componentRef = useRef();
-
+  const { role } = useAuth();
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    } 
     const fetchInvoice = async () => {
       try {
         const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
@@ -53,7 +56,7 @@ const AfficherFacture = () => {
     };
 
     fetchInvoice();
-  }, [orderID]);
+  }, [orderID,role,navigate]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,

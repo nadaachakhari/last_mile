@@ -12,14 +12,24 @@ import {
     CFormSelect,
 } from '@coreui/react';
 import { useParams, useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AffecterLivreur = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [deliveryPersons, setDeliveryPersons] = useState([]);
     const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState('');
-
+    const { role } = useAuth();
+  
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          } 
         console.log('Order ID from URL:', id);
 
         const fetchDeliveryPersons = async () => {
@@ -41,7 +51,7 @@ const AffecterLivreur = () => {
         };
 
         fetchDeliveryPersons();
-    }, [id]);
+    }, [id,role,navigate]);
 
     const handleAffecterLivreur = async (e) => {
         e.preventDefault();

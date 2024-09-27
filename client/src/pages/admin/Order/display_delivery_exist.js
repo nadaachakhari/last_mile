@@ -22,7 +22,7 @@ import {
 
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 // Function to convert number to words in French
 const numberToWords = (number) => {
   const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
@@ -58,16 +58,7 @@ const numberToWords = (number) => {
   return convert_thousands(number).trim();
 };
 
-const numberToWordsWithDecimals = (number) => {
-  const parts = number.toString().split('.');
-  const integerPart = parseInt(parts[0], 10);
-  const decimalPart = parts[1] ? parseInt(parts[1], 10) : 0;
 
-  const integerWords = numberToWords(integerPart);
-  const decimalWords = decimalPart > 0 ? numberToWords(decimalPart) : '';
-
-  return decimalWords ? `${integerWords} dinars et ${decimalWords} millimes` : `${integerWords} dinars`;
-};
 
 const DisplayDeliverySellExists = () => {
   const { orderID } = useParams();
@@ -76,8 +67,17 @@ const DisplayDeliverySellExists = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const componentRef = useRef();
-
+  const { role } = useAuth();
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchInvoice = async () => {
       try {
         const response = await axios.post(`http://localhost:5001/DeliverySell/order/${orderID}`);
@@ -90,7 +90,7 @@ const DisplayDeliverySellExists = () => {
     };
 
     fetchInvoice();
-  }, [orderID]);
+  }, [orderID,role,navigate]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,

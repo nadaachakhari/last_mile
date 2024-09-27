@@ -21,7 +21,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilPrint,
 } from '@coreui/icons'
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const numberToWords = (number) => {
   const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
   const teens = ["dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
@@ -73,8 +73,17 @@ const displayInvoiceExists = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const componentRef = useRef();
-
+  const { role } = useAuth();
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchInvoice = async () => {
       try {
         const response = await axios.post(`http://localhost:5001/Invoice/invoiceOrder/${orderID}`);
@@ -87,7 +96,7 @@ const displayInvoiceExists = () => {
     };
 
     fetchInvoice();
-  }, [orderID]);
+  }, [orderID,role,navigate]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link ,useNavigate} from 'react-router-dom';
 import {
     CButton,
     CCard,
@@ -15,12 +15,23 @@ import {
     CTableBody,
     CTableDataCell,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const OrderDetail = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
     const [userRole, setUserRole] = useState('')
+    const { role } = useAuth();
+    const navigate = useNavigate();
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur' &&  role !=='Administrateur' &&  role !=='client') {
+            navigate('/unauthorized');
+          }
         const fetchOrderDetails = async () => {
             const token = localStorage.getItem('token');
            
@@ -44,7 +55,7 @@ const OrderDetail = () => {
         };
 
         fetchOrderDetails();
-    }, [id]);
+    }, [id,role,navigator]);
 
     if (!order) {
         return <div>Loading...</div>;

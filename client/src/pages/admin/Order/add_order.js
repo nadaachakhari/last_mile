@@ -18,7 +18,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react'
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AddOrder = () => {
   const [formData, setFormData] = useState({
     
@@ -45,8 +45,18 @@ const AddOrder = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
   const [showBankDropdown, setShowBankDropdown] = useState(false)
   const navigate = useNavigate()
-
+  const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+  
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    } 
     const fetchCustomers = async () => {
       const token = localStorage.getItem('token')
       if (!token) {
@@ -112,7 +122,7 @@ const AddOrder = () => {
     fetchCustomers()
     fetchPaymentMethods()
     fetchArticles()
-  }, [])
+  }, [role, navigate])
 
   const checkOrderCodeExists = async (code) => {
     try {

@@ -18,7 +18,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditOrder = () => {
   const [formData, setFormData] = useState({
    
@@ -40,8 +40,17 @@ const EditOrder = () => {
   const [dateError, setDateError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const { role } = useAuth();
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur' &&  role !=='Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchOrder = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Order/ordrelines/${id}`);
@@ -84,8 +93,15 @@ const EditOrder = () => {
     };
 
     const fetchPaymentMethods = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        console.error('Token non trouvé dans localStorage.')
+        return
+      }
       try {
-        const response = await axios.get('http://localhost:5001/PaymentMethode/');
+        const response = await axios.get('http://localhost:5001/PaymentMethode/', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         setPaymentMethods(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des méthodes de paiement:', error);
@@ -114,7 +130,7 @@ const EditOrder = () => {
     fetchCustomers();
     fetchPaymentMethods();
     fetchArticles();
-  }, [id]);
+  }, [id,role,navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;

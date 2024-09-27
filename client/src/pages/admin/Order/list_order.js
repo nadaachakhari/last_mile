@@ -20,6 +20,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { IoEyeSharp } from 'react-icons/io5'
 import { FaEdit, FaFileInvoice, FaTimes, FaExclamationTriangle, FaTruck } from 'react-icons/fa'
 import Select from 'react-select'
+import { useAuth } from '../../../Middleware/Use_Auth';
 const OrderList = () => {
   const [orders, setOrders] = useState([])
   const [userRole, setUserRole] = useState('')
@@ -31,7 +32,17 @@ const OrderList = () => {
   const navigate = useNavigate()
   const [selectedSupplier, setSelectedSupplier] = useState(null)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const { role } = useAuth();
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur' &&  role !=='Administrateur' &&  role !=='client' &&  role !=='livreur') {
+      navigate('/unauthorized');
+    }
     const fetchOrders = async () => {
       const token = localStorage.getItem('token')
       const role = localStorage.getItem('role')
@@ -95,7 +106,7 @@ const OrderList = () => {
     fetchCustomers()
     fetchSuppliers()
     fetchOrders()
-  }, [updateKey])
+  }, [updateKey,role,navigate])
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' }

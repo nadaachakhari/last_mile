@@ -18,6 +18,8 @@ import {
     CModalBody,
     CModalFooter,
 } from '@coreui/react';
+import { useAuth } from '../../../Middleware/Use_Auth';
+
 
 const ChangeOrderState = () => {
     const { orderId } = useParams();
@@ -31,7 +33,7 @@ const ChangeOrderState = () => {
     const [modalMessage, setModalMessage] = useState('');
     const navigate = useNavigate();
     const [userRole, setUserRole] = useState('');
-
+    const { role } = useAuth();
     // Transitions d'état valides
     const validTransitions = {
         'en cours de livraison': ['Livraison imminente'],
@@ -49,6 +51,15 @@ const ChangeOrderState = () => {
     };
 
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'livreur') {
+            navigate('/unauthorized');
+          } 
         const fetchOrderAndStates = async () => {
             try {
                 const [orderResponse, statesResponse] = await Promise.all([
@@ -68,7 +79,7 @@ const ChangeOrderState = () => {
         };
 
         fetchOrderAndStates();
-    }, [orderId]);
+    }, [orderId,role,navigate]);
 
     const handleChangeState = async () => {
         const token = localStorage.getItem('token');
