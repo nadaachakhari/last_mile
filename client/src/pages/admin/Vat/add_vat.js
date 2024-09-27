@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,7 +17,7 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AddVat = () => {
   const [formData, setFormData] = useState({
     value: '',
@@ -26,7 +26,18 @@ const AddVat = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const navigate = useNavigate();
+  const { role } = useAuth(); 
+  useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
 
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
+  },  [role, navigate])
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });

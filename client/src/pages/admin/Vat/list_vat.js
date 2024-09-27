@@ -22,7 +22,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const ListVat = () => {
   const [vats, setVats] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -30,8 +30,17 @@ const ListVat = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [vatToDelete, setVatToDelete] = useState(null);
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchVats = async () => {
         const token = localStorage.getItem('token');
       if (!token) {
@@ -53,7 +62,7 @@ const ListVat = () => {
     };
 
     fetchVats();
-  }, []);
+  }, [role,navigate]);
 
   const handleDelete = async () => {
     try {
@@ -102,7 +111,7 @@ const ListVat = () => {
                 {vats.map((vat, index) => (
                   <CTableRow key={vat.id}>
                     <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                    <CTableDataCell>{vat.value}</CTableDataCell>
+                    <CTableDataCell>{vat.value}%</CTableDataCell>
                     <CTableDataCell>
                       <Link to={`/admin/detail_vat/${vat.id}`}>
                         <CButton size="md" color="info" className="me-2">

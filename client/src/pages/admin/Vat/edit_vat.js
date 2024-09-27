@@ -17,7 +17,7 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditVat = () => {
   const { id } = useParams();
   const [formData, setFormData] = useState({
@@ -27,8 +27,17 @@ const EditVat = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchVat = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/vat/${id}`);
@@ -41,7 +50,7 @@ const EditVat = () => {
     };
 
     fetchVat();
-  }, [id]);
+  }, [id,role,navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;

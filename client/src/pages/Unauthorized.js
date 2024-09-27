@@ -6,7 +6,7 @@ const Unauthorized = () => {
   return (
     <div>
       <h1>Accès non autorisé</h1>
-      <p>Votre rôle actuel est : {role}</p>
+      {/* <p>Votre rôle actuel est : {role}</p> */}
     </div>
   );
 };

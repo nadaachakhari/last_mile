@@ -37,7 +37,7 @@ const AddUser = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [roles, setRoles] = useState([])
   const [selectedRole, setSelectedRole] = useState('')
-  const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+  const { role } = useAuth(); 
 
   const navigate = useNavigate()
 

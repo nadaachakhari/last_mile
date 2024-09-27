@@ -10,14 +10,23 @@ import {
   CRow,
   CAlert,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const DetailVat = () => {
   const { id } = useParams();
   const [vat, setVat] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchVat = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/vat/${id}`);
@@ -29,7 +38,7 @@ const DetailVat = () => {
     };
 
     fetchVat();
-  }, [id]);
+  }, [id,role,navigate]);
 
   if (error) {
     return (
@@ -59,7 +68,7 @@ const DetailVat = () => {
             <strong>Détails de la TVA</strong>
           </CCardHeader>
           <CCardBody>
-            <p><strong>Valeur:</strong> {vat.value}</p>
+            <p><strong>Valeur:</strong> {vat.value}%</p>
     
             <Link to="/admin/list_vat">
               <CButton color="primary">Retour à la liste</CButton>
