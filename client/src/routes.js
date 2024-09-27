@@ -201,10 +201,10 @@ const routes = [
   { path: '/forms/layout', name: 'Layout', element: Layout },
   //nouvau
   //routes de type tiers
-  { path: '/admin/add_type_tiers', element: add_type_tiers },
+  // { path: '/admin/add_type_tiers', element: add_type_tiers },
   { path: '/admin/list_type_tiers', element: list_type_tiers },
-  { path: '/admin/detail_type_tiers/:id', element: detail_type_tiers },
-  { path: '/admin/edit_type_tiers/:id', name: 'edit_type_tiers', element: edit_type_tiers },
+  // { path: '/admin/detail_type_tiers/:id', element: detail_type_tiers },
+  // { path: '/admin/edit_type_tiers/:id', name: 'edit_type_tiers', element: edit_type_tiers },
 
   //role users
   // { path: '/admin/add_role_users', name: 'Ajouter Role utilisateur', element: add_role_users },
