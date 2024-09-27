@@ -271,7 +271,7 @@ const handleChangeOrderState = (orderId) => {
                   )}
                     {userRole === 'fournisseur' && (
                     <>
-                     <CTableHeaderCell>Facteur</CTableHeaderCell>
+                     {/* <CTableHeaderCell>Facteur</CTableHeaderCell> */}
                     <CTableHeaderCell>Annule</CTableHeaderCell>
 
                     </>
@@ -375,7 +375,8 @@ const handleChangeOrderState = (orderId) => {
                         </CButton>
                       )}
                     </CTableDataCell>
-                    {userRole === 'fournisseur' && (
+                    {/* facteur pour fournisseurs */}
+                    {/* {userRole === 'fournisseur' && (
                       
                       <CTableDataCell>
 
@@ -392,7 +393,7 @@ const handleChangeOrderState = (orderId) => {
                             <FaFileInvoice className="icon-white icon-lg me-1" />
                           </CButton>
                           </CTableDataCell>
-                            )}
+                            )} */}
                     {userRole === 'fournisseur' && (
                       
                         <CTableDataCell>

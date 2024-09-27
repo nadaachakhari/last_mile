@@ -22,7 +22,7 @@ import {
 
 import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 // Function to convert number to words in French
 const numberToWords = (number) => {
   const ones = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
@@ -76,8 +76,17 @@ const DisplayDeliveryNote = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const componentRef = useRef();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchDeliveries = async () => {
         const token = localStorage.getItem('token')
 
@@ -100,7 +109,7 @@ const DisplayDeliveryNote = () => {
     };
 
     fetchDeliveries();
-  }, [orderID]);
+  }, [orderID,role,navigate]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,

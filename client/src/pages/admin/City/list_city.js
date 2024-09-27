@@ -25,7 +25,6 @@ import {
   CModalFooter,
 } from '@coreui/react';
 import { FaInfoCircle, FaEdit, FaTrash } from 'react-icons/fa';
-import { cilX, cilInfo, cilPencil } from '@coreui/icons';
 import { useAuth } from '../../../Middleware/Use_Auth';
 const ListeCity = () => {
   const [city, setcity] = useState([]);
