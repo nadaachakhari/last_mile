@@ -17,15 +17,25 @@ import {
 } from '@coreui/react';
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
-import { FaExclamationTriangle } from 'react-icons/fa';
-
+import {  useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../Middleware/Use_Auth';
 const ListClaims = () => {
     const [claims, setClaims] = useState([]);
     const [userRole, setUserRole] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
     const [showAlert, setShowAlert] = useState(false);
-
+    const { role } = useAuth();
+    const navigate = useNavigate();
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'client' &&  role !=='Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchClaims = async () => {
             const token = localStorage.getItem('token');
             const role = localStorage.getItem('role');
@@ -47,7 +57,7 @@ const ListClaims = () => {
         };
 
         fetchClaims();
-    }, []);
+    }, [role,navigator]);
 
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };

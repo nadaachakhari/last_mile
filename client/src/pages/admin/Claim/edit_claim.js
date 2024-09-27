@@ -14,7 +14,7 @@ import {
     CFormSelect,
 } from '@coreui/react';
 import { useParams, useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditClaim = () => {
     const { claimID } = useParams();
     const [claim, setClaim] = useState({});
@@ -24,8 +24,17 @@ const EditClaim = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [showAlert, setShowAlert] = useState(false);
     const navigate = useNavigate();
-
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; 
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }  
         const fetchClaim = async () => {
             const token = localStorage.getItem('token');
 
@@ -59,7 +68,7 @@ const EditClaim = () => {
 
         fetchClaim();
         fetchStatuts();
-    }, [claimID]);
+    }, [claimID,role,navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

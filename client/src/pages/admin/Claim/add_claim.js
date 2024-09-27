@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -12,7 +12,7 @@ import {
     CFormLabel,
     CAlert
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AddClaim = () => {
     const [description, setDescription] = useState('');
     const [observation, setObservation] = useState('');
@@ -21,7 +21,18 @@ const AddClaim = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const { orderID } = useParams();
     const navigate = useNavigate();
-console.log(orderID);
+    const { role } = useAuth();
+    useEffect(() => {
+        if (!role) {
+          return; 
+        }
+    
+        console.log('User role:', role);
+    
+        if (role !== 'client') {
+          navigate('/unauthorized');
+        }  
+    },  [role, navigate])
 
     const handleSubmit = async (e) => {
         e.preventDefault();

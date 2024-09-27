@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CCard, CCardBody, CCardHeader, CCol, CRow, CTable, CTableBody, CTableDataCell, CTableHeaderCell, CTableRow, CAlert, CButton } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const DisplayClaim = () => {
     const { orderID } = useParams();
     const [claim, setClaim] = useState(null);
@@ -10,8 +10,17 @@ const DisplayClaim = () => {
     const [status, setStatus] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; 
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'client') {
+            navigate('/unauthorized');
+          }  
         const fetchClaimAndOrder = async () => {
             try {
                 const token = localStorage.getItem('token');
@@ -37,7 +46,7 @@ const DisplayClaim = () => {
         };
 
         fetchClaimAndOrder();
-    }, [orderID]);
+    }, [orderID,role,navigate]);
 
     if (error) {
         return <CAlert color="danger">{error}</CAlert>;
