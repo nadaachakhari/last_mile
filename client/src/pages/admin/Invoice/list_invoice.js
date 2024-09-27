@@ -17,15 +17,24 @@ import {
 } from '@coreui/react';
 import { IoEyeSharp, IoPrintSharp } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
   const [alertMessage, setAlertMessage] = useState('');
 
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchInvoices = async () => {
       const token = localStorage.getItem('token');
 
@@ -45,7 +54,7 @@ const InvoiceList = () => {
     };
 
     fetchInvoices();
-  }, []);
+  }, [role,navigate]);
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };

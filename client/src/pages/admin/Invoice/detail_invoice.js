@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
-import { useParams } from 'react-router-dom';
+import { useParams ,useNavigate} from 'react-router-dom';
 import {
   CCard,
   CCardBody,
@@ -14,12 +14,23 @@ import {
   CTableHead,
   CTableRow
 } from '@coreui/react';
+import { useAuth } from '../../../Middleware/Use_Auth';
 
 const InvoiceDetail = () => {
   const { id } = useParams(); // Get ID from URL
   const [invoice, setInvoice] = useState(null);
-
+  const navigate = useNavigate()
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchInvoiceDetails = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -42,7 +53,7 @@ const InvoiceDetail = () => {
     } else {
       console.error('Invoice ID is undefined');
     }
-  }, [id]);
+  }, [id,role,navigate]);
 
   if (!invoice) {
     return <div>Loading...</div>;
