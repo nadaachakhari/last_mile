@@ -222,10 +222,10 @@ const routes = [
   { path: '/admin/detail_city/:id', name: 'Détail ville', element: detail_city },
   { path: '/admin/edit_city/:id', name: 'Modifer ville', element: edit_city },
   //routes de tiers
-  { path: '/admin/add_tiers', name: 'Ajouter Tier', element: add_tiers },
-  { path: '/admin/list_tiers', name: 'Lister Tier', element: list_tiers },
-  { path: '/admin/detail_tiers/:id', name: 'Détail Tier', element: detail_tiers },
-  { path: '/admin/edit_tiers/:id', name: 'Modifer Tiers', element: edit_tiers },
+  // { path: '/admin/add_tiers', name: 'Ajouter Tier', element: add_tiers },
+  // { path: '/admin/list_tiers', name: 'Lister Tier', element: list_tiers },
+  // { path: '/admin/detail_tiers/:id', name: 'Détail Tier', element: detail_tiers },
+  // { path: '/admin/edit_tiers/:id', name: 'Modifer Tiers', element: edit_tiers },
 
   //routes de vat
   { path: '/admin/add_vat', name: 'Ajouter TVA', element: add_vat },
@@ -265,10 +265,10 @@ const routes = [
   },
 
   //state
-  { path: '/admin/add_state', name: 'Ajouter état', element: add_state },
-  { path: '/admin/list_state', element: list_state },
-  { path: '/admin/detail_state/:id', element: detail_state },
-  { path: '/admin/edit_state/:id', name: 'modifer état', element: edit_state },
+  // { path: '/admin/add_state', name: 'Ajouter état', element: add_state },
+  // { path: '/admin/list_state', element: list_state },
+  // { path: '/admin/detail_state/:id', element: detail_state },
+  // { path: '/admin/edit_state/:id', name: 'modifer état', element: edit_state },
 
   //routes de vat
   { path: '/admin/add_vat', element: add_vat },

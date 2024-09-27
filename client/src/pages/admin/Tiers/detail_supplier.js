@@ -14,15 +14,24 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const DetailSupplier = () => {
   const { id } = useParams(); // Récupère l'ID du fournisseur depuis les paramètres d'URL
   const navigate = useNavigate(); // Pour la navigation
   const [supplier, setSupplier] = useState(null); // État pour stocker les détails du fournisseur
   const [showModal, setShowModal] = useState(false); // État pour contrôler l'affichage du modal
-
+  const { role } = useAuth();
+  
   useEffect(() => {
-    // Fonction pour récupérer les détails du fournisseur à partir de l'API
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchSupplier = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Tier/supplier/${id}`);
@@ -33,7 +42,7 @@ const DetailSupplier = () => {
     };
 
     fetchSupplier(); // Appel de la fonction au chargement du composant
-  }, [id]);
+  }, [id,role,navigate]);
 
   if (!supplier) {
     return (

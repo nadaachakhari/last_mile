@@ -22,14 +22,23 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const ListSupplier = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [idToDelete, setIdToDelete] = useState(null);
     const navigate = useNavigate();
-
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; 
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchSuppliers = async () => {
             try {
                 const response = await axios.get('http://localhost:5001/Tier/supplier');
@@ -40,7 +49,7 @@ const ListSupplier = () => {
         };
 
         fetchSuppliers();
-    }, []);
+    }, [role,navigate]);
 
     // Fonction pour gérer la suppression d'un fournisseur
     const handleSupprimer = async (id) => {

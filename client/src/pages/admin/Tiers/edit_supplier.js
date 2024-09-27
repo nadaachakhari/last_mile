@@ -18,7 +18,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const EditSupplier = () => {
   const { id } = useParams(); // Récupérer l'ID du fournisseur à éditer depuis les paramètres d'URL
   const navigate = useNavigate(); // Pour la navigation
@@ -40,9 +40,18 @@ const EditSupplier = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [typeSuppliers, setTypeSuppliers] = useState([]); // État pour stocker la liste des types de fournisseurs
   const [cities, setCities] = useState([]); // État pour stocker la liste des villes
-
+  const { role } = useAuth();
   // Utiliser useEffect pour récupérer les détails du fournisseur à éditer
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     const fetchSupplierDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Tier/supplier/${id}`);
@@ -74,7 +83,7 @@ const EditSupplier = () => {
     fetchSupplierDetails();
     fetchTypeSuppliers();
     fetchCities();
-  }, [id]);
+  }, [id,role,navigate]);
 
   // Gérer les modifications du formulaire
   const handleChange = (e) => {

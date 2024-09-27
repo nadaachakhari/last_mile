@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link,useNavigate } from 'react-router-dom';
 import {
     CCard,
     CCardBody,
@@ -9,12 +9,22 @@ import {
     CRow,
     CButton,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const DetailClient = () => {
     const { id } = useParams(); 
     const [client, setClient] = useState(null);
-
+    const { role } = useAuth();
+    const navigate = useNavigate()
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur') {
+            navigate('/unauthorized');
+          }
         const fetchClient = async () => {
             try {
                 const response = await axios.get(`http://localhost:5001/Tier/clients/${id}`);
@@ -25,7 +35,7 @@ const DetailClient = () => {
         };
 
         fetchClient(); 
-    }, [id]);
+    }, [id,role,navigate]);
 
     if (!client) {
         return (

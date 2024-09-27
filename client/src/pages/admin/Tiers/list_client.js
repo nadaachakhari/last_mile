@@ -17,11 +17,20 @@ import {
 import { Link } from 'react-router-dom';
 import { IoEyeSharp } from 'react-icons/io5';
 import { FaEdit } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const ClientList = () => {
     const [clients, setClients] = useState([]);
-
+    const { role } = useAuth();
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'fournisseur') {
+            navigate('/unauthorized');
+          }
         const fetchClients = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -39,7 +48,7 @@ const ClientList = () => {
         };
 
         fetchClients();
-    }, []);
+    }, [role,navigator]);
 
     const handleModifier = (id) => {
         console.log(`Modifier client avec id: ${id}`);

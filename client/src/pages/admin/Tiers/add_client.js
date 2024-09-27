@@ -19,7 +19,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react'
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const AddClient = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -37,8 +37,19 @@ const AddClient = () => {
   const [cities, setCities] = useState([])
   const [userDetails, setUserDetails] = useState(null)
   const navigate = useNavigate()
-
+  const { role } = useAuth(); 
   useEffect(() => {
+  
+      if (!role) {
+        return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      }
+  
+      console.log('User role:', role);
+  
+      if (role !== 'fournisseur') {
+        navigate('/unauthorized');
+      }
+ 
     const fetchCities = async () => {
       try {
         const response = await axios.get('http://localhost:5001/City/')
@@ -47,11 +58,6 @@ const AddClient = () => {
         console.error('Erreur lors de la récupération des villes:', error)
       }
     }
-
-    fetchCities()
-  }, [])
-
-  useEffect(() => {
     const updateUserName = async () => {
       const userName = await generateClientUserName(formData.name, formData.email)
       setFormData((prev) => ({ ...prev, user_name: userName }))
@@ -60,7 +66,8 @@ const AddClient = () => {
     if (formData.name && formData.email) {
       updateUserName()
     }
-  }, [formData.name, formData.email])
+    fetchCities()
+  }, [role,navigate,formData.name, formData.email])
 
   const handleChange = (e) => {
     const { id, value } = e.target

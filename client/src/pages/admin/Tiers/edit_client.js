@@ -18,7 +18,7 @@ import {
   CModalFooter,
   CFormSelect,
 } from '@coreui/react'
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const EditClient = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -37,8 +37,18 @@ const EditClient = () => {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [cities, setCities] = useState([])
-
+  const { role } = useAuth();
+ 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchClientDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:5001/Tier/${id}`)
@@ -62,7 +72,7 @@ const EditClient = () => {
 
     fetchClientDetails()
     fetchCities()
-  }, [id])
+  }, [id,role,navigate])
 
   const handleChange = (e) => {
     const { id, value } = e.target
