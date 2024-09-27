@@ -18,7 +18,7 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const AddCity = () => {
   const [formData, setFormData] = useState({
     value: '',
@@ -26,8 +26,19 @@ const AddCity = () => {
   });
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const navigate = useNavigate(); // Initialisation de navigate à partir de useNavigate()
+  const navigate = useNavigate();
+  const { role } = useAuth(); 
+  useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
 
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
+  },  [role, navigate])
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });

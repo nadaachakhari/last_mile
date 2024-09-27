@@ -17,10 +17,12 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditCity = () => {
   const { id } = useParams(); // Get ID from URL parameters for editing
   const navigate = useNavigate(); // For navigation
+  const { role } = useAuth(); 
+  
   const [formData, setFormData] = useState({
     value: '',
     deleted: '1',
@@ -29,6 +31,15 @@ const EditCity = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'Administrateur') {
+      navigate('/unauthorized');
+    }
     if (id) {
       // If there's an ID, fetch the existing city details
       const fetchcity = async () => {
@@ -41,7 +52,7 @@ const EditCity = () => {
       };
       fetchcity();
     }
-  }, [id]);
+  }, [id,role,navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
