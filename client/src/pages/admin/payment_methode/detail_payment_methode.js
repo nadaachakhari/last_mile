@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+
+import { useParams, Link ,useNavigate} from 'react-router-dom';
 import {
     CButton,
     CCard,
@@ -9,11 +10,22 @@ import {
     CCol,
     CRow,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth'
 const DetailPaymentMethod = () => {
     const { id } = useParams(); 
     const [paymentMethod, setPaymentMethod] = useState(null); 
+    const navigate = useNavigate();
+    const { role } = useAuth(); 
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchPaymentMethod = async () => {
             try {
                 const response = await axios.get(`http://localhost:5001/PaymentMethode/${id}`);
@@ -24,7 +36,7 @@ const DetailPaymentMethod = () => {
         };
 
         fetchPaymentMethod();
-    }, [id]); 
+    }, [id,role,navigate]); 
 
     if (!paymentMethod) {
         return (

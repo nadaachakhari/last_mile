@@ -24,14 +24,23 @@ import {
     CModalFooter,
 } from '@coreui/react';
 import { FaInfoCircle, FaEdit, FaTrash } from 'react-icons/fa';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const ListePaymentMethods = () => {
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [idToDelete, setIdToDelete] = useState(null);
     const navigate = useNavigate();
-
+    const { role } = useAuth(); 
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         const fetchPaymentMethods = async () => {
             const token = localStorage.getItem('token');
 
@@ -55,7 +64,7 @@ const ListePaymentMethods = () => {
         };
 
         fetchPaymentMethods();
-    }, []);
+    }, [role,navigate]);
 
     const handleDetail = async (id) => {
         try {

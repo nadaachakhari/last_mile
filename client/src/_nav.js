@@ -289,24 +289,8 @@ const useNavigation = () => {
             icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
             items: [{ component: CNavItem, name: 'Liste des clients', to: '/admin/list_client' }],
           },
-          // {
-          //   component: CNavGroup,
-          //   name: 'Ville',
-          //   icon: <CIcon icon={cilGlobeAlt} customClassName="nav-icon" />,
-          //   items: [{ component: CNavItem, name: 'Liste des villes', to: '/admin/list_city' }],
-          // },
-          {
-            component: CNavGroup,
-            name: 'Méthode de paiement',
-            icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
-            items: [
-              {
-                component: CNavItem,
-                name: 'Liste des méthodes de paiement',
-                to: '/admin/list_payment_methode',
-              },
-            ],
-          },
+       
+      
           {
             component: CNavGroup,
             name: 'Les articles',
@@ -376,6 +360,18 @@ const useNavigation = () => {
             name: 'Les réclamations',
             icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
             items: [{ component: CNavItem, name: 'Liste des réclamations', to: '/admin/list_claim' }],
+          },
+          {
+            component: CNavGroup,
+            name: 'Méthode de paiement',
+            icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
+            items: [
+              {
+                component: CNavItem,
+                name: 'Liste des méthodes de paiement',
+                to: '/admin/list_payment_methode',
+              },
+            ],
           },
         ]
       : []),

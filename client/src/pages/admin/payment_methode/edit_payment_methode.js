@@ -17,6 +17,7 @@ import {
     CModalBody,
     CModalFooter,
 } from '@coreui/react';
+import { useAuth } from '../../../Middleware/Use_Auth';
 
 const EditPaymentMethod = () => {
     const { id } = useParams();
@@ -27,8 +28,17 @@ const EditPaymentMethod = () => {
     });
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-
+    const { role } = useAuth(); 
     useEffect(() => {
+        if (!role) {
+            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          }
+      
+          console.log('User role:', role);
+      
+          if (role !== 'Administrateur') {
+            navigate('/unauthorized');
+          }
         if (id) {
             const fetchPaymentMethod = async () => {
                 try {
@@ -40,7 +50,7 @@ const EditPaymentMethod = () => {
             };
             fetchPaymentMethod();
         }
-    }, [id]);
+    }, [id,role,navigate]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;

@@ -29,7 +29,7 @@ const OrderDetail = () => {
       
           console.log('User role:', role);
       
-          if (role !== 'fournisseur' &&  role !=='Administrateur' &&  role !=='client') {
+          if (role !== 'fournisseur' &&  role !=='Administrateur' &&  role !=='client' && role !='livreur') {
             navigate('/unauthorized');
           }
         const fetchOrderDetails = async () => {
