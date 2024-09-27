@@ -23,14 +23,23 @@ import {
 } from '@coreui/react';
 import { FaInfoCircle, FaEdit, FaTrash } from 'react-icons/fa';
 import { IoEyeSharp } from 'react-icons/io5';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const ListeCategory = () => {
   const [categories, setCategories] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const navigate = useNavigate();
-
+  const { role } = useAuth(); 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     const fetchCategories = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -50,7 +59,7 @@ const ListeCategory = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [role,navigate]);
 
   const handleDetail = async (idCategory) => {
     try {

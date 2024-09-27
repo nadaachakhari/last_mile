@@ -17,10 +17,11 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react';
-
+import { useAuth } from '../../../Middleware/Use_Auth';
 const EditCategory = () => {
   const { id } = useParams(); // Get ID from URL parameters for editing
   const navigate = useNavigate(); // For navigation
+  const { role } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     deleted: false,
@@ -29,6 +30,15 @@ const EditCategory = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
+    if (!role) {
+      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+    }
+
+    console.log('User role:', role);
+
+    if (role !== 'fournisseur') {
+      navigate('/unauthorized');
+    }
     if (id) {
       // If there's an ID, fetch the existing category details
       const fetchCategory = async () => {
@@ -41,7 +51,7 @@ const EditCategory = () => {
       };
       fetchCategory();
     }
-  }, [id]);
+  }, [id,role,navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
