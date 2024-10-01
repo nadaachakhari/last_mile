@@ -8,12 +8,10 @@ import './scss/style.scss'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
-
-// Pages
-const Login = React.lazy(() => import('./views/pages/login/Login'))
+//Register pour fournisseurs
 const Register = React.lazy(() => import('./pages/admin/Tiers/supplier_registration.js'))
-const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
-const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
+
+
 //authenticate
 
 const Authenticate = React.lazy(() => import('./pages/admin/Authenticate/authenticate'))
@@ -48,10 +46,9 @@ const App = () => {
         }
       >
         <Routes>
-          <Route exact path="/login" name="Login Page" element={<Login />} />
+         
           <Route exact path="/register" name="Register Page" element={<Register />} />
-          <Route exact path="/404" name="Page 404" element={<Page404 />} />
-          <Route exact path="/500" name="Page 500" element={<Page500 />} />
+       
           <Route path="*" name="Home" element={<DefaultLayout />} />
           <Route exact path="/authenticate" name="Login Page" element={<Authenticate />} />
           <Route exact path="/request_reset_password" name="" element={<Request_reset_password />} />

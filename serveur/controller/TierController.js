@@ -458,6 +458,10 @@ const getAllClientsForSupplier = async (req, res) => {
 
 //Supplier
 
+
+
+
+
 const generatePassword = () => {
   const chars =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -491,10 +495,9 @@ async function generateSupplierCode() {
   const formattedNumber = newSupplierNumber.toString().padStart(3, '0');
   return `fournisseur${formattedNumber}`;
 }
-const createSupplier = async (req, res) => {
+const createSupplierParAdministateur = async (req, res) => {
   const {
     name,
-   
     address,
     postal_code,
     country,
@@ -522,7 +525,7 @@ const createSupplier = async (req, res) => {
     const existingSupplier = await Tiers.findOne({ where: { email } });
     if (existingSupplier) {
       const emailSubject = "Bienvenue chez nous !";
-      const emailText = `Bonjour ${existingSupplier.name},\n\nBienvenue chez nous !\n\nCordialement,\nVotre équipe`;
+      const emailText = `Bonjour ${existingSupplier.name},\n\nVotre inscription est déjà existante.\n\nCordialement,\nVotre équipe`;
 
       // Envoi d'un email au fournisseur existant
       await sendEmail(existingSupplier.email, emailSubject, emailText);
@@ -533,7 +536,6 @@ const createSupplier = async (req, res) => {
     // Generate unique username for supplier
     const user_name = await generateUserName(name, email);
     const code = await generateSupplierCode();
-    // Génération et hashage du mot de passe
     const generatedPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
@@ -555,12 +557,13 @@ const createSupplier = async (req, res) => {
       block: false,
       password: hashedPassword,
       deleted: false,
+      activate: 1, // Activation par défaut
       createdBy, // Assigner createdBy à null
     });
 
-    // Envoi d'un email au nouveau fournisseur avec ses informations de connexion
-    const emailSubject = "Bienvenue sur notre plateforme !";
-    const emailText = `Bonjour ${newSupplier.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newSupplier.user_name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
+    // Envoi d'un email au nouveau fournisseur
+    const emailSubject = "Inscription réussie - En attente de confirmation";
+    const emailText = `Bonjour ${newSupplier.name},\n\nVotre inscription a été réalisée avec succès.\n\nVotre login : ${newSupplier.user_name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
 
     // Envoi de l'email
     await sendEmail(newSupplier.email, emailSubject, emailText);
@@ -571,6 +574,87 @@ const createSupplier = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+const createSupplier = async (req, res) => {
+  const {
+    name,
+    address,
+    postal_code,
+    country,
+    phone,
+    mobile,
+    fax,
+    email,
+    cityID,
+    tax_identification_number,
+  } = req.body;
+  const createdBy = null; // Assigner createdBy à null pour les livreurs
+
+  try {
+    // Vérifiez si le type "fournisseur" existe
+    const typeSupplier = await TypeTiers.findOne({
+      where: { name: "fournisseur", deleted: false },
+    });
+    if (!typeSupplier) {
+      return res
+        .status(400)
+        .json({ error: 'Type "fournisseur" does not exist' });
+    }
+
+    // Vérifiez si l'email existe déjà
+    const existingSupplier = await Tiers.findOne({ where: { email } });
+    if (existingSupplier) {
+      const emailSubject = "Bienvenue chez nous !";
+      const emailText = `Bonjour ${existingSupplier.name},\n\nVotre inscription est déjà existante.\n\nCordialement,\nVotre équipe`;
+
+      // Envoi d'un email au fournisseur existant
+      await sendEmail(existingSupplier.email, emailSubject, emailText);
+
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Generate unique username for supplier
+    const user_name = await generateUserName(name, email);
+    const code = await generateSupplierCode();
+    const generatedPassword = generatePassword();
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    // Création du nouveau fournisseur
+    const newSupplier = await Tiers.create({
+      name,
+      user_name,
+      type_tiersID: typeSupplier.id,
+      code,
+      address,
+      postal_code,
+      country,
+      phone,
+      mobile,
+      fax,
+      email,
+      cityID,
+      tax_identification_number,
+      block: false,
+      password: hashedPassword,
+      deleted: false,
+      activate: 0, // Activation par défaut
+      createdBy, // Assigner createdBy à null
+    });
+
+    // Envoi d'un email au nouveau fournisseur
+    const emailSubject = "Inscription réussie - En attente de confirmation";
+    const emailText = `Bonjour ${newSupplier.name},\n\nVotre inscription a été réalisée avec succès.\n\nVotre login : ${newSupplier.user_name}\nVotre mot de passe : ${generatedPassword}\n\nVotre compte est en attente de confirmation par un administrateur. Vous recevrez une notification une fois que votre compte sera activé.\n\nCordialement,\nVotre équipe`;
+
+    // Envoi de l'email
+    await sendEmail(newSupplier.email, emailSubject, emailText);
+
+    res.status(201).json({ newSupplier, generatedPassword });
+  } catch (error) {
+    console.error("Erreur lors de la création du fournisseur:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
 
 const uploadSupplier = async (req, res) => {
   const { id } = req.params;
@@ -697,6 +781,33 @@ const deleteSupplier = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const activateDeactivateSupplier = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      // Trouver le fournisseur par ID
+      const supplier = await Tiers.findByPk(id);
+      if (!supplier) {
+          return res.status(404).json({ message: "Fournisseur non trouvé." });
+      }
+
+      // Inverser le statut d'activation
+      supplier.activate = !supplier.activate;
+      await supplier.save();
+
+      res.status(200).json({
+          message: `Le statut d'activation du fournisseur a été mis à jour avec succès.`,
+          supplier: {
+              id: supplier.id,
+              activate: supplier.activate,
+          },
+      });
+  } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut d\'activation:', error);
+      res.status(500).json({ message: "Erreur lors de la mise à jour du fournisseur." });
+  }
+};
+
 const updateUserAndTiers = async (userId, tiersData, userData) => {
   try {
     // Start a transaction
@@ -770,11 +881,13 @@ module.exports = {
   getAllClientsForSupplier,
 
   //crud fournisseur
-  createSupplier,
+  createSupplierParAdministateur,
   uploadSupplier,
   getAllSuppliers,
   getSupplierById,
   deleteSupplier,
+  createSupplier,
+  activateDeactivateSupplier,
 //updateUserAndTiers
 updateUserAndTiers,
 getUserProfile,

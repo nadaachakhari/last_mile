@@ -35,7 +35,6 @@ const AddClient = () => {
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [cities, setCities] = useState([])
-  const [userDetails, setUserDetails] = useState(null)
   const navigate = useNavigate()
   const { role } = useAuth(); 
   useEffect(() => {

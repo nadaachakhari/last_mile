@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode }from 'jwt-decode';
 
 import {
   CButton,
@@ -20,6 +20,7 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import avatar from '../../../assets/images/pages/login/Livraison6.png';
+
 const Authenticate = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +66,12 @@ const Authenticate = () => {
           navigate('/dashboard');
       }
     } catch (error) {
-      setError('Login failed. Please check your username and password.');
+      // Check if the error contains a message from the backend related to activation
+      if (error.response && error.response.data.error) {
+        setError(error.response.data.error); // Display the error message from the backend
+      } else {
+        setError('Login failed. Please check your username and password.');
+      }
     }
   };
 
@@ -74,7 +80,7 @@ const Authenticate = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={3}>
-            <img src={avatar}  style={{ width: '280px', height: '330px', marginLeft: '0px' }}  />
+            <img src={avatar} style={{ width: '280px', height: '330px', marginLeft: '0px' }} />
           </CCol>
           <CCol md={6}>
             <CCardGroup>
@@ -83,7 +89,7 @@ const Authenticate = () => {
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />

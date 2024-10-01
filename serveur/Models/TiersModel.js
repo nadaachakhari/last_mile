@@ -127,6 +127,11 @@ const Tiers = sequelize.define(
         key: "id",
       },
     },
+    activate: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     tableName: "tiers",
