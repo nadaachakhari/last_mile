@@ -230,9 +230,11 @@ const Register = () => {
         </CModalHeader>
         <CModalBody>Votre inscription a été enregistrée avec succès. Veuillez attendre la confirmation de l'administrateur.</CModalBody>
         <CModalFooter>
-          <CButton color="primary" onClick={() => setShowSuccessModal(false)}>
+        
+          <CButton color="primary" onClick={() => navigate('/authenticate')}>
             Fermer
           </CButton>
+        
         </CModalFooter>
       </CModal>
     </div>

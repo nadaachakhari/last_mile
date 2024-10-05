@@ -18,6 +18,8 @@ const {
   deleteSupplier,
   updateUserAndTiers,
   getUserProfile,
+  getSupplierById ,
+
   activateDeactivateSupplier,
   checkUserName
   //getOrdersByCustomer
