@@ -24,7 +24,7 @@ const InvoiceRoute = require('./routes/InvoiceRoute');
 const StatusClaimRoute = require('./routes/StatutClaimRoute');
 const ClaimRoute = require('./routes/ClaimRoute');
 const BankRoute = require('./routes/BankRoute');
-
+const DashboardRoute = require ('./routes/DashboardRoute');
 
 // Configuration de multer pour le stockage des images
 const storage = multer.diskStorage({
@@ -94,6 +94,7 @@ app.use('/Article', ArticleRoutes);
 app.use('/StatutClaim', StatusClaimRoute);
 app.use('/Claim', ClaimRoute);
 app.use('/Bank', BankRoute);
+app.use('/Dashboard',DashboardRoute);
 
 app.use('/uploads', express.static(path.join(__dirname, '../client/src/assets/images')));
 app.use('/users_uploads', express.static(path.join(__dirname, '../client/src/assets/images/users')));
