@@ -238,7 +238,6 @@ const handleChangeOrderState = (orderId) => {
         />
       )}
 
-      {/* Show customer search when the role is 'Fournisseur' */}
       { userRole === 'Administrateur' &&(
         <Select
           options={customers}
