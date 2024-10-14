@@ -5,11 +5,10 @@ const PaymentMethod = require('../Models/PaymentMethodModel');
 
 
 const getAllPaymentMethods = async (req, res) => {
-    const id_supplier = req.user.id; // Récupérer l'id du fournisseur connecté
-
+    
     try {
         const paymentMethods = await PaymentMethod.findAll({
-            where: { id_supplier,
+            where: {
                 deleted: false },
         });
         res.json(paymentMethods);

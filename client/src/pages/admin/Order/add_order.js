@@ -76,15 +76,8 @@ const AddOrder = () => {
     }
 
     const fetchPaymentMethods = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        console.error('Token non trouvé dans localStorage.')
-        return
-      }
-      try {
-        const response = await axios.get('http://localhost:5001/PaymentMethode/', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+           try {
+        const response = await axios.get('http://localhost:5001/PaymentMethode/')
         setPaymentMethods(response.data)
       } catch (error) {
         console.error('Erreur lors de la récupération des méthodes de paiement:', error)
