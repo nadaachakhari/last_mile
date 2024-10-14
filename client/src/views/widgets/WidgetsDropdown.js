@@ -17,10 +17,11 @@ import { cilArrowBottom, cilArrowTop, cilOptions,cilUser  } from '@coreui/icons'
 import axios from 'axios'; // Utiliser axios ou fetch pour appeler l'API
 
 const WidgetsDropdown = (props) => {
+  const [articleCount, setArticleCount] = useState(0);
   const [clientCount, setClientCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [supplierCount, setSupplierCount] = useState(0); // Stocker le nombre de fournisseurs
+  const [supplierCount, setSupplierCount] = useState(0); 
   const widgetChartRef1 = useRef();
+  const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -61,9 +62,35 @@ const WidgetsDropdown = (props) => {
         setLoading(false);
       }
     };
+    const fetchArticleCount = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/Dashboard/count-articles', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+    
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des articles');
+        }
+    
+        const data = await response.json();
+        console.log('Article count data:', data); // Pour vérifier la réponse
+        // Assurez-vous d'utiliser la bonne clé pour accéder au nombre d'articles
+        setArticleCount(data.ArticleCount || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error('Erreur :', error);
+        setLoading(false);
+      }
+    };
+    
+    
+    
     fetchClientCount();
-
+ 
     fetchSupplierCount();
+    fetchArticleCount ();
   }, []);
   
   const widgetChartRef2 = useRef(null)
@@ -157,25 +184,23 @@ const WidgetsDropdown = (props) => {
         }
         chart={
           <div className="position-absolute top-50 end-0 translate-middle-y p-3">
-            {/* Ajout d'une icône avec un style subtile et taille ajustée */}
             <CIcon icon={cilUser} size="3xl" className="opacity-75 text-white" />
           </div>
         }
       />
     </CCol>
     )}
+ {userRole === 'fournisseur' && (
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
           value={
             <>
-              2.49%{' '}
-              <span className="fs-6 fw-normal">
-                (84.7% <CIcon icon={cilArrowTop} />)
-              </span>
+              {articleCount} {' '} 
+              <span className="fs-6 fw-normal">Articles</span>
             </>
           }
-          title="Conversion Rate"
+          title="Nombre d'Articles"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
@@ -197,7 +222,7 @@ const WidgetsDropdown = (props) => {
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                   {
-                    label: 'My First dataset',
+                    label: 'Articles',
                     backgroundColor: 'rgba(255,255,255,.2)',
                     borderColor: 'rgba(255,255,255,.55)',
                     data: [78, 81, 80, 45, 34, 12, 40],
@@ -236,6 +261,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
+    )}
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="danger"
