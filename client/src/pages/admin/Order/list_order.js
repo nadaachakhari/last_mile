@@ -310,9 +310,13 @@ const handleChangeOrderState = (orderId) => {
       order.state.value === 'Commande annulée'
         ? 'red'
         : order.state.value === 'en cours de livraison'
+        ? 'orange'
+        : order.state.value === 'Livraison effectuée'
         ? 'green'
+         : order.state.value === 'Livraison imminente'
+        ? 'yellow'
         : 'white',
-    color: 'black', // Pour que le texte reste lisible sur fond coloré
+    color: 'black', 
   }}
 >
   {order.state.value}
