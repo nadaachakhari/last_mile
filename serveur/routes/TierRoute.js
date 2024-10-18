@@ -19,7 +19,7 @@ const {
   updateUserAndTiers,
   getUserProfile,
   getSupplierById ,
-
+  deleteclient,
   activateDeactivateSupplier,
   checkUserName
   //getOrdersByCustomer
@@ -50,6 +50,8 @@ router.get('/supplier/:id', getSupplierById);
 router.put('/clients/:id', updateClient);
 router.get('/clients/:id', getClientById)
 router.put('/update_deleted_Supplier/:id', deleteSupplier);
+router.put('/update_deleted_client/:id', deleteclient);
+
 //
 router.get('/:id', getTierById);
 router.put('/:id', updateTier);

@@ -120,8 +120,8 @@ const Register = () => {
             <CCard className="mx-4">
               <CCardBody className="p-4">
                 <CForm onSubmit={handleSubmit}>
-                  <h1>Register</h1>
-                  <p className="text-medium-emphasis">Create your account</p>
+                  <h1>Registre</h1>
+                  <p className="text-medium-emphasis">Devenir fournisseur chez notre plate-forme</p>
 
                   <CInputGroup className="mb-3">
                     <CInputGroupText>

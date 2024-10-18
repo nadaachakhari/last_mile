@@ -1,6 +1,7 @@
 const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const   Articles =require('../Models/ArticleModel');
+const Order=require('../Models/OrderModel');
 // afficher pour fournisseur
 const countClientsBySupplier = async (req, res) => {
   try {
@@ -36,6 +37,28 @@ const countArticleBySupplier = async (req, res) => {
       res.status(500).json({ message: 'Erreur lors du comptage des Article.', error: error.message });
   }
 };
+const totalCommandsBySupplier = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ message: 'User not authenticated or invalid.' });
+  }
+
+  const id_supplier = req.user.id;
+
+    const totalCommands = await Order.count({
+      where: {
+        supplierID: id_supplier,  // Filtrer par supplierID
+      },
+    });
+
+    res.json({ totalCommands });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des commandes:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des commandes' });
+  }
+};
+
+
 //afficher pour admin 
 const countSuppliers = async (req, res) => {
   try {
@@ -58,4 +81,4 @@ const countSuppliers = async (req, res) => {
 
   
 
-module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier };
+module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier };

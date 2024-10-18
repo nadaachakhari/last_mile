@@ -66,9 +66,8 @@ const Authenticate = () => {
           navigate('/dashboard');
       }
     } catch (error) {
-      // Check if the error contains a message from the backend related to activation
       if (error.response && error.response.data.error) {
-        setError(error.response.data.error); // Display the error message from the backend
+        setError(error.response.data.error);
       } else {
         setError('Login failed. Please check your username and password.');
       }
@@ -84,18 +83,19 @@ const Authenticate = () => {
           </CCol>
           <CCol md={6}>
             <CCardGroup>
-              <CCard className="p-4">
+              {/* Adjusted width of the login card */}
+              <CCard className="p-4" style={{ width: '100%' }}>
                 <CCardBody>
                   <CForm onSubmit={handleLogin}>
-                    <h1>Login</h1>
-                    <p className="text-body-secondary">Sign In to your account</p>
+                    <h1>Se connecter</h1>
+                    <p className="text-body-secondary">Connectez-vous à votre compte</p>
                     {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
+                        placeholder="Nom d'utilisateur"
                         autoComplete="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -107,22 +107,23 @@ const Authenticate = () => {
                       </CInputGroupText>
                       <CFormInput
                         type="password"
-                        placeholder="Password"
+                        placeholder="Mot de passe"
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
                     <CRow>
+                      {/* Adjusted width for login button and forgot password link to be on the same row */}
                       <CCol xs={6}>
-                        <CButton type="submit" color="primary" className="px-4">
-                          Login
+                        <CButton type="submit" color="primary" className="w-100">
+                          Se connecter
                         </CButton>
                       </CCol>
-                      <CCol xs={6} className="text-right">
+                      <CCol xs={6} className="d-flex justify-content-end">
                         <Link to="/request_reset_password">
                           <CButton color="link" className="px-0">
-                            Forgot password?
+                            Mot de passe oublié?
                           </CButton>
                         </Link>
                       </CCol>
@@ -133,14 +134,11 @@ const Authenticate = () => {
               <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
+                    <h2>S'inscrire</h2>
+                    <p>Bienvenue sur notre plateforme GoLivraison.</p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
+                        Créer un compte?
                       </CButton>
                     </Link>
                   </div>

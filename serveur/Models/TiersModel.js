@@ -129,9 +129,9 @@ const Tiers = sequelize.define(
     },
     activate: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
+      defaultValue: true,  // or 1, depending on your schema
+    }
+    
   },
   {
     tableName: "tiers",

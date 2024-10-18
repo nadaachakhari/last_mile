@@ -269,8 +269,12 @@ const user_name = await generateUserName(name, email);
       block: false,
       password: hashedPassword,
       deleted: false,
+      activate: 1,  // Modification ici pour définir "activate" à 1
       createdBy,
     });
+    
+
+
 
     const emailSubject = "Bienvenue sur notre plateforme !";
     const emailText = `Bonjour ${newClient.name},\n\nBienvenue sur notre plateforme !\n\nVotre login : ${newClient.user_name}\nVotre mot de passe : ${generatedPassword}\n\nCordialement,\nVotre équipe`;
@@ -283,6 +287,22 @@ const user_name = await generateUserName(name, email);
   }
 };
 
+const deleteclient = async (req, res) => {
+  const { id } = req.params;
+  console.log("id", id);
+  
+  try {
+    const client = await Tiers.findByPk(id);
+    if (!client) {
+      return res.status(404).json({ error: "client not found" });
+    }
+
+    await client.update({ deleted: true });
+    res.status(200).json({ message: "client deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 const checkUserName = async (req, res) => {
   const { userName } = req.params;
   try {
@@ -879,7 +899,7 @@ module.exports = {
   getAllClients,
   getClientById,
   getAllClientsForSupplier,
-
+  deleteclient,
   //crud fournisseur
   createSupplierParAdministateur,
   uploadSupplier,

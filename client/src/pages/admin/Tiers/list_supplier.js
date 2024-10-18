@@ -51,6 +51,8 @@ const ListSupplier = () => {
         }
     };
 
+    
+
     const handleSupprimer = (id) => {
         setIdToDelete(id); // Set the supplier ID to be deleted
         setShowConfirmation(true); // Show confirmation modal

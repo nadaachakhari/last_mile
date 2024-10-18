@@ -31,6 +31,7 @@ const AddClient = () => {
     fax: '',
     email: '',
     cityID: '',
+    activate:'1',
   })
   const [showModal, setShowModal] = useState(false)
   const [modalMessage, setModalMessage] = useState('')

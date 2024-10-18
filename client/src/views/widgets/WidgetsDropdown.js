@@ -13,13 +13,15 @@ import {
 import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions,cilUser  } from '@coreui/icons'
+import { cilArrowBottom, cilArrowTop, cilOptions,cilUser   } from '@coreui/icons'
+import { FiShoppingCart } from 'react-icons/fi'; // Icône pour les commandes
 import axios from 'axios'; // Utiliser axios ou fetch pour appeler l'API
 
 const WidgetsDropdown = (props) => {
   const [articleCount, setArticleCount] = useState(0);
   const [clientCount, setClientCount] = useState(0);
   const [supplierCount, setSupplierCount] = useState(0); 
+  const [totalCommands, setTotalCommands] = useState(0);
   const widgetChartRef1 = useRef();
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
@@ -39,6 +41,26 @@ const WidgetsDropdown = (props) => {
         setSupplierCount(response.data.supplierCount);
       } catch (error) {
         console.error('Erreur lors de la récupération du nombre de fournisseurs:', error);
+      }
+    };
+    const fetchTotalCommands = async () => {
+      try {
+        const response = await fetch(`http://localhost:5001/Dashboard/total-commands`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+    
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des commandes');
+        }
+    
+        const data = await response.json();
+        console.log('Total des commandes pour le fournisseur:', data.totalCommands);
+        return data.totalCommands;
+      } catch (error) {
+        console.error('Erreur :', error);
+        setLoading(false);
       }
     };
      // Fonction pour récupérer le nombre de clients
@@ -75,8 +97,7 @@ const WidgetsDropdown = (props) => {
         }
     
         const data = await response.json();
-        console.log('Article count data:', data); // Pour vérifier la réponse
-        // Assurez-vous d'utiliser la bonne clé pour accéder au nombre d'articles
+        console.log('Article count data:', data);
         setArticleCount(data.ArticleCount || 0);
         setLoading(false);
       } catch (error) {
@@ -88,7 +109,7 @@ const WidgetsDropdown = (props) => {
     
     
     fetchClientCount();
- 
+    fetchTotalCommands();
     fetchSupplierCount();
     fetchArticleCount ();
   }, []);
@@ -262,100 +283,22 @@ const WidgetsDropdown = (props) => {
         />
       </CCol>
     )}
-      <CCol sm={6} xl={4} xxl={3}>
-        <CWidgetStatsA
-          color="danger"
-          value={
-            <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
-            </>
-          }
-          title="Sessions"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    border: {
-                      display: false,
-                    },
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </CCol>
+
+{userRole === 'fournisseur' && (
+        <CCol sm={6} xl={4} xxl={3}>
+          <CWidgetStatsA
+            color="info"
+            value={
+              <>
+                <FiShoppingCart size={24} style={{ marginRight: '8px' }} /> 
+                {totalCommands}{' '}
+                <span className="fs-6 fw-normal">Commandes Reçues</span>
+              </>
+            }
+            title="Total Commandes Reçues"
+          />
+        </CCol>
+      )}
     </CRow>
   )
 }
