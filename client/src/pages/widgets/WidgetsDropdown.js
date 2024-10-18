@@ -14,7 +14,7 @@ import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions,cilUser   } from '@coreui/icons'
-import { FiShoppingCart } from 'react-icons/fi'; // Icône pour les commandes
+import { FiShoppingCart ,FiPackage } from 'react-icons/fi'; // Icône pour les commandes
 import axios from 'axios'; // Utiliser axios ou fetch pour appeler l'API
 
 const WidgetsDropdown = (props) => {
@@ -34,84 +34,28 @@ const WidgetsDropdown = (props) => {
       console.error('Token non trouvé dans localStorage.')
       return
     }
-    // Appeler l'API pour obtenir le nombre de fournisseurs
-    const fetchSupplierCount = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/Dashboard/count-Suppliers'); 
-        setSupplierCount(response.data.supplierCount);
+        const [supplierRes, commandsRes, clientRes, articleRes] = await Promise.all([
+          axios.get('http://localhost:5001/Dashboard/count-Suppliers', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5001/Dashboard/total-commands', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5001/Dashboard/count-clients', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+
+        setSupplierCount(supplierRes.data.supplierCount);
+        setTotalCommands(commandsRes.data.totalCommands);
+        setClientCount(clientRes.data.clientCount);
+        setArticleCount(articleRes.data.ArticleCount || 0);
+
       } catch (error) {
-        console.error('Erreur lors de la récupération du nombre de fournisseurs:', error);
-      }
-    };
-    const fetchTotalCommands = async () => {
-      try {
-        const response = await fetch(`http://localhost:5001/Dashboard/total-commands`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-    
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des commandes');
-        }
-    
-        const data = await response.json();
-        console.log('Total des commandes pour le fournisseur:', data.totalCommands);
-        return data.totalCommands;
-      } catch (error) {
-        console.error('Erreur :', error);
+        console.error('Erreur lors de la récupération des données:', error);
+      } finally {
         setLoading(false);
       }
     };
-     // Fonction pour récupérer le nombre de clients
-     const fetchClientCount = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/Dashboard/count-clients', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assurez-vous d'envoyer le token JWT
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des clients');
-        }
-        
-        const data = await response.json();
-        setClientCount(data.clientCount);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erreur :', error);
-        setLoading(false);
-      }
-    };
-    const fetchArticleCount = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/Dashboard/count-articles', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-    
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des articles');
-        }
-    
-        const data = await response.json();
-        console.log('Article count data:', data);
-        setArticleCount(data.ArticleCount || 0);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erreur :', error);
-        setLoading(false);
-      }
-    };
-    
-    
-    
-    fetchClientCount();
-    fetchTotalCommands();
-    fetchSupplierCount();
-    fetchArticleCount ();
+
+    fetchData();
   }, []);
   
   const widgetChartRef2 = useRef(null)
@@ -214,9 +158,11 @@ const WidgetsDropdown = (props) => {
  {userRole === 'fournisseur' && (
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
-          color="warning"
+           style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+          color="success"
           value={
             <>
+            
               {articleCount} {' '} 
               <span className="fs-6 fw-normal">Articles</span>
             </>
@@ -228,57 +174,17 @@ const WidgetsDropdown = (props) => {
                 <CIcon icon={cilOptions} />
               </CDropdownToggle>
               <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
+              <Link to="/admin/list_article" >
+                <CDropdownItem>Afficher Articles</CDropdownItem>
+                </Link>
               </CDropdownMenu>
             </CDropdown>
           }
           chart={
-            <CChartLine
-              className="mt-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'Articles',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40],
-                    fill: true,
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    display: false,
-                  },
-                  y: {
-                    display: false,
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 2,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
+            <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+          
+              <FiPackage size={70} style={{ marginRight: '8px' }} className="opacity-75 text-white" /> 
+            </div>
           }
         />
       </CCol>
@@ -287,15 +193,21 @@ const WidgetsDropdown = (props) => {
 {userRole === 'fournisseur' && (
         <CCol sm={6} xl={4} xxl={3}>
           <CWidgetStatsA
-            color="info"
+             style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+            color="warning"
             value={
               <>
-                <FiShoppingCart size={24} style={{ marginRight: '8px' }} /> 
                 {totalCommands}{' '}
                 <span className="fs-6 fw-normal">Commandes Reçues</span>
               </>
             }
             title="Total Commandes Reçues"
+            chart={
+              <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+            
+                <FiShoppingCart size={70} style={{ marginRight: '8px' }} className="opacity-75 text-white" /> 
+              </div>
+            }
           />
         </CCol>
       )}
