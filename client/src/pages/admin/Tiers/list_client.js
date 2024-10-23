@@ -70,15 +70,30 @@ const ClientList = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.put(`http://localhost:5001/Tier/update_deleted_Supplier/${idToDelete}`);
-            setClients(clients.filter((client) => client.id !== idToDelete)); // Correct state update
-            console.log(`Client avec l'ID ${idToDelete} marqué comme supprimé.`);
+            // Make the API call to delete the client (mark as deleted)
+            const response = await axios.put(`http://localhost:5001/Tier/update_deleted_client/${idToDelete}`);
+    
+            // If the deletion was successful, update the client list state
+            if (response.status === 200) {
+                setClients(clients.filter((client) => client.id !== idToDelete));
+                console.log(`Client with ID ${idToDelete} marked as deleted.`);
+            } else {
+                console.error('Failed to delete client:', response.data.error);
+            }
         } catch (error) {
-            console.error(`Erreur lors de la suppression du client avec l'ID ${idToDelete}:`, error);
+            // If the error message indicates that the client has associated orders, display an alert
+            if (error.response && error.response.data.error === "Client has associated orders. Cannot delete the client.") {
+                alert("Ce client a des commandes associées et ne peut pas être supprimé.");
+            } else {
+                console.error(`Erreur lors de la suppression du client avec l'ID ${idToDelete}:`, error);
+            }
         } finally {
-            setShowConfirmation(false); // Close confirmation modal after delete
+            // Close the confirmation modal
+            setShowConfirmation(false);
         }
     };
+    
+    
 
     const cancelDelete = () => {
         setShowConfirmation(false); 
@@ -142,15 +157,15 @@ const ClientList = () => {
             </CCol>
 
             <CModal visible={showConfirmation} onClose={cancelDelete}>
-                <CModalHeader closeButton>
-                    <CModalTitle>Confirmation de suppression</CModalTitle>
-                </CModalHeader>
-                <CModalBody>Êtes-vous sûr de vouloir supprimer ce client ?</CModalBody>
-                <CModalFooter>
-                    <CButton color="danger" onClick={confirmDelete}>Supprimer</CButton>
-                    <CButton color="secondary" onClick={cancelDelete}>Annuler</CButton>
-                </CModalFooter>
-            </CModal>
+    <CModalHeader closeButton>
+        <CModalTitle>Confirmation de suppression</CModalTitle>
+    </CModalHeader>
+    <CModalBody>Êtes-vous sûr de vouloir supprimer ce client ?</CModalBody>
+    <CModalFooter>
+        <CButton color="danger" onClick={confirmDelete}>Supprimer</CButton>
+        <CButton color="secondary" onClick={cancelDelete}>Annuler</CButton>
+    </CModalFooter>
+</CModal>
         </CRow>
     );
 };

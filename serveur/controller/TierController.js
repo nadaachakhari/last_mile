@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const City = require('../Models/CityModel');
+const Order =require('../Models/OrderModel');
 const { sendEmail } = require('../config/emailConfig')
 const { Op } = require('sequelize');
 const User = require('../Models/UserModel');
@@ -290,19 +291,40 @@ const user_name = await generateUserName(name, email);
 const deleteclient = async (req, res) => {
   const { id } = req.params;
   console.log("id", id);
-  
+
   try {
+    // Recherche du client dans la table Tiers
     const client = await Tiers.findByPk(id);
     if (!client) {
-      return res.status(404).json({ error: "client not found" });
+      return res.status(404).json({ error: "Client not found" });
     }
 
+    // Recherche des commandes associées à ce client dans la table Order
+    const orders = await Order.findAll({ where: { customerID: id } });
+
+    if (orders.length > 0) {
+      // Si des commandes existent, vous pouvez décider de bloquer la suppression
+      return res.status(400).json({
+        error: "Client has associated orders. Cannot delete the client."
+      });
+
+      // OU vous pouvez mettre à jour les commandes, par exemple en les marquant comme annulées
+      // await Order.update({ status: 'Cancelled' }, { where: { customerID: id } });
+
+      // Dans ce cas, vous pouvez continuer à supprimer le client après avoir mis à jour les commandes
+      // await client.update({ deleted: true });
+      // return res.status(200).json({ message: "Client and associated orders updated successfully." });
+    }
+
+    // Si aucune commande n'est trouvée, marquez le client comme supprimé
     await client.update({ deleted: true });
-    res.status(200).json({ message: "client deleted successfully" });
+    res.status(200).json({ message: "Client deleted successfully" });
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 const checkUserName = async (req, res) => {
   const { userName } = req.params;
   try {

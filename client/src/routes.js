@@ -162,7 +162,7 @@ const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
-const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
+const widgets  = React.lazy(() => import('./pages/widgets/Widgets.js'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -209,11 +209,7 @@ const routes = [
   //role users
   // { path: '/admin/add_role_users', name: 'Ajouter Role utilisateur', element: add_role_users },
   { path: '/admin/list_role_users', name: 'Liste Role utilisateur', element: liset_role_users },
-  // {
-  //   path: '/admin/detail_role_users/:id',
-  //   name: 'Détail Role utilisateur',
-  //   element: detail_role_users,
-  // },
+  // { path: '/admin/detail_role_users/:id',name: 'Détail Role utilisateur',element: detail_role_users, },
   // { path: '/admin/edit_role_users/:id', name: 'Edit Role utilisateur', element: edit_role_users },
 
   //les routes de city
@@ -335,7 +331,6 @@ const routes = [
   { path: '/detail_bank/:id', element: detail_bank },
   { path: '/edit_bank/:id', name: 'modifer bank', element: edit_bank },
 
-
 //invoice
 { path: '/admin/list_invoice', element: list_invoice },
 { path: '/admin/detail_invoice/:id', element: detail_invoice },
@@ -354,7 +349,7 @@ const routes = [
   { path: '/notifications/badges', name: 'Badges', element: Badges },
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
-  { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/widgets', name: 'Widgets', element: widgets },
 ]
 
 export default routes
