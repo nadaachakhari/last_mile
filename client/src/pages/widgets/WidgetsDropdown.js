@@ -13,15 +13,16 @@ import {
 import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions,cilUser   } from '@coreui/icons'
-import { FiShoppingCart ,FiPackage } from 'react-icons/fi'; // Icône pour les commandes
-import axios from 'axios'; // Utiliser axios ou fetch pour appeler l'API
+import { cilArrowBottom, cilArrowTop, cilOptions,cilUser ,cilTruck   } from '@coreui/icons'
+import { FiShoppingCart ,FiPackage } from 'react-icons/fi'; 
+import axios from 'axios'; 
 
 const WidgetsDropdown = (props) => {
   const [articleCount, setArticleCount] = useState(0);
   const [clientCount, setClientCount] = useState(0);
   const [supplierCount, setSupplierCount] = useState(0); 
   const [totalCommands, setTotalCommands] = useState(0);
+  const [deliveryOrderCount, setDeliveryOrderCount] = useState(0); 
   const widgetChartRef1 = useRef();
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
@@ -29,54 +30,43 @@ const WidgetsDropdown = (props) => {
     const token = localStorage.getItem('token')
     const role = localStorage.getItem('role')
     setUserRole(role)
-
+  
     if (!token) {
       console.error('Token non trouvé dans localStorage.')
       return
     }
     const fetchData = async () => {
       try {
-        const [supplierRes, commandsRes, clientRes, articleRes] = await Promise.all([
+        const [supplierRes, commandsRes, clientRes, articleRes, deliveryOrdersRes] = await Promise.all([
           axios.get('http://localhost:5001/Dashboard/count-Suppliers', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/total-commands', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-clients', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5001/Dashboard/count-orders-delivery', { headers: { Authorization: `Bearer ${token}` } })
         ]);
-
-        setSupplierCount(supplierRes.data.supplierCount);
-        setTotalCommands(commandsRes.data.totalCommands);
-        setClientCount(clientRes.data.clientCount);
+  
+        setSupplierCount(supplierRes.data.supplierCount || 0);
+        setTotalCommands(commandsRes.data.totalCommands || 0);
+        setClientCount(clientRes.data.clientCount || 0);
         setArticleCount(articleRes.data.ArticleCount || 0);
-
+        
+        // Correction ici pour attribuer orderCount à deliveryOrderCount
+        setDeliveryOrderCount(deliveryOrdersRes.data.orderCount || 0); 
+  
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
   
+  
   const widgetChartRef2 = useRef(null)
 
-  useEffect(() => {
-    document.documentElement.addEventListener('ColorSchemeChange', () => {
-      if (widgetChartRef1.current) {
-        setTimeout(() => {
-          widgetChartRef1.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-primary')
-          widgetChartRef1.current.update()
-        })
-      }
 
-      if (widgetChartRef2.current) {
-        setTimeout(() => {
-          widgetChartRef2.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-info')
-          widgetChartRef2.current.update()
-        })
-      }
-    })
-  }, [widgetChartRef1, widgetChartRef2])
   if (loading) {
     return <p>Chargement...</p>;
   }
@@ -206,6 +196,40 @@ const WidgetsDropdown = (props) => {
               <div className="position-absolute top-50 end-0 translate-middle-y p-3">
             
                 <FiShoppingCart size={70} style={{ marginRight: '8px' }} className="opacity-75 text-white" /> 
+              </div>
+            }
+          />
+        </CCol>
+      )}
+         {userRole === 'livreur' && (
+        <CCol sm={6} xl={4} xxl={3}>
+          <CWidgetStatsA
+            style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} // Rounded corners and shadow
+            color="warning"
+            value={
+              <>
+                <span className="fs-3 fw-bold">{deliveryOrderCount}</span>{' '} 
+                <span className="fs-6 fw-normal">Commandes Livrées</span>
+              </>
+            }
+            title={<span className="text-light">Nombre de Commandes Livrées</span>} 
+            action={
+              <div className="position-absolute top-0 end-0 p-3">
+                <CDropdown alignment="end">
+                  <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+                    <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
+                  </CDropdownToggle>
+                  <CDropdownMenu>
+                    <Link to="/livreur/list_orders">
+                      <CDropdownItem>Afficher les commandes</CDropdownItem>
+                    </Link>
+                  </CDropdownMenu>
+                </CDropdown>
+              </div>
+            }
+            chart={
+              <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+                <CIcon icon={cilTruck} size="3xl" className="opacity-75 text-white" /> {/* Delivery truck icon */}
               </div>
             }
           />

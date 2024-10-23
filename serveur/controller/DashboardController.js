@@ -78,7 +78,29 @@ const countSuppliers = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors du comptage des fournisseurs.', error: error.message });
   }
 };
+//afficher pour livreur
+const countOrdersByDeliveryPerson = async (req, res) => {
+  try {
+      if (!req.user || !req.user.id) {
+          return res.status(400).json({ message: 'User not authenticated or invalid.' });
+      }
+
+      const deliveryPersonId = req.user.id; // Assuming the delivery person's ID is obtained from the user token
+
+      // Count the number of orders assigned to the delivery person
+      const orderCount = await Order.count({
+          where: { deliveryID: deliveryPersonId }  // Assuming 'deliveryID' is the foreign key in the 'Order' table
+      });
+
+      res.status(200).json({ deliveryPersonId, orderCount });
+  } catch (error) {
+      console.error('Erreur lors du comptage des commandes:', error);
+      res.status(500).json({ message: 'Erreur lors du comptage des commandes.', error: error.message });
+  }
+};
 
   
 
-module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier };
+module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier 
+  , countOrdersByDeliveryPerson };
+
