@@ -68,13 +68,23 @@ const ArticleList = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.put(`http://localhost:5001/Article/update_deleted/${selectedArticleId}`);
-      setArticles(articles.filter(a => a.id !== selectedArticleId));
-      setShowConfirmation(false);
+      const response = await axios.put(`http://localhost:5001/Article/update_deleted/${selectedArticleId}`);
+      
+      if (response.status === 200) {
+        // Successfully marked as deleted, update the article list
+        setArticles(articles.filter(a => a.id !== selectedArticleId));
+        setShowConfirmation(false);
+      } 
     } catch (error) {
-      console.error('Erreur lors de la suppression de l\'article:', error);
+      // Check if the error message indicates associated order lines
+      if (error.response && error.response.status === 400 && error.response.data.error.includes('associated order lines')) {
+        alert('Cet article a des lignes de commande associées et ne peut pas être supprimé.');
+      } else {
+        console.error('Erreur lors de la suppression de l\'article:', error);
+      }
     }
   };
+  
 
   const cancelDelete = () => {
     setSelectedArticleId(null);
@@ -152,21 +162,21 @@ const ArticleList = () => {
         </CCard>
       </CCol>
       
-      {/* Modal de confirmation de suppression */}
       <CModal visible={showConfirmation} onClose={cancelDelete}>
-        <CModalHeader closeButton>
-          <CModalTitle>Confirmation de suppression</CModalTitle>
-        </CModalHeader>
-        <CModalBody>Êtes-vous sûr de vouloir supprimer cet article ?</CModalBody>
-        <CModalFooter>
-          <CButton color="danger" onClick={confirmDelete}>
-            Supprimer
-          </CButton>
-          <CButton color="secondary" onClick={cancelDelete}>
-            Annuler
-          </CButton>
-        </CModalFooter>
-      </CModal>
+  <CModalHeader closeButton>
+    <CModalTitle>Confirmation de suppression</CModalTitle>
+  </CModalHeader>
+  <CModalBody>Êtes-vous sûr de vouloir supprimer cet article ?</CModalBody>
+  <CModalFooter>
+    <CButton color="danger" onClick={confirmDelete}>
+      Supprimer
+    </CButton>
+    <CButton color="secondary" onClick={cancelDelete}>
+      Annuler
+    </CButton>
+  </CModalFooter>
+</CModal>
+
     </CRow>
   );
 };

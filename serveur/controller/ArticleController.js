@@ -2,7 +2,7 @@ const Article = require('../Models/ArticleModel');
 const Vat = require('../Models/VatModel');
 const Category = require('../Models/CategoryModel');
 const Tiers = require('../Models/TiersModel');
-
+const OrderLignes =  require('../Models/OrderLignesModel');
 
 const createArticle = async (req, res) => {
   const { name, vatID, sale_ht, categoryID, bar_code, deleted } = req.body;
@@ -157,18 +157,32 @@ const updateArticle = async (req, res) => {
 // Supprimer (logiquement) un article
 const deleteArticle = async (req, res) => {
   const { id } = req.params;
+
   try {
+    // Fetch the article by ID
     const article = await Article.findByPk(id);
     if (!article) {
       return res.status(404).json({ error: 'Article not found' });
     }
 
+    // Check if the article is associated with any order lines
+    const orderLignes = await OrderLignes.findAll({ where: { articleID: id } });
+    if (orderLignes.length > 0) {
+      // If associated order lines exist, block deletion
+      return res.status(400).json({
+        error: 'Article has associated order lines. Cannot delete the article.'
+      });
+    }
+
+    // If no associations, mark the article as deleted
     await article.update({ deleted: true });
     res.status(200).json({ message: 'Article deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
+
 
 module.exports = {
   createArticle,

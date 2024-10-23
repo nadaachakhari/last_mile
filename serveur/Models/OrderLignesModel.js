@@ -62,8 +62,11 @@ OrderLignes.init({
   timestamps: false,
 });
 
+
+Order.hasMany(OrderLignes, { foreignKey: 'parentID' });
 OrderLignes.belongsTo(Order, { as: 'order', foreignKey: 'parentID' });
-Order.hasOne(OrderLignes, { foreignKey: 'parentID' });
+
+Article.hasMany(OrderLignes, { foreignKey: 'articleID' });
 OrderLignes.belongsTo(Article, { as: 'article', foreignKey: 'articleID' });
-Article.hasOne(OrderLignes, { foreignKey: 'articleID' });
+
 module.exports = OrderLignes;
