@@ -2,6 +2,7 @@ const Tiers = require('../Models/TiersModel');
 const TypeTiers = require('../Models/TypeTiersModel');
 const   Articles =require('../Models/ArticleModel');
 const Order=require('../Models/OrderModel');
+const Claim= require('../Models/ClaimModel');
 // afficher pour fournisseur
 const countClientsBySupplier = async (req, res) => {
   try {
@@ -78,6 +79,19 @@ const countSuppliers = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors du comptage des fournisseurs.', error: error.message });
   }
 };
+const countClaims = async (req, res) => {
+  try {
+    // Compter le nombre total de réclamations dans la table Claims
+    const totalClaims = await Claim.count({
+    });
+
+    res.status(200).json({ totalClaims });  // Retourner le nombre total de réclamations
+  } catch (error) {
+    console.error('Erreur lors du comptage des réclamations:', error);
+    res.status(500).json({ message: 'Erreur lors du comptage des réclamations.', error: error.message });
+  }
+};
+
 //afficher pour livreur
 const countOrdersByDeliveryPerson = async (req, res) => {
   try {
@@ -102,5 +116,5 @@ const countOrdersByDeliveryPerson = async (req, res) => {
   
 
 module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier 
-  , countOrdersByDeliveryPerson };
+  , countOrdersByDeliveryPerson,countClaims };
 

@@ -13,7 +13,7 @@ import {
 import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions,cilUser ,cilTruck   } from '@coreui/icons'
+import { cilArrowBottom, cilArrowTop, cilOptions,cilUser ,cilTruck,cilWarning    } from '@coreui/icons'
 import { FiShoppingCart ,FiPackage } from 'react-icons/fi'; 
 import axios from 'axios'; 
 
@@ -23,36 +23,42 @@ const WidgetsDropdown = (props) => {
   const [supplierCount, setSupplierCount] = useState(0); 
   const [totalCommands, setTotalCommands] = useState(0);
   const [deliveryOrderCount, setDeliveryOrderCount] = useState(0); 
+  const [claimCount, setClaimCount] = useState(0);
   const widgetChartRef1 = useRef();
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const role = localStorage.getItem('role')
-    setUserRole(role)
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    setUserRole(role);
+    
+    console.log('Rôle de l\'utilisateur:', role); // Vérifier le rôle ici
   
     if (!token) {
-      console.error('Token non trouvé dans localStorage.')
-      return
+      console.error('Token non trouvé dans localStorage.');
+      return;
     }
+    
     const fetchData = async () => {
       try {
-        const [supplierRes, commandsRes, clientRes, articleRes, deliveryOrdersRes] = await Promise.all([
-          axios.get('http://localhost:5001/Dashboard/count-Suppliers', { headers: { Authorization: `Bearer ${token}` } }),
+        const [supplierRes, commandsRes, clientRes, articleRes, deliveryOrdersRes, claimRes] = await Promise.all([
+          axios.get('http://localhost:5001/Dashboard/count-Suppliers'),
           axios.get('http://localhost:5001/Dashboard/total-commands', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-clients', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5001/Dashboard/count-orders-delivery', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get('http://localhost:5001/Dashboard/count-orders-delivery', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5001/Dashboard/countClaims'),
         ]);
+        
   
         setSupplierCount(supplierRes.data.supplierCount || 0);
         setTotalCommands(commandsRes.data.totalCommands || 0);
         setClientCount(clientRes.data.clientCount || 0);
         setArticleCount(articleRes.data.ArticleCount || 0);
-        
-        // Correction ici pour attribuer orderCount à deliveryOrderCount
-        setDeliveryOrderCount(deliveryOrdersRes.data.orderCount || 0); 
+        setDeliveryOrderCount(deliveryOrdersRes.data.orderCount || 0);
+        setClaimCount( claimRes.data.totalClaims || 0);
   
+
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
       } finally {
@@ -64,7 +70,7 @@ const WidgetsDropdown = (props) => {
   }, []);
   
   
-  const widgetChartRef2 = useRef(null)
+  
 
 
   if (loading) {
@@ -235,6 +241,43 @@ const WidgetsDropdown = (props) => {
           />
         </CCol>
       )}
+  {userRole === 'Administrateur' && (
+        <CCol sm={6} xl={4} xxl={3}>
+          <CWidgetStatsA
+            style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+            color="danger"
+            value={
+              <>
+                <h2></h2>
+                <span className="fs-3 fw-bold">{claimCount}</span>{' '}
+                <span className="fs-6 fw-normal">Réclamations</span>
+              </>
+            }
+            title={<span className="text-light">Nombre de Réclamations</span>}
+            action={
+              <div className="position-absolute top-0 end-0 p-3">
+                <CDropdown alignment="end">
+                  <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+                    <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
+                  </CDropdownToggle>
+                  <CDropdownMenu>
+                    <Link to="/admin/list_claims">
+                      <CDropdownItem>Afficher Réclamations</CDropdownItem>
+                    </Link>
+                  </CDropdownMenu>
+                </CDropdown>
+              </div>
+            }
+            chart={
+              <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+                <CIcon icon={cilWarning} size="3xl" className="opacity-75 text-white" />
+              </div>
+            }
+          />
+        </CCol>
+      )}
+
+
     </CRow>
   )
 }
