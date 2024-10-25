@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import {
   CRow,
   CCol,
+  CCard ,
+  CCardBody,
   CDropdown,
   CDropdownMenu,
   CDropdownItem,
@@ -11,9 +13,13 @@ import {
   CWidgetStatsA,
 } from '@coreui/react'
 import { getStyle } from '@coreui/utils'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions,cilUser ,cilTruck,cilWarning    } from '@coreui/icons'
+import { cilArrowBottom, cilArrowTop, cilOptions, cilUser, cilTruck, cilWarning, cilBriefcase } from '@coreui/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faTruck, faTimesCircle, faClock, faBell, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+
+import { faBox } from '@fortawesome/free-solid-svg-icons';
+
 import { FiShoppingCart ,FiPackage } from 'react-icons/fi'; 
 import axios from 'axios'; 
 
@@ -24,7 +30,9 @@ const WidgetsDropdown = (props) => {
   const [totalCommands, setTotalCommands] = useState(0);
   const [deliveryOrderCount, setDeliveryOrderCount] = useState(0); 
   const [claimCount, setClaimCount] = useState(0);
-  const widgetChartRef1 = useRef();
+  const [orderStates, setOrderStates] = useState([0]);
+
+
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
   useEffect(() => {
@@ -32,7 +40,7 @@ const WidgetsDropdown = (props) => {
     const role = localStorage.getItem('role');
     setUserRole(role);
     
-    console.log('Rôle de l\'utilisateur:', role); // Vérifier le rôle ici
+    console.log('Rôle de l\'utilisateur:', role); 
   
     if (!token) {
       console.error('Token non trouvé dans localStorage.');
@@ -41,37 +49,40 @@ const WidgetsDropdown = (props) => {
     
     const fetchData = async () => {
       try {
-        const [supplierRes, commandsRes, clientRes, articleRes, deliveryOrdersRes, claimRes] = await Promise.all([
+        const [
+          supplierRes,
+          commandsRes,
+          clientRes,
+          articleRes,
+          deliveryOrdersRes,
+          claimRes,
+          orderCountsRes,
+        ] = await Promise.all([
           axios.get('http://localhost:5001/Dashboard/count-Suppliers'),
           axios.get('http://localhost:5001/Dashboard/total-commands', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-clients', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-orders-delivery', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/countClaims'),
+          axios.get('http://localhost:5001/Dashboard/countOrdersByState'),
         ]);
-        
-  
+
         setSupplierCount(supplierRes.data.supplierCount || 0);
         setTotalCommands(commandsRes.data.totalCommands || 0);
         setClientCount(clientRes.data.clientCount || 0);
         setArticleCount(articleRes.data.ArticleCount || 0);
         setDeliveryOrderCount(deliveryOrdersRes.data.orderCount || 0);
-        setClaimCount( claimRes.data.totalClaims || 0);
-  
-
+        setClaimCount(claimRes.data.totalClaims || 0);
+        setOrderStates(orderCountsRes.data || [] );
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
-  
-  
-  
-
 
   if (loading) {
     return <p>Chargement...</p>;
@@ -81,17 +92,16 @@ const WidgetsDropdown = (props) => {
        {userRole === 'Administrateur' && (
        <CCol sm={6} xl={4} xxl={3}>
       <CWidgetStatsA
-        style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} // Ajout de coins arrondis et d'une ombre
+        style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
         color="primary"
         value={
           <>
-            <span className="fs-3 fw-bold">{supplierCount}</span>{' '} {/* Taille de la valeur ajustée */}
+            <span className="fs-3 fw-bold">{supplierCount}</span>{' '} 
             <span className="fs-6 fw-normal">
             Fournisseurs
             </span>
           </>
         }
-        title={<span className="text-light">Nombre de Fournisseurs</span>} // Titre plus clair
         action={
           <div className="position-absolute top-0 end-0 p-3">
            <CDropdown alignment="end">
@@ -108,7 +118,6 @@ const WidgetsDropdown = (props) => {
         }
         chart={
           <div className="position-absolute top-50 end-0 translate-middle-y p-3">
-            {/* Ajout d'une icône avec un style subtile et taille ajustée */}
             <CIcon icon={cilUser} size="3xl" className="opacity-75 text-white" />
           </div>
         }
@@ -261,7 +270,7 @@ const WidgetsDropdown = (props) => {
                     <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
                   </CDropdownToggle>
                   <CDropdownMenu>
-                    <Link to="/admin/list_claims">
+                    <Link to="/admin/list_claim">
                       <CDropdownItem>Afficher Réclamations</CDropdownItem>
                     </Link>
                   </CDropdownMenu>
@@ -276,15 +285,80 @@ const WidgetsDropdown = (props) => {
           />
         </CCol>
       )}
+     {userRole === 'Administrateur' && (    
+     <CRow className={props.className} xs={{ gutter: 4 }}>
+  <CRow>
+    <CCol sm={5}>
+      <h4 id="traffic" className="card-title mb-0">Nombre des colis par état</h4>
+    </CCol>
+  </CRow>
 
+  {orderStates.map((state, index) => {
+  
+    let icon = faBox; 
+    let boxColor = 'primary'; 
+    if (state.state.value === 'Livraison effectuée') {
+      icon = faCheckCircle; 
+      boxColor = 'success'; 
+    } else if (state.state.value === 'en cours de livraison') {
+      icon = faTruck; 
+      boxColor = 'warning'; 
+    } else if (state.state.value === 'Commande annulée') {
+      icon = faTimesCircle; 
+      boxColor = 'danger'; 
+    } else if (state.state.value === 'En attente de livraison') {
+      icon = faClock; 
+      boxColor = 'info'; 
+    } else if (state.state.value === 'Livraison imminente') {
+      icon = faBell; 
+      boxColor = 'primary';
+    } else if (state.state.value === 'Adresse changée') {
+      icon = faMapMarkerAlt; 
+      boxColor = 'dark'; 
+    }
 
-    </CRow>
+    return (
+      <CCol sm={6} xl={4} xxl={3} key={index}>
+        <CWidgetStatsA
+          style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+          color={boxColor} 
+          value={
+            <>
+              <span className="fs-3 fw-bold">{state.count !== undefined ? state.count : "0"}</span>{' '}
+              <span className="fs-6 fw-normal">Commandes</span>
+            </>
+          }
+          title={<span className="text-light">{state.state.value}</span>} // Display state value
+          action={
+            <div className="position-absolute top-0 end-0 p-3">
+              <CDropdown alignment="end">
+                <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+                  <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem>Voir Détails</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            </div>
+          }
+          chart={
+            <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+              <FontAwesomeIcon icon={icon} size="3x" className="opacity-75 text-white" />
+            </div>
+          }
+        />
+      </CCol>
+    );
+  })}
+
+</CRow>
+)}
+
+    </CRow>   
   )
 }
-
 WidgetsDropdown.propTypes = {
   className: PropTypes.string,
   withCharts: PropTypes.bool,
 }
-
 export default WidgetsDropdown
