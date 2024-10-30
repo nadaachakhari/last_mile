@@ -32,7 +32,7 @@ const AddArticle = () => {
     bar_code: '',
     deleted: false,
   });
-  const [imageFile, setImageFile] = useState(null); // Ajout de l'état pour l'image
+  const [imageFile, setImageFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [vats, setVats] = useState([]);
@@ -41,7 +41,7 @@ const AddArticle = () => {
   const { role } = useAuth(); 
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return;
     }
 
     console.log('User role:', role);
@@ -104,13 +104,13 @@ const AddArticle = () => {
 
     setFormData({
       ...formData,
-      sale_ht: sale_ht, // Assurer que c'est une chaîne avec 3 décimales
+      sale_ht: sale_ht, 
       sale_ttc: sale_ttc ? sale_ttc.toFixed(3) : '',
     });
   };
 
   const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]); // Stocker le fichier image sélectionné
+    setImageFile(e.target.files[0]); 
   };
 
   const handleSubmit = async (e) => {
@@ -131,7 +131,7 @@ const AddArticle = () => {
     data.append('bar_code', formData.bar_code);
     data.append('deleted', formData.deleted);
     if (imageFile) {
-      data.append('photo', imageFile); // Ajouter le fichier image si sélectionné
+      data.append('photo', imageFile);
     }
 
     try {

@@ -33,7 +33,7 @@ const ListeBank = () => {
 
     useEffect(() => {
         if (!role) {
-            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+            return;
           }
       
           console.log('User role:', role);
@@ -54,34 +54,33 @@ const ListeBank = () => {
     }, [role,navigate]);
 
     const handleModifier = (id) => {
-        navigate(`/edit_bank/${id}`); // Navigate to edit page
+        navigate(`/edit_bank/${id}`); 
     };
 
     const handleSupprimer = (id) => {
-        setIdToDelete(id); // Stocke la référence de la banque à supprimer
-        setShowConfirmation(true); // Affiche la popup de confirmation
+        setIdToDelete(id);
+        setShowConfirmation(true);
     };
 
     const confirmDelete = async () => {
         try {
             await axios.put(`http://localhost:5001/Bank/update_deleted/${id}`);
-            // Mettre à jour localement en filtrant les éléments supprimés
             const updatedList = banks.filter((bank) => bank.id !== id);
             setBanks(updatedList);
             console.log(`Banque avec la référence ${id} marquée comme supprimée.`);
         } catch (error) {
             console.error(`Erreur lors de la suppression de la banque avec la référence ${id}:`, error);
         } finally {
-            setShowConfirmation(false); // Ferme la popup de confirmation après suppression
+            setShowConfirmation(false); 
         }
     };
 
     const cancelDelete = () => {
-        setShowConfirmation(false); // Annule la suppression et ferme la popup de confirmation
+        setShowConfirmation(false); 
     };
 
     const handleAddBank = () => {
-        navigate('/add_bank'); // Navigate to the add page
+        navigate('/add_bank');
     };
 
     return (

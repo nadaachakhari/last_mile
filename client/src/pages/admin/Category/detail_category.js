@@ -16,15 +16,15 @@ import {
 } from '@coreui/react';
 import { useAuth } from '../../../Middleware/Use_Auth';
 const DetailCategory = () => {
-  const { id } = useParams(); // Get ID from URL parameters
-  const navigate = useNavigate(); // For navigation
+  const { id } = useParams();
+  const navigate = useNavigate(); 
   const [category, setCategory] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const { role } = useAuth();
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return; 
     }
 
     console.log('User role:', role);
@@ -46,7 +46,7 @@ const DetailCategory = () => {
   }, [id,role, navigate]);
 
   const handleReturn = () => {
-    navigate('/admin/list_category'); // Navigate back to list
+    navigate('/admin/list_category');
   };
 
   return (

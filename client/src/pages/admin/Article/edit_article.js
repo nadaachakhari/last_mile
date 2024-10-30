@@ -21,7 +21,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../Middleware/Use_Auth'; 
 const EditArticle = () => {
-  const { id } = useParams(); // Récupérer l'ID de l'article à partir de l'URL
+  const { id } = useParams(); 
   const [formData, setFormData] = useState({
 
     name: '',
@@ -42,7 +42,7 @@ const EditArticle = () => {
   const { role } = useAuth(); 
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return;
     }
 
     console.log('User role:', role);

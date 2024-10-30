@@ -27,6 +27,7 @@ const WidgetsDropdown = (props) => {
   const [articleCount, setArticleCount] = useState(0);
   const [clientCount, setClientCount] = useState(0);
   const [supplierCount, setSupplierCount] = useState(0); 
+  const [adminCount, setadminCount] = useState(0); 
   const [totalCommands, setTotalCommands] = useState(0);
   const [deliveryOrderCount, setDeliveryOrderCount] = useState(0); 
   const [claimCount, setClaimCount] = useState(0);
@@ -51,6 +52,7 @@ const WidgetsDropdown = (props) => {
       try {
         const [
           supplierRes,
+          adminRes,
           commandsRes,
           clientRes,
           articleRes,
@@ -59,6 +61,7 @@ const WidgetsDropdown = (props) => {
           orderCountsRes,
         ] = await Promise.all([
           axios.get('http://localhost:5001/Dashboard/count-Suppliers'),
+          axios.get('http://localhost:5001/Dashboard/count-admin'),
           axios.get('http://localhost:5001/Dashboard/total-commands', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-clients', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/count-articles', { headers: { Authorization: `Bearer ${token}` } }),
@@ -68,6 +71,7 @@ const WidgetsDropdown = (props) => {
         ]);
 
         setSupplierCount(supplierRes.data.supplierCount || 0);
+        setadminCount(adminRes.data.adminCount || 0);
         setTotalCommands(commandsRes.data.totalCommands || 0);
         setClientCount(clientRes.data.clientCount || 0);
         setArticleCount(articleRes.data.ArticleCount || 0);
@@ -89,6 +93,7 @@ const WidgetsDropdown = (props) => {
   }
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
+      
        {userRole === 'Administrateur' && (
        <CCol sm={6} xl={4} xxl={3}>
       <CWidgetStatsA
@@ -111,6 +116,41 @@ const WidgetsDropdown = (props) => {
             <CDropdownMenu>
               <Link to="/admin/list_fournisseur" >
                 <CDropdownItem>Afficher fournisseur</CDropdownItem>
+                </Link>
+              </CDropdownMenu>
+            </CDropdown>
+          </div>
+        }
+        chart={
+          <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+            <CIcon icon={cilUser} size="3xl" className="opacity-75 text-white" />
+          </div>
+        }
+      />
+    </CCol>
+          )}
+                 {userRole === 'Administrateur' && (
+       <CCol sm={6} xl={4} xxl={3}>
+      <CWidgetStatsA
+        style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+        color="primary"
+        value={
+          <>
+            <span className="fs-3 fw-bold">{adminCount}</span>{' '} 
+            <span className="fs-6 fw-normal">
+            Administrateur
+            </span>
+          </>
+        }
+        action={
+          <div className="position-absolute top-0 end-0 p-3">
+           <CDropdown alignment="end">
+           <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+            <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
+            </CDropdownToggle>
+            <CDropdownMenu>
+              <Link to="/admin/list_fournisseur" >
+                <CDropdownItem>Afficher Administrateur</CDropdownItem>
                 </Link>
               </CDropdownMenu>
             </CDropdown>

@@ -19,8 +19,8 @@ import {
 } from '@coreui/react';
 import { useAuth } from '../../../Middleware/Use_Auth';
 const EditCategory = () => {
-  const { id } = useParams(); // Get ID from URL parameters for editing
-  const navigate = useNavigate(); // For navigation
+  const { id } = useParams(); 
+  const navigate = useNavigate(); 
   const { role } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -31,7 +31,7 @@ const EditCategory = () => {
 
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return; 
     }
 
     console.log('User role:', role);
@@ -40,7 +40,6 @@ const EditCategory = () => {
       navigate('/unauthorized');
     }
     if (id) {
-      // If there's an ID, fetch the existing category details
       const fetchCategory = async () => {
         try {
           const response = await axios.get(`http://localhost:5001/category/${id}`);
@@ -61,9 +60,8 @@ const EditCategory = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update the existing category
       await axios.put(`http://localhost:5001/category/${id}`, formData);
-      navigate('/admin/list_category'); // Navigate back to list after successful submission
+      navigate('/admin/list_category'); 
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.error) {
         setModalMessage(error.response.data.error);
@@ -75,7 +73,7 @@ const EditCategory = () => {
   };
 
   const handleReturn = () => {
-    navigate('/admin/list_category'); // Navigate back to list
+    navigate('/admin/list_category');
   };
 
   return (

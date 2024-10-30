@@ -26,10 +26,10 @@ const AddCategory = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const navigate = useNavigate();
-  const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+  const { role } = useAuth(); 
     useEffect(() => {
         if (!role) {
-          return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          return; 
         }
     
         console.log('User role:', role);

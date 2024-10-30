@@ -17,15 +17,15 @@ import {
 } from '@coreui/react';
 
 const DetailArticle = () => {
-  const { id } = useParams(); // Get ID from URL parameters
-  const navigate = useNavigate(); // For navigation
+  const { id } = useParams(); 
+  const navigate = useNavigate(); 
   const [article, setArticle] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const { role } = useAuth(); 
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return; 
     }
 
     console.log('User role:', role);
@@ -47,7 +47,7 @@ const DetailArticle = () => {
   }, [id,role, navigate]);
 
   const handleReturn = () => {
-    navigate('/list_article'); // Navigate back to list
+    navigate('/list_article'); 
   };
 
   return (

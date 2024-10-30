@@ -19,8 +19,8 @@ import {
 } from '@coreui/react';
 import { useAuth } from '../../../Middleware/Use_Auth';
 const EditBank = () => {
-    const { id } = useParams(); // Get reference from URL parameters for editing
-    const navigate = useNavigate(); // For navigation
+    const { id } = useParams();
+    const navigate = useNavigate(); 
     const [formData, setFormData] = useState({
         value: '',
     });
@@ -30,7 +30,7 @@ const EditBank = () => {
     const { role } = useAuth();
     useEffect(() => {
         if (!role) {
-            return; // N'exécutez rien tant que le rôle n'est pas récupéré
+            return; 
           }
       
           console.log('User role:', role);
@@ -39,7 +39,6 @@ const EditBank = () => {
             navigate('/unauthorized');
           }
         if (id) {
-            // If there's a reference, fetch the existing bank details
             const fetchBank = async () => {
                 try {
                     const response = await axios.get(`http://localhost:5001/Bank/${id}`);
@@ -60,9 +59,9 @@ const EditBank = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Update the existing bank
+         
             await axios.put(`http://localhost:5001/Bank/${id}`, formData);
-            navigate('/list_bank'); // Navigate back to list after successful submission
+            navigate('/list_bank');
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.message) {
                 setModalMessage(error.response.data.message);

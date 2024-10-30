@@ -4,6 +4,8 @@ const   Articles =require('../Models/ArticleModel');
 const Order=require('../Models/OrderModel');
 const Claim= require('../Models/ClaimModel');
 const State =require('../Models/StateModel');
+const  RoleUsers =require('../Models/RoleUserModel');
+const  User =require('../Models/UserModel');
 const sequelize = require("../config/database");
 // afficher pour fournisseur
 const countClientsBySupplier = async (req, res) => {
@@ -79,6 +81,24 @@ const countSuppliers = async (req, res) => {
   } catch (error) {
     console.error('Erreur lors du comptage des fournisseurs:', error);
     res.status(500).json({ message: 'Erreur lors du comptage des fournisseurs.', error: error.message });
+  }
+};
+const countAdmin = async (req, res) => {
+  try {
+  
+    const adminCount = await User.count({
+      include: [
+        {
+          model: RoleUsers,
+          where: { name: 'Administrateur' } 
+        }
+      ],
+      where: { deleted: false } 
+    });
+    res.status(200).json({ adminCount });
+  } catch (error) {
+    console.error('Erreur lors du comptage des Administrateur:', error);
+    res.status(500).json({ message: 'Erreur lors du comptage des Administrateur.', error: error.message });
   }
 };
 const countClaims = async (req, res) => {
@@ -176,5 +196,5 @@ const countOrdersByDeliveryPerson = async (req, res) => {
   
 
 module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier 
-  , countOrdersByDeliveryPerson,countClaims,countOrdersByState,countTotalOrders };
+  , countOrdersByDeliveryPerson,countClaims,countOrdersByState,countTotalOrders ,countAdmin};
 

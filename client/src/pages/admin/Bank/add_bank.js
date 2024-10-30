@@ -26,10 +26,10 @@ const AddBank = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const navigate = useNavigate();
-    const { role } = useAuth(); // Utilisation du hook useAuth pour récupérer le rôle
+    const { role } = useAuth(); 
     useEffect(() => {
         if (!role) {
-          return; // N'exécutez rien tant que le rôle n'est pas récupéré
+          return; 
         }
     
         console.log('User role:', role);
@@ -51,7 +51,6 @@ const AddBank = () => {
                 value: formData.value,
             });
             console.log('Réponse serveur:', response.data);
-            // Afficher un message de succès ou rediriger l'utilisateur
             navigate('/list_bank');
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.message) {
