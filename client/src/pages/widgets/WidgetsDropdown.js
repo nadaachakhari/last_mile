@@ -32,7 +32,7 @@ const WidgetsDropdown = (props) => {
   const [deliveryOrderCount, setDeliveryOrderCount] = useState(0); 
   const [claimCount, setClaimCount] = useState(0);
   const [orderStates, setOrderStates] = useState([0]);
-
+  const [totalorder, setTotalorder] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState('')
@@ -59,6 +59,7 @@ const WidgetsDropdown = (props) => {
           deliveryOrdersRes,
           claimRes,
           orderCountsRes,
+          orderRes,
         ] = await Promise.all([
           axios.get('http://localhost:5001/Dashboard/count-Suppliers'),
           axios.get('http://localhost:5001/Dashboard/count-admin'),
@@ -68,22 +69,25 @@ const WidgetsDropdown = (props) => {
           axios.get('http://localhost:5001/Dashboard/count-orders-delivery', { headers: { Authorization: `Bearer ${token}` } }),
           axios.get('http://localhost:5001/Dashboard/countClaims'),
           axios.get('http://localhost:5001/Dashboard/countOrdersByState'),
+          axios.get('http://localhost:5001/Dashboard/countTotalOrders'),
         ]);
-
+    
         setSupplierCount(supplierRes.data.supplierCount || 0);
         setadminCount(adminRes.data.adminCount || 0);
         setTotalCommands(commandsRes.data.totalCommands || 0);
+        setTotalorder(orderRes.data.totalOrders || 0); // Assurez-vous de prendre `totalOrders` ici
         setClientCount(clientRes.data.clientCount || 0);
         setArticleCount(articleRes.data.ArticleCount || 0);
         setDeliveryOrderCount(deliveryOrdersRes.data.orderCount || 0);
         setClaimCount(claimRes.data.totalClaims || 0);
-        setOrderStates(orderCountsRes.data || [] );
+        setOrderStates(orderCountsRes.data || []);
       } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
       } finally {
         setLoading(false);
       }
     };
+    
 
     fetchData();
   }, []);
@@ -107,6 +111,7 @@ const WidgetsDropdown = (props) => {
             </span>
           </>
         }
+        title={<span className="text-light">Nombre de Fournisseur</span>}
         action={
           <div className="position-absolute top-0 end-0 p-3">
            <CDropdown alignment="end">
@@ -142,6 +147,7 @@ const WidgetsDropdown = (props) => {
             </span>
           </>
         }
+        title={<span className="text-light">Nombre de Administrateur</span>}
         action={
           <div className="position-absolute top-0 end-0 p-3">
            <CDropdown alignment="end">
@@ -164,6 +170,7 @@ const WidgetsDropdown = (props) => {
       />
     </CCol>
           )}
+
               {userRole === 'fournisseur' && (
     <CCol sm={6} xl={4} xxl={3}>
       <CWidgetStatsA
@@ -325,6 +332,7 @@ const WidgetsDropdown = (props) => {
           />
         </CCol>
       )}
+      
      {userRole === 'Administrateur' && (    
      <CRow className={props.className} xs={{ gutter: 4 }}>
   <CRow>
@@ -332,7 +340,40 @@ const WidgetsDropdown = (props) => {
       <h4 id="traffic" className="card-title mb-0">Nombre des colis par état</h4>
     </CCol>
   </CRow>
-
+  {userRole === 'Administrateur' && (
+  <CCol sm={6} xl={4} xxl={3}>
+    <CWidgetStatsA
+      style={{ height: '164px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+      color="primary"
+      value={
+        <>
+          <span className="fs-3 fw-bold">{totalorder}</span>{' '}
+          <span className="fs-6 fw-normal">Commandes</span>
+        </>
+      }
+      title={<span className="text-light">Nombre de Commande</span>}
+      action={
+        <div className="position-absolute top-0 end-0 p-3">
+          <CDropdown alignment="end">
+            <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
+              <CIcon icon={cilOptions} className="text-light" style={{ cursor: 'pointer' }} />
+            </CDropdownToggle>
+            <CDropdownMenu>
+              <Link to="/admin/list_fournisseur">
+                <CDropdownItem>Afficher Commandes</CDropdownItem>
+              </Link>
+            </CDropdownMenu>
+          </CDropdown>
+        </div>
+      }
+      chart={
+        <div className="position-absolute top-50 end-0 translate-middle-y p-3">
+          <CIcon icon={cilUser} size="3xl" className="opacity-75 text-white" />
+        </div>
+      }
+    />
+  </CCol>
+)}
   {orderStates.map((state, index) => {
   
     let icon = faBox; 
@@ -391,7 +432,10 @@ const WidgetsDropdown = (props) => {
     );
   })}
 
+
+
 </CRow>
+
 )}
 
     </CRow>   
