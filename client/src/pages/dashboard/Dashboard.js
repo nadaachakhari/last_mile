@@ -1,6 +1,8 @@
-import React from 'react'
-import classNames from 'classnames'
 
+import classNames from 'classnames'
+import React, { useEffect } from 'react';
+
+import { Link, useNavigate } from 'react-router-dom';
 import {
   CAvatar,
   CButton,
@@ -20,6 +22,7 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { useAuth } from '../../Middleware/Use_Auth';
 import {
   cibCcAmex,
   cibCcApplePay,
@@ -55,6 +58,16 @@ import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
 
 const Dashboard = () => {
+  const navigate = useNavigate(); // Move this inside the component
+  const { role } = useAuth();
+
+  useEffect(() => {
+    if (!role) {
+      return;
+    }
+    console.log('User role:', role);
+  }, [role, navigate]);
+
   const progressExample = [
     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
     { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
@@ -175,6 +188,8 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
+
+
 
   return (
     <>

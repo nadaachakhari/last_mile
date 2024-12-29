@@ -1,24 +1,27 @@
-// **  Initial State
+// Exemple de reducer pour l'authentification
 const initialState = {
-  userData: {}
-}
+  isAuthenticated: false,  // Valeur par défaut
+  user: null,
+};
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'LOGIN':
+    case 'LOGIN_SUCCESS':
       return {
         ...state,
-        userData: action.data,
-        [action.config.storageTokenKeyName]: action[action.config.storageTokenKeyName],
-        [action.config.storageRefreshTokenKeyName]: action[action.config.storageRefreshTokenKeyName]
-      }
+        isAuthenticated: true,
+        user: action.payload,  // Vous pouvez stocker les informations de l'utilisateur ici
+      };
     case 'LOGOUT':
-      const obj = { ...action }
-      delete obj.type
-      return { ...state, userData: {}, ...obj }
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: null,
+      };
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default authReducer
+export default authReducer;
+

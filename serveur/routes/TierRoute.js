@@ -38,6 +38,7 @@ router.get('/', getAllTiers);
 
 //client
 router.post('/create-client', authenticateToken, createClient);
+
 router.get('/clients', getAllClients);
 router.get('/clientbysupplier', authenticateToken, getAllClientsForSupplier);
 //Supplier
