@@ -1,5 +1,13 @@
+
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+
+import classNames from 'classnames'
+import React, { useEffect } from 'react';
+
+import { Link, useNavigate } from 'react-router-dom';
+
 import {
   CAvatar,
   CButton,
@@ -19,6 +27,7 @@ import {
   CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { useAuth } from '../../Middleware/Use_Auth';
 import {
   cibCcAmex,
   cibCcApplePay,
@@ -56,6 +65,24 @@ import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import axios from 'axios';
 
 const Dashboard = () => {
+
+  const navigate = useNavigate(); // Move this inside the component
+  const { role } = useAuth();
+
+  useEffect(() => {
+    if (!role) {
+      return;
+    }
+    console.log('User role:', role);
+  }, [role, navigate]);
+
+  const progressExample = [
+    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
+    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
+    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
+    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
+    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
+  ]
 
 
   const progressGroupExample1 = [
@@ -203,6 +230,8 @@ const Dashboard = () => {
     fetchOrdersByClient();
     
   }, [token]); 
+
+
 
   return (
     <>

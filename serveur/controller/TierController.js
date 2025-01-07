@@ -270,7 +270,7 @@ const user_name = await generateUserName(name, email);
       block: false,
       password: hashedPassword,
       deleted: false,
-      activate: 1,  // Modification ici pour définir "activate" à 1
+      activate: 1,  
       createdBy,
     });
     

@@ -35,7 +35,7 @@ const OrderList = () => {
   const { role } = useAuth();
   useEffect(() => {
     if (!role) {
-      return; // N'exécutez rien tant que le rôle n'est pas récupéré
+      return; 
     }
 
     console.log('User role:', role);
