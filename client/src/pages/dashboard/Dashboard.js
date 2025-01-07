@@ -1,6 +1,5 @@
-import React from 'react'
-import classNames from 'classnames'
-
+import React, { useEffect, useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {
   CAvatar,
   CButton,
@@ -42,7 +41,9 @@ import {
   cilUser,
   cilUserFemale,
 } from '@coreui/icons'
-
+import ChartcountOrdersByClientAddressbysulppier from './Chart/ChartcountOrdersByClientAddressbysupplier copy'
+import ChartcountOrdersByClientAddress from './Chart/ChartcountOrdersByClientAddress'
+import ChartCountOrdersByMonth from './Chart/ChartcountOrdersByMonth'
 import avatar1 from 'src/assets/images/avatars/1.jpg'
 import avatar2 from 'src/assets/images/avatars/2.jpg'
 import avatar3 from 'src/assets/images/avatars/3.jpg'
@@ -52,16 +53,10 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
-import MainChart from './MainChart'
+import axios from 'axios';
 
 const Dashboard = () => {
-  const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
+
 
   const progressGroupExample1 = [
     { title: 'Monday', value1: 34, value2: 78 },
@@ -175,64 +170,75 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
+  
+  const [ordersData, setOrdersData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState('');
+  const token = localStorage.getItem('token');
+
+  const fetchOrdersByClient = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5001/Dashboard/countOrdersByClientForSupplier', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const formattedData = response.data.ordersByClient.map((item) => ({
+        clientName: item.client.name,
+        orderCount: item.orderCount,
+      }));
+      setOrdersData(formattedData);
+    } catch (error) {
+      setError('Erreur lors de la récupération des données');
+      console.error('Erreur:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+      setUserRole(role);
+    fetchOrdersByClient();
+    
+  }, [token]); 
 
   return (
     <>
       <WidgetsDropdown className="mb-4" />
+      {userRole === 'fournisseur' && (
       <CCard className="mb-4">
-        <CCardBody>
-          <CRow>
-            <CCol sm={5}>
-              <h4 id="traffic" className="card-title mb-0">
-                Traffic
-              </h4>
-              <div className="small text-body-secondary">January - July 2023</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
-          </CRow>
-          <MainChart />
-        </CCardBody>
-        <CCardFooter>
-          <CRow
-            xs={{ cols: 1, gutter: 4 }}
-            sm={{ cols: 2 }}
-            lg={{ cols: 4 }}
-            xl={{ cols: 5 }}
-            className="mb-2 text-center"
-          >
-            {progressExample.map((item, index, items) => (
-              <CCol
-                className={classNames({
-                  'd-none d-xl-block': index + 1 === items.length,
-                })}
-                key={index}
-              >
-                <div className="text-body-secondary">{item.title}</div>
-                <div className="fw-semibold text-truncate">
-                  {item.value} ({item.percent}%)
-                </div>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
-          </CRow>
-        </CCardFooter>
+      <CCardBody>
+      <div style={{ padding: '20px' }}>
+      <h3>Nombre de commandes par client</h3>
+      {loading ? (
+        <p>Chargement des données...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={ordersData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="clientName" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="orderCount" fill="#8884d8" name="Nombre de commandes" />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+
+
+    </CCardBody>
+    
       </CCard>
+      
+      )}
+        <ChartcountOrdersByClientAddressbysulppier/>
+      <ChartcountOrdersByClientAddress/>
+      <ChartCountOrdersByMonth/>
       <WidgetsBrand className="mb-4" withCharts />
       <CRow>
         <CCol xs>

@@ -174,6 +174,7 @@ const taxStampValue = parseFloat(taxStamp) || 0; // Default to 0 if not defined
 const finalTotalTTC = totals.total_ttc + taxStampValue;
 
 return (
+  
     <CRow className='print'>
       <CCol xs={12}>
         <CCard className="mb-4 print-container" ref={componentRef} style={{ border: '2px solid black' }}>

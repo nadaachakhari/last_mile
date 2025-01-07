@@ -21,10 +21,11 @@ import { useReactToPrint } from 'react-to-print';
 import avatar from '../../../assets/images/logo/logo_last.png';
 
 import {
-  cilPrint,
+  cilPrint, cilDescription
 } from '@coreui/icons'
 import { useAuth } from '../../../Middleware/Use_Auth';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const AfficherFacture = () => {
   const { orderID } = useParams();
@@ -34,6 +35,7 @@ const AfficherFacture = () => {
   const navigate = useNavigate();
   const componentRef = useRef();
   const { role } = useAuth();
+
   useEffect(() => {
     if (!role) {
       return; // N'exécutez rien tant que le rôle n'est pas récupéré
@@ -169,10 +171,38 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
 
   const totals = calculateTotals();
 
+  // Télécharger la facture en PDF
+  const generatePDF = () => {
+    const input = componentRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 190;
+      const pageHeight = pdf.internal.pageSize.height;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let position = 10;
+      
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.save(`facture_${orderID}.pdf`);
+    });
+  };
   return (
     <CRow className='print'>
+        <div className="mb-4 d-flex justify-content-end mt-3">
+        <CButton color="primary" onClick={handlePrint} className="mt-3">
+              <CIcon icon={cilPrint} style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" /> Imprimer Facture
+        </CButton>
+        <CButton color="primary" onClick={generatePDF} className="mt-3 ms-2">
+        <CIcon icon={cilDescription} size="lg" className="me-2" />Télécharger la facture en PDF
+        </CButton>
+        <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
+                Retourner à la Liste des Commandes
+              </CButton>
+              
+            </div>
       <CCol xs={12}>
-        <CCard className="mb-4 print-container" ref={componentRef} style={{ border: '2px solid black' }}>
+        
+        <CCard className="mb-4 print-container" ref={componentRef} style={{  width: '100%', border: '2px solid black' }}>
         <CCardHeader className="d-flex justify-content-between align-items-center" style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid black' }}>
             <img src={avatar} alt="Logo" style={{ height: '80px' }} />
             <div>
@@ -255,7 +285,7 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
             </CRow>
   
             {/* Footer Section */}
-            <CTable className='print-footer' responsive style={{ borderTop: '2px solid black', marginTop: '20px' }}>
+            <CTable className='print-footer' responsive style={{ borderTop: '2px solid black'}}>
               <CTableBody>
                 <CTableRow>
                   <CTableDataCell style={{ borderRight: '2px solid black', height: '100px', verticalAlign: 'bottom' }}>
@@ -268,7 +298,7 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
                   </CTableDataCell>
                 </CTableRow>
                 <CTableRow>
-                  <CTableDataCell colSpan="2" className="text-center">
+                  <CTableDataCell  className="footer">
                     <p>AXESERP | B11, Sfax Innovation 2 Route Saltinia km 3 ZI Poudrière 2 | Tél. 29 300 034 | Email. contact@axeserp.com | MF. 1699211/V/A/P/000</p>
                   </CTableDataCell>
                 </CTableRow>
@@ -282,21 +312,31 @@ const totalVatRate = invoiceLignes.reduce((sum, line) => {
       }
    .print-footer{
     display: flex;
+    borderRight: '2px solid black';
    }
-
+  .footer {
+     
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;  
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
+    }
   `}
 </style>
 
-            <div className="no-print" style={{ marginBottom: '20px' }}>
+            {/* <div className="no-print" style={{ marginBottom: '20px' }}>
               <CButton color="primary" onClick={handlePrint} className="mt-3">
               <CIcon icon={cilPrint} style={{ width: '20px', marginRight: '8px' }}customClassName="nav-icon" /> Imprimer Facture
               </CButton>
               <CButton color="secondary" onClick={() => navigate('/admin/list_order')} className="mt-3 ms-2">
                 Retourner à la Liste des Commandes
               </CButton>
-            </div>
+            </div> */}
           </CCardBody>
-          <div className="print-footer"></div>
+     
         </CCard>
       </CCol>
     </CRow>

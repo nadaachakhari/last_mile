@@ -192,9 +192,224 @@ const countOrdersByDeliveryPerson = async (req, res) => {
       res.status(500).json({ message: 'Erreur lors du comptage des commandes.', error: error.message });
   }
 };
+const countOrdersByClientForSupplier = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ message: 'User not authenticated or invalid.' });
+    }
+
+    const id_supplier = req.user.id; // ID du fournisseur connecté
+
+    // Récupérer le nombre de commandes groupées par client pour le fournisseur connecté
+    const ordersByClient = await Order.findAll({
+      attributes: [
+        'customerID',
+        [sequelize.fn('COUNT', sequelize.col('Order.id')), 'orderCount']
+      ],
+      where: { supplierID: id_supplier }, // Filtrer par fournisseur
+      group: ['customerID'], // Grouper par client
+      include: [
+        {
+          model: Tiers,
+          as: 'customer', // Assurez-vous que l'association pour le client est correctement définie
+          attributes: ['id', 'name'] // Inclure les informations sur le client
+        }
+      ],
+      raw: true
+    });
+
+    // Structurer les résultats
+    const result = ordersByClient.map(order => ({
+      client: {
+        id: order['customer.id'],
+        name: order['customer.name']
+      },
+      orderCount: order['orderCount']
+    }));
+
+    res.status(200).json({ supplierId: id_supplier, ordersByClient: result });
+  } catch (error) {
+    console.error('Erreur lors du comptage des commandes par client:', error);
+    res.status(500).json({ message: 'Erreur lors du comptage des commandes par client.', error: error.message });
+  }
+};
+const countOrdersByClientAddressbysupplier = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ message: 'User not authenticated or invalid.' });
+    }
+
+    const id_supplier = req.user.id; // ID of the connected supplier
+
+    // Count orders grouped by client address
+    const ordersByAddress = await Order.findAll({
+      attributes: [
+        [sequelize.col('customer.address'), 'clientAddress'], // Assuming the address is in the 'Tiers' table under 'customer'
+        [sequelize.fn('COUNT', sequelize.col('Order.id')), 'orderCount']
+      ],
+      where: { supplierID: id_supplier }, // Filter by supplier
+      group: ['customer.address'], // Group by address
+      include: [
+        {
+          model: Tiers,
+          as: 'customer', // Ensure this association is correctly defined
+          attributes: [] // No need to include all customer fields, just the address
+        }
+      ],
+      raw: true
+    });
+
+    // Format the result
+    const result = ordersByAddress.map(order => ({
+      clientAddress: order.clientAddress,
+      orderCount: order.orderCount
+    }));
+
+    res.status(200).json({ supplierId: id_supplier, ordersByAddress: result });
+  } catch (error) {
+    console.error('Error counting orders by client address:', error);
+    res.status(500).json({ message: 'Error counting orders by client address.', error: error.message });
+
+  }const countOrdersByMonth = async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(400).json({ message: 'User not authenticated or invalid.' });
+      }
+  
+      const id_supplier = req.user.id; // ID du fournisseur connecté
+  
+      // Récupérer les commandes groupées par mois
+      const ordersByMonth = await Order.findAll({
+        attributes: [
+          [sequelize.fn('DATE_FORMAT', sequelize.col('createdAt'), '%Y-%m'), 'month'], // Extraire le mois et l'année
+          [sequelize.fn('COUNT', sequelize.col('id')), 'orderCount'] // Compter les commandes
+        ],
+        where: { supplierID: id_supplier }, // Filtrer par fournisseur
+        group: [sequelize.fn('DATE_FORMAT', sequelize.col('createdAt'), '%Y-%m')], // Grouper par mois
+        order: [[sequelize.fn('DATE_FORMAT', sequelize.col('createdAt'), '%Y-%m'), 'ASC']], // Trier par mois
+        raw: true
+      });
+  
+      // Structurer les résultats
+      const result = ordersByMonth.map(order => ({
+        month: order.month,
+        orderCount: parseInt(order.orderCount, 10)
+      }));
+  
+      res.status(200).json({ supplierId: id_supplier, ordersByMonth: result });
+    } catch (error) {
+      console.error('Erreur lors du comptage des commandes par mois:', error);
+      res.status(500).json({ message: 'Erreur lors du comptage des commandes par mois.', error: error.message });
+    }
+  };
+  
+};
+const countOrdersByClientAddress = async (req, res) => {
+  try {
+    
+    // Count orders grouped by client address
+    const ordersByAddress = await Order.findAll({
+      attributes: [
+        [sequelize.col('customer.address'), 'clientAddress'], // Assuming the address is in the 'Tiers' table under 'customer'
+        [sequelize.fn('COUNT', sequelize.col('Order.id')), 'orderCount']
+      ],
+      
+      group: ['customer.address'], // Group by address
+      include: [
+        {
+          model: Tiers,
+          as: 'customer', // Ensure this association is correctly defined
+          attributes: [] // No need to include all customer fields, just the address
+        }
+      ],
+      raw: true
+    });
+
+    // Format the result
+    const result = ordersByAddress.map(order => ({
+      clientAddress: order.clientAddress,
+      orderCount: order.orderCount
+    }));
+
+    res.status(200).json({  ordersByAddress: result });
+  } catch (error) {
+    console.error('Error counting orders by client address:', error);
+    res.status(500).json({ message: 'Error counting orders by client address.', error: error.message });
+
+  }
+  
+};
+const countOrdersByMonth = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ message: 'User not authenticated or invalid.' });
+    }
+
+    const id_supplier = req.user.id; // ID du fournisseur connecté
+
+    // Récupérer les commandes groupées par mois
+    const ordersByMonth = await Order.findAll({
+      attributes: [
+        [sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m'), 'month'], // Utiliser 'date' pour extraire le mois et l'année
+        [sequelize.fn('COUNT', sequelize.col('id')), 'orderCount'] // Compter les commandes
+      ],
+      where: { supplierID: id_supplier }, // Filtrer par fournisseur
+      group: [sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m')], // Grouper par mois
+      order: [[sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m'), 'ASC']], // Trier par mois
+      raw: true
+    });
+
+    // Structurer les résultats
+    const result = ordersByMonth.map(order => ({
+      month: order.month,
+      orderCount: parseInt(order.orderCount, 10)
+    }));
+
+    res.status(200).json({ supplierId: id_supplier, ordersByMonth: result });
+  } catch (error) {
+    console.error('Erreur lors du comptage des commandes par mois:', error);
+    res.status(500).json({ message: 'Erreur lors du comptage des commandes par mois.', error: error.message });
+  }
+};
+
+const countOrdersByDay = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ message: 'User not authenticated or invalid.' });
+    }
+
+    const id_supplier = req.user.id; // ID du fournisseur connecté
+
+    // Récupérer les commandes groupées par jour
+    const ordersByDay = await Order.findAll({
+      attributes: [
+        [sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m-%d'), 'day'], // Utiliser 'date' pour extraire le jour (année-mois-jour)
+        [sequelize.fn('COUNT', sequelize.col('id')), 'orderCount'] // Compter les commandes
+      ],
+      where: { supplierID: id_supplier }, // Filtrer par fournisseur
+      group: [sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m-%d')], // Grouper par jour
+      order: [[sequelize.fn('DATE_FORMAT', sequelize.col('date'), '%Y-%m-%d'), 'ASC']], // Trier par jour
+      raw: true
+    });
+
+    // Structurer les résultats
+    const result = ordersByDay.map(order => ({
+      day: order.day,
+      orderCount: parseInt(order.orderCount, 10)
+    }));
+
+    res.status(200).json({ supplierId: id_supplier, ordersByDay: result });
+  } catch (error) {
+    console.error('Erreur lors du comptage des commandes par jour:', error);
+    res.status(500).json({ message: 'Erreur lors du comptage des commandes par jour.', error: error.message });
+  }
+};
+
+
 
   
 
 module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier 
-  , countOrdersByDeliveryPerson,countClaims,countOrdersByState,countTotalOrders ,countAdmin};
+  , countOrdersByDeliveryPerson,countClaims,countOrdersByState,countTotalOrders ,countAdmin,countOrdersByClientForSupplier,
+  countOrdersByClientAddress,countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier};
 

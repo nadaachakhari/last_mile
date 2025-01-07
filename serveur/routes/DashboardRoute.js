@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../controller/AuthController'); 
 const { countClientsBySupplier ,countSuppliers,countArticleBySupplier,totalCommandsBySupplier, countOrdersByDeliveryPerson,
-    countClaims,countOrdersByState,countTotalOrders,countAdmin
+    countClaims,countOrdersByState,countTotalOrders,countAdmin,countOrdersByClientForSupplier,countOrdersByClientAddress,
+    countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier
 } = require('../controller/DashboardController'); 
 
 router.get('/count-admin', countAdmin);
@@ -15,4 +16,10 @@ router.get('/count-orders-delivery', authenticateToken,countOrdersByDeliveryPers
 router.get('/countClaims',countClaims);
 router.get('/countOrdersByState',countOrdersByState)
 router.get('/countTotalOrders',countTotalOrders)
+router.get('/countOrdersByClientForSupplier',authenticateToken,countOrdersByClientForSupplier)
+router.get('/countOrdersByClientAddressbysupplier',authenticateToken,countOrdersByClientAddressbysupplier)
+router.get('/countOrdersByClientAddress',countOrdersByClientAddress)
+
+router.get('/countOrdersByMonth',authenticateToken,countOrdersByMonth)
+router.get('/countOrdersByDay',authenticateToken,countOrdersByDay)
 module.exports = router;

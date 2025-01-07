@@ -36,7 +36,7 @@
     "core-js": "^3.37.1",
     "cors": "^2.8.5",
     "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
+    "jspdf": "^2.5.2",
     "jwt-decode": "^4.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
@@ -46,6 +46,7 @@
     "react-router-dom": "^6.24.1",
     "react-select": "^5.8.0",
     "react-to-print": "^2.15.1",
+    "recharts": "^2.15.0",
     "redux": "5.0.1",
     "simplebar-react": "^3.2.5"
   },
@@ -60,6 +61,6 @@
     "postcss": "^8.4.38",
     "prettier": "3.3.2",
     "sass": "^1.77.5",
-    "vite": "^5.2.13"
+    "vite": "^5.4.11"
   }
 }
