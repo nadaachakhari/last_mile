@@ -405,11 +405,51 @@ const countOrdersByDay = async (req, res) => {
   }
 };
 
+const countOrdersByStateAndAddress= async (req, res) =>  {
+  try {
+    const ordersCount = await Order.findAll({
+      attributes: [
+        'address', // Adresse du client
+        'state',   // État de la commande
+        [sequelize.fn('COUNT', sequelize.col('id')), 'orderCount'], // Compte des commandes
+      ],
+      include: [
+        {
+          model: Tiers,
+          as: 'customer', // Assurez-vous que cette association est correctement définie
+          attributes: ['name'], // Inclure des informations sur le client si nécessaire
+        },
+      ],
+      where: {
+        state: ['Livraison effectuée', 'Commande annulée'], // Filtre sur les états
+      },
+      group: ['address', 'state'], // Grouper par adresse et état
+      raw: true, // Retourne un objet brut
+    });
+
+    // Organiser les résultats par adresse et état
+    const result = {};
+    ordersCount.forEach((order) => {
+      const { address, state, orderCount } = order;
+      if (!result[address]) {
+        result[address] = {};
+      }
+      result[address][state] = parseInt(orderCount, 10);
+    });
+
+    return result;
+  } catch (error) {
+    console.error('Erreur lors du comptage des commandes :', error);
+    throw error;
+  }
+}
+
 
 
   
 
 module.exports = { countClientsBySupplier,countSuppliers,countArticleBySupplier,totalCommandsBySupplier 
   , countOrdersByDeliveryPerson,countClaims,countOrdersByState,countTotalOrders ,countAdmin,countOrdersByClientForSupplier,
-  countOrdersByClientAddress,countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier};
+  countOrdersByClientAddress,countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier,
+  countOrdersByStateAndAddress};
 

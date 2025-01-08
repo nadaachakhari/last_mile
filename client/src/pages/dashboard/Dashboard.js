@@ -2,10 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-
-import classNames from 'classnames'
-import React, { useEffect } from 'react';
-
 import { Link, useNavigate } from 'react-router-dom';
 
 import {
@@ -60,7 +56,7 @@ import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-import WidgetsBrand from '../widgets/WidgetsBrand'
+// import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import axios from 'axios';
 
@@ -268,8 +264,8 @@ const Dashboard = () => {
         <ChartcountOrdersByClientAddressbysulppier/>
       <ChartcountOrdersByClientAddress/>
       <ChartCountOrdersByMonth/>
-      <WidgetsBrand className="mb-4" withCharts />
-      <CRow>
+      {/* <WidgetsBrand className="mb-4" withCharts /> */}
+      {/* <CRow>
         <CCol xs>
           <CCard className="mb-4">
             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
@@ -414,7 +410,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
+      </CRow> */}
     </>
   )
 }

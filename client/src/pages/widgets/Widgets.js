@@ -31,7 +31,7 @@ import {
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import { DocsExample } from 'src/components'
 
-import WidgetsBrand from './WidgetsBrand'
+// import WidgetsBrand from './WidgetsBrand'
 import WidgetsDropdown from './WidgetsDropdown'
 
 const Widgets = () => {
@@ -735,10 +735,10 @@ const Widgets = () => {
           </CRow>
         </DocsExample>
         <DocsExample href="components/widgets/#cwidgetstatsd">
-          <WidgetsBrand />
+          {/* <WidgetsBrand /> */}
         </DocsExample>
         <DocsExample href="components/widgets/#cwidgetstatsd">
-          <WidgetsBrand withCharts />
+          {/* <WidgetsBrand withCharts /> */}
         </DocsExample>
         <DocsExample href="components/widgets/#cwidgetstatsc">
           <CCardGroup className="mb-4">

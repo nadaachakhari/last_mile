@@ -3,7 +3,7 @@ const router = express.Router();
 const { authenticateToken } = require('../controller/AuthController'); 
 const { countClientsBySupplier ,countSuppliers,countArticleBySupplier,totalCommandsBySupplier, countOrdersByDeliveryPerson,
     countClaims,countOrdersByState,countTotalOrders,countAdmin,countOrdersByClientForSupplier,countOrdersByClientAddress,
-    countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier
+    countOrdersByMonth,countOrdersByDay,countOrdersByClientAddressbysupplier,countOrdersByStateAndAddress
 } = require('../controller/DashboardController'); 
 
 router.get('/count-admin', countAdmin);
@@ -19,7 +19,7 @@ router.get('/countTotalOrders',countTotalOrders)
 router.get('/countOrdersByClientForSupplier',authenticateToken,countOrdersByClientForSupplier)
 router.get('/countOrdersByClientAddressbysupplier',authenticateToken,countOrdersByClientAddressbysupplier)
 router.get('/countOrdersByClientAddress',countOrdersByClientAddress)
-
+router.get('/countOrdersByStateAndAddress',countOrdersByStateAndAddress)
 router.get('/countOrdersByMonth',authenticateToken,countOrdersByMonth)
 router.get('/countOrdersByDay',authenticateToken,countOrdersByDay)
 module.exports = router;
